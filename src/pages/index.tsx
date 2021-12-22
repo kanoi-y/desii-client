@@ -4,7 +4,7 @@ import React from 'react'
 export default function Home() {
   return (
     <Box textAlign="center">
-      <chakra.h1 color="tomato">Hello World!</chakra.h1>
+      <chakra.h1 color="tomato">Hello World!!</chakra.h1>
     </Box>
   )
 }
