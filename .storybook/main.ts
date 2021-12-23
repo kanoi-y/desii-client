@@ -1,16 +1,12 @@
 const path = require('path')
 
 module.exports = {
-  stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.tsx'],
-  addons: ['@storybook/addon-links', '@storybook/addon-essentials'],
-  typescript: {
-    check: true,
-    checkOptions: {},
-    reactDocgen: 'react-docgen-typescript',
-    reactDocgenTypescriptOptions: {
-      include: ['../src/**/*.stories.mdx', '../src/**/*.stories.tsx'],
-    },
-  },
+  stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  addons: [
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    '@storybook/addon-postcss',
+  ],
   webpackFinal: async (config) => {
     return {
       ...config,
@@ -30,5 +26,8 @@ module.exports = {
         },
       },
     }
+  },
+  typescript: {
+    reactDocgen: false,
   },
 }
