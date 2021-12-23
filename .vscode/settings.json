@@ -1,5 +1,5 @@
 {
   "editor.formatOnSave": true,
   "prettier.requireConfig": true,
-  "cSpell.words": ["chakra", "desii"]
+  "cSpell.words": ["chakra", "desii", "Docgen", "Viewports"]
 }
