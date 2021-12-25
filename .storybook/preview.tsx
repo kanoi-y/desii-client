@@ -1,11 +1,12 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import { Story } from '@storybook/react'
 import React from 'react'
-// import theme from '../src/theme'
+
+import { theme } from '../src/theme'
 
 const withChakra = (Story: Story) => {
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <Story />
     </ChakraProvider>
   )
