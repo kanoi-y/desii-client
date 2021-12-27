@@ -26,7 +26,7 @@ export const Button: VFC<Props> = ({
       color={color}
       disabled={disabled}
       size={size}
-      onCLick={onClick}
+      onClick={onClick}
       isLoading={isLoading}
     >
       {children}
