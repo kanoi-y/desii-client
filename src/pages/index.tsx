@@ -1,10 +1,15 @@
-import { Box, chakra } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import React from 'react'
+import { Button } from '~/components/parts/commons'
 
 export default function Home() {
+  const handleClick = () => {
+    alert('Hello!')
+  }
+
   return (
     <Box textAlign="center">
-      <chakra.h1 color="tomato">Hello World!!</chakra.h1>
+      <Button onClick={handleClick}>Hello World!!</Button>
     </Box>
   )
 }
