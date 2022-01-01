@@ -1,8 +1,11 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import { Story } from '@storybook/react'
+import { initialize, mswDecorator } from 'msw-storybook-addon'
 import React from 'react'
-
 import { theme } from '../src/theme'
+
+// Initialize MSW
+initialize()
 
 const withChakra = (Story: Story) => {
   return (
@@ -12,7 +15,7 @@ const withChakra = (Story: Story) => {
   )
 }
 
-export const decorators = [withChakra]
+export const decorators = [withChakra, mswDecorator]
 
 const customViewports = {
   /** iPhone X */
@@ -45,7 +48,7 @@ const customViewports = {
 }
 
 export const parameters = {
-  actions: { argTypesRegex: "^on[A-Z].*" },
+  actions: { argTypesRegex: '^on[A-Z].*' },
   viewport: {
     viewports: customViewports,
     defaultViewport: 'base',
