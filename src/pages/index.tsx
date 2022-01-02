@@ -30,6 +30,7 @@ export default function Home() {
           key={user._id}
           userName={user.name}
           iconImageId={user.iconImageId}
+          userId={user._id}
         />
       ))}
     </Box>

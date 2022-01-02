@@ -1,32 +1,45 @@
 import { useQuery } from '@apollo/client'
-import { Avatar } from '@chakra-ui/react'
+import { Avatar, Link } from '@chakra-ui/react'
+import NextLink from 'next/link'
 import { VFC } from 'react'
-import { User } from '~/domains'
 import { GET_ATTACHMENT_BY_ID } from '~/queries'
 import { GetAttachmentByIdQuery } from '~/types/generated/graphql'
 
 type sizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full'
 
 type Props = {
-  userName?: string;
-  iconImageId?: string;
+  userName: string;
+  iconImageId: string;
+  userId?: string;
   size?: sizeType
   isLink?: boolean
 }
 
-export const UserIcon: VFC<Props> = ({ userName, iconImageId, size = 'md', isLink = false }) => {
-  const { data, error } = useQuery<GetAttachmentByIdQuery>(
-    GET_ATTACHMENT_BY_ID,
-    {
-      variables: { id: iconImageId },
-      // fetchPolicy: 'network-only',
-      fetchPolicy: 'cache-and-network',
-      //fetchPolicy: 'cache-first',
-      //fetchPolicy: 'no-cache',
-    }
+export const UserIcon: VFC<Props> = ({ userName, iconImageId, userId = '', size = 'md', isLink = false }) => {
+  const { data } = useQuery<GetAttachmentByIdQuery>(GET_ATTACHMENT_BY_ID, {
+    variables: { id: iconImageId },
+    fetchPolicy: 'cache-and-network',
+  })
+
+  if (isLink) {
+    return (
+      <NextLink href={`/user/${userId}`} passHref>
+        <Link>
+          <Avatar
+            name={userName}
+            size={size}
+            src={data?.attachments_by_pk?.filePath}
+          />
+        </Link>
+      </NextLink>
+    )
+  }
+
+  return (
+    <Avatar
+      name={userName}
+      size={size}
+      src={data?.attachments_by_pk?.filePath}
+    />
   )
-
-  if (error) null
-
-  return <Avatar name={userName} size={size} src={data?.attachments_by_pk?.filePath} />
 }
