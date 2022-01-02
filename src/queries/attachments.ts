@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 export const GET_ATTACHMENT_BY_ID = gql`
   query GetAttachmentById($id: uuid!) {
-    attachments_by_pk(id: $id) {
+    attachments_by_pk(_id: $id) {
       _id
       name
       size
@@ -17,9 +17,9 @@ export const GET_ATTACHMENT_BY_ID = gql`
 export const CREATE_ATTACHMENT = gql`
   mutation CreateAttachment(
     $name: String!
-    $size: Number!
+    $size: Int!
     $filePath: String!
-    $createdUserId: String!
+    $createdUserId: uuid!
   ) {
     insert_attachments_one(
       object: {
@@ -42,7 +42,7 @@ export const CREATE_ATTACHMENT = gql`
 
 export const DELETE_ATTACHMENT = gql`
   mutation DeleteAttachment($id: uuid!) {
-    delete_attachments_by_pk(id: $id) {
+    delete_attachments_by_pk(_id: $id) {
       _id
       name
       size

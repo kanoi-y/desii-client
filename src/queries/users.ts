@@ -16,7 +16,7 @@ export const GET_USERS = gql`
 
 export const GET_USER_BY_ID = gql`
   query GetUserById($id: uuid!) {
-    users_by_pk(id: $id) {
+    users_by_pk(_id: $id) {
       _id
       name
       description
@@ -33,7 +33,7 @@ export const CREATE_USER = gql`
     $name: String!
     $description: String!
     $email: String!
-    $iconImageId: String!
+    $iconImageId: uuid!
   ) {
     insert_users_one(
       object: {
@@ -56,7 +56,7 @@ export const CREATE_USER = gql`
 
 export const DELETE_USER = gql`
   mutation DeleteUser($id: uuid!) {
-    delete_users_by_pk(id: $id) {
+    delete_users_by_pk(_id: $id) {
       _id
       name
       description
@@ -74,10 +74,10 @@ export const UPDATE_USER = gql`
     $name: String
     $description: String
     $email: String
-    $iconImageId: String
+    $iconImageId: uuid
   ) {
     update_users_by_pk(
-      pk_columns: { id: $id }
+      pk_columns: { _id: $id }
       _set: {
         name: $name
         description: $description
