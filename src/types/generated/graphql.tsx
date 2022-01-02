@@ -580,13 +580,13 @@ export type Users = {
   __typename?: 'users';
   _id: Scalars['uuid'];
   /** An object relationship */
-  attachment?: Maybe<Attachments>;
+  attachment: Attachments;
   /** An object relationship */
   attachmentById?: Maybe<Attachments>;
   createdAt: Scalars['timestamptz'];
   description: Scalars['String'];
   email: Scalars['String'];
-  iconImageId?: Maybe<Scalars['uuid']>;
+  iconImageId: Scalars['uuid'];
   name: Scalars['String'];
   updatedAt: Scalars['timestamptz'];
 };
@@ -802,14 +802,14 @@ export type DeleteAttachmentMutation = { __typename?: 'mutation_root', delete_at
 export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUsersQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', _id: any, name: string, description: string, email: string, iconImageId?: any | null | undefined, createdAt: any, updatedAt: any }> };
+export type GetUsersQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', _id: string, name: string, description: string, email: string, iconImageId: string, createdAt: Date, updatedAt: DateConstructor }> };
 
 export type GetUserByIdQueryVariables = Exact<{
   id: Scalars['uuid'];
 }>;
 
 
-export type GetUserByIdQuery = { __typename?: 'query_root', users_by_pk?: { __typename?: 'users', _id: any, name: string, description: string, email: string, iconImageId?: any | null | undefined, createdAt: any, updatedAt: any } | null | undefined };
+export type GetUserByIdQuery = { __typename?: 'query_root', users_by_pk?: { __typename?: 'users', _id: any, name: string, description: string, email: string, iconImageId: any, createdAt: any, updatedAt: any } | null | undefined };
 
 export type CreateUserMutationVariables = Exact<{
   name: Scalars['String'];
@@ -819,14 +819,14 @@ export type CreateUserMutationVariables = Exact<{
 }>;
 
 
-export type CreateUserMutation = { __typename?: 'mutation_root', insert_users_one?: { __typename?: 'users', _id: any, name: string, description: string, email: string, iconImageId?: any | null | undefined, createdAt: any, updatedAt: any } | null | undefined };
+export type CreateUserMutation = { __typename?: 'mutation_root', insert_users_one?: { __typename?: 'users', _id: any, name: string, description: string, email: string, iconImageId: any, createdAt: any, updatedAt: any } | null | undefined };
 
 export type DeleteUserMutationVariables = Exact<{
   id: Scalars['uuid'];
 }>;
 
 
-export type DeleteUserMutation = { __typename?: 'mutation_root', delete_users_by_pk?: { __typename?: 'users', _id: any, name: string, description: string, email: string, iconImageId?: any | null | undefined, createdAt: any, updatedAt: any } | null | undefined };
+export type DeleteUserMutation = { __typename?: 'mutation_root', delete_users_by_pk?: { __typename?: 'users', _id: any, name: string, description: string, email: string, iconImageId: any, createdAt: any, updatedAt: any } | null | undefined };
 
 export type UpdateUserMutationVariables = Exact<{
   id: Scalars['uuid'];
@@ -837,7 +837,7 @@ export type UpdateUserMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserMutation = { __typename?: 'mutation_root', update_users_by_pk?: { __typename?: 'users', _id: any, name: string, description: string, email: string, iconImageId?: any | null | undefined, createdAt: any, updatedAt: any } | null | undefined };
+export type UpdateUserMutation = { __typename?: 'mutation_root', update_users_by_pk?: { __typename?: 'users', _id: any, name: string, description: string, email: string, iconImageId: any, createdAt: any, updatedAt: any } | null | undefined };
 
 
 export const GetAttachmentByIdDocument = gql`
