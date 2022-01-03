@@ -802,7 +802,7 @@ export type DeleteAttachmentMutation = { __typename?: 'mutation_root', delete_at
 export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUsersQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', _id: string, name: string, description: string, email: string, iconImageId: string, createdAt: Date, updatedAt: DateConstructor }> };
+export type GetUsersQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', _id: string, name: string, description: string, email: string, iconImageId: string, createdAt: Date, updatedAt: Date }> };
 
 export type GetUserByIdQueryVariables = Exact<{
   id: Scalars['uuid'];

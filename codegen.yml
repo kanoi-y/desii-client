@@ -3,10 +3,10 @@ schema:
   - https://desii-development.hasura.app/v1/graphql:
       headers:
         'x-hasura-admin-secret': ${NEXT_PUBLIC_HASURA_KEY}
-documents: "src/queries/**/*.ts"
+documents: 'src/queries/**/*.ts'
 generates:
   src/types/generated/graphql.tsx:
     plugins:
-      - "typescript"
-      - "typescript-operations"
-      - "typescript-react-apollo"
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
