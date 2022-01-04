@@ -8,7 +8,7 @@ export const handlers = [
     return res(
       ctx.data({
         attachments_by_pk: {
-          ...attachmentsFactory({ _id: id }),
+          ...attachmentsFactory({ _id: id, filePath: 'images/Desii_icon.png' }),
         },
       })
     )
