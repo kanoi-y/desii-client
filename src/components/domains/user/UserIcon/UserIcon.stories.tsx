@@ -1,7 +1,7 @@
 import { ApolloProvider } from '@apollo/client'
-import { initializeApollo } from '~/lib/apolloClient'
 import { Box } from '@chakra-ui/react'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { initializeApollo } from '~/lib/apolloClient'
 import { UserIcon } from './UserIcon'
 
 export default {
@@ -9,13 +9,16 @@ export default {
   component: UserIcon,
 } as ComponentMeta<typeof UserIcon>
 
-const Template: ComponentStory<typeof UserIcon> = ({ ...args }) => {
+const Template: ComponentStory<typeof UserIcon> = ({ size, ...args }) => {
   const client = initializeApollo()
 
   return (
     <ApolloProvider client={client}>
-      <Box>
+      <Box display="flex" flexWrap="wrap">
+        <UserIcon size="sm" {...args} />
         <UserIcon {...args} />
+        <UserIcon size="lg" {...args} />
+        <UserIcon size="full" {...args} />
       </Box>
     </ApolloProvider>
   )

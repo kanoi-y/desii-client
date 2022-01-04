@@ -5,17 +5,23 @@ import { VFC } from 'react'
 import { GET_ATTACHMENT_BY_ID } from '~/queries'
 import { GetAttachmentByIdQuery } from '~/types/generated/graphql'
 
-type sizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full'
+type sizeType = 'sm' | 'md' | 'lg' | 'full'
 
 type Props = {
-  userName: string;
-  iconImageId: string;
-  userId?: string;
+  userName: string
+  iconImageId: string
+  userId?: string
   size?: sizeType
   isLink?: boolean
 }
 
-export const UserIcon: VFC<Props> = ({ userName, iconImageId, userId = '', size = 'md', isLink = false }) => {
+export const UserIcon: VFC<Props> = ({
+  userName,
+  iconImageId,
+  userId = '',
+  size = 'md',
+  isLink = false,
+}) => {
   const { data } = useQuery<GetAttachmentByIdQuery>(GET_ATTACHMENT_BY_ID, {
     variables: { id: iconImageId },
     fetchPolicy: 'cache-and-network',
