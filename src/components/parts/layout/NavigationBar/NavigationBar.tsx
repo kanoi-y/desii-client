@@ -1,4 +1,6 @@
-import { Box, Image } from '@chakra-ui/react'
+import { Box, Link } from '@chakra-ui/react'
+import Image from 'next/image'
+import NextLink from 'next/link'
 import { useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Button } from '~/components/parts/commons'
@@ -23,8 +25,14 @@ export const NavigationBar: VFC<Props> = ({
   }, [isLogin, userName, iconImageId])
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="space-between">
-      <Image src="images/Desii_logo.svg" alt="Desii_logo" />
+    <Box width="100%" p="12px" display="flex" alignItems="center" justifyContent="space-between">
+      <NextLink href="/" passHref>
+        <Link>
+          <Box width="100px">
+            <Image src="/images/Desii_logo.svg" alt="Desii_logo" width="300" height="100" />
+          </Box>
+        </Link>
+      </NextLink>
       <Box>{iconContent}</Box>
     </Box>
   )

@@ -39,6 +39,8 @@ export const UserIcon: VFC<Props> = ({
             name={userName}
             size={size}
             src={data?.attachments_by_pk?.filePath}
+            bg="transparent"
+            boxShadow="outline"
           />
         </Link>
       </NextLink>
@@ -50,6 +52,8 @@ export const UserIcon: VFC<Props> = ({
       name={userName}
       size={size}
       src={data?.attachments_by_pk?.filePath}
+      bg="transparent"
+      boxShadow="outline"
     />
   )
 }
