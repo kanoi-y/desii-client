@@ -3,6 +3,7 @@ import { Avatar, Link } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { VFC } from 'react'
 import { GET_ATTACHMENT_BY_ID } from '~/queries'
+import { theme } from '~/theme'
 import { GetAttachmentByIdQuery } from '~/types/generated/graphql'
 
 type sizeType = 'sm' | 'md' | 'lg' | 'full'
@@ -40,7 +41,7 @@ export const UserIcon: VFC<Props> = ({
             size={size}
             src={data?.attachments_by_pk?.filePath}
             bg="transparent"
-            boxShadow="outline"
+            boxShadow={`0 0 0 1px ${theme.colors.secondary.main}`}
           />
         </Link>
       </NextLink>
@@ -53,7 +54,7 @@ export const UserIcon: VFC<Props> = ({
       size={size}
       src={data?.attachments_by_pk?.filePath}
       bg="transparent"
-      boxShadow="outline"
+      boxShadow={`0 0 0 1px ${theme.colors.secondary.main}`}
     />
   )
 }
