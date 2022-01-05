@@ -1,8 +1,13 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import { Story } from '@storybook/react'
 import React from 'react'
-
 import { theme } from '../src/theme'
+
+if (typeof global.process === 'undefined') {
+  const { worker } = require('../src/mocks/browser')
+
+  worker.start()
+}
 
 const withChakra = (Story: Story) => {
   return (
@@ -45,7 +50,7 @@ const customViewports = {
 }
 
 export const parameters = {
-  actions: { argTypesRegex: "^on[A-Z].*" },
+  actions: { argTypesRegex: '^on[A-Z].*' },
   viewport: {
     viewports: customViewports,
     defaultViewport: 'base',
