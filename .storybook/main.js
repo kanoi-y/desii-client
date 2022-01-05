@@ -6,7 +6,6 @@ module.exports = {
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@storybook/addon-actions',
-    'storybook-addon-apollo-client',
   ],
   typescript: {
     reactDocgen: false,
@@ -30,5 +29,8 @@ module.exports = {
         },
       },
     }
+  },
+  refs: {
+    '@chakra-ui/react': { disable: true },
   },
 }

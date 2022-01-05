@@ -1,4 +1,3 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { ChakraProvider } from '@chakra-ui/react'
 import { Story } from '@storybook/react'
 import React from 'react'
@@ -55,8 +54,5 @@ export const parameters = {
   viewport: {
     viewports: customViewports,
     defaultViewport: 'base',
-  },
-  apolloClient: {
-    MockedProvider,
   },
 }
