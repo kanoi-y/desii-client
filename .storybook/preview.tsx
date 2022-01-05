@@ -1,5 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import { Story } from '@storybook/react'
+import * as nextImage from 'next/image'
 import React from 'react'
 import { theme } from '../src/theme'
 
@@ -18,6 +19,13 @@ const withChakra = (Story: Story) => {
 }
 
 export const decorators = [withChakra]
+
+Object.defineProperty(nextImage, 'default', {
+  configurable: true,
+  value: (props: any) => {
+    return <img {...props} />
+  },
+})
 
 const customViewports = {
   /** iPhone X */
