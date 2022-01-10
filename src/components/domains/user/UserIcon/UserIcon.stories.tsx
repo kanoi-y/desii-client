@@ -29,6 +29,7 @@ DefaultUserIcon.args = {
   userName: 'userName',
   iconImageId: 'iconImageId',
   userId: 'userId',
+  isLink: true,
 }
 
 const GuestTemplate: ComponentStory<typeof GuestUserIcon> = ({ ...args }) => {
