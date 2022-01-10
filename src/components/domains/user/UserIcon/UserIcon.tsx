@@ -1,7 +1,8 @@
-import { useQuery } from '@apollo/client'
-import { Avatar, Link } from '@chakra-ui/react'
-import NextLink from 'next/link'
 import { VFC } from 'react'
+import { useQuery } from '@apollo/client'
+import { Avatar } from '@chakra-ui/react'
+
+import { Link } from '~/components/parts/commons'
 import { GET_ATTACHMENT_BY_ID } from '~/queries'
 import { theme } from '~/theme'
 import { GetAttachmentByIdQuery } from '~/types/generated/graphql'
@@ -34,17 +35,15 @@ export const UserIcon: VFC<Props> = ({
 
   if (isLink) {
     return (
-      <NextLink href={`/user/${userId}`} passHref>
-        <Link>
-          <Avatar
-            name={userName}
-            size={size}
-            src={data?.attachments_by_pk?.filePath}
-            bg="transparent"
-            boxShadow={`0 0 0 1px ${theme.colors.secondary.main}`}
-          />
-        </Link>
-      </NextLink>
+      <Link href={`/user/${userId}`}>
+        <Avatar
+          name={userName}
+          size={size}
+          src={data?.attachments_by_pk?.filePath}
+          bg="transparent"
+          boxShadow={`0 0 0 1px ${theme.colors.secondary.main}`}
+        />
+      </Link>
     )
   }
 
