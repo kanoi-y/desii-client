@@ -5,13 +5,20 @@ import { ReactNode, VFC } from 'react'
 type Props = {
   children: ReactNode
   href: NextLinkProps['href']
-  target?: string;
+  target?: string
 }
 
 export const Link: VFC<Props> = ({ children, href, target }) => {
   return (
     <NextLink href={href} passHref>
-      <ChakraLink target={target || '_self'} rel={target ? 'opener noreferrer' : ''}>{children}</ChakraLink>
+      <ChakraLink
+        target={target || '_self'}
+        rel={target ? 'opener noreferrer' : ''}
+        _active={{ boxShadow: 'none' }}
+        _focus={{ boxShadow: 'none' }}
+      >
+        {children}
+      </ChakraLink>
     </NextLink>
   )
 }
