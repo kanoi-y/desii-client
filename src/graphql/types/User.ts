@@ -7,15 +7,16 @@ export const User = objectType({
     t.nonNull.string('name')
     t.nonNull.string('email')
     t.field('emailVerified', {
-      type: 'DateTime'
+      type: 'DateTime',
     })
+    t.string('description')
     t.string('image')
     t.string('iconImageId')
     t.nonNull.field('createdAt', {
-      type: 'DateTime'
+      type: 'DateTime',
     })
     t.nonNull.field('updatedAt', {
-      type: 'DateTime'
+      type: 'DateTime',
     })
   },
 })

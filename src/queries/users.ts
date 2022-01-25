@@ -3,10 +3,11 @@ import { gql } from '@apollo/client'
 export const GET_USERS = gql`
   query GetUsers {
     users {
-      _id
+      id
       name
       description
       email
+      image
       iconImageId
       createdAt
       updatedAt
@@ -16,11 +17,12 @@ export const GET_USERS = gql`
 
 export const GET_USER_BY_ID = gql`
   query GetUserById($id: uuid!) {
-    users_by_pk(_id: $id) {
-      _id
+    users_by_pk(id: $id) {
+      id
       name
       description
       email
+      image
       iconImageId
       createdAt
       updatedAt

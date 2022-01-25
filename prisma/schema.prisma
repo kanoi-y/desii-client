@@ -41,6 +41,7 @@ model User {
   name          String
   email         String      @unique
   emailVerified DateTime?
+  description   String?
   image         String?
   iconImageId   String?
   iconImage     Attachment? @relation(name: "iconImage", fields: [iconImageId], references: [id])
