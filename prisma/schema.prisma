@@ -43,25 +43,10 @@ model User {
   emailVerified DateTime?
   description   String?
   image         String?
-  iconImageId   String?
-  iconImage     Attachment? @relation(name: "iconImage", fields: [iconImageId], references: [id])
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-  attachment    Attachment?  @relation("createdUser")
   accounts      Account[]
   sessions      Session[]
-}
-
-model Attachment {
-  id            String   @id @default(cuid())
-  name          String
-  size          Int
-  filePath      String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  createdUserId String
-  createdUser   User     @relation(name: "createdUser", fields: [createdUserId], references: [id])
-  User          User?    @relation("iconImage")
 }
 
 model VerificationToken {

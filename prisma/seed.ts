@@ -1,13 +1,13 @@
 import { prisma } from '../src/lib/prisma'
 
 const main = async () => {
-  await prisma.attachment.create({
+  await prisma.user.create({
     data: {
-      id: "attachment1",
-      name: 'name',
-      size: 100,
-      filePath: 'filePath',
-      createdUserId: 'user1',
+      id: 'user1',
+      name: 'user1',
+      email: 'email',
+      description: 'description',
+      image: 'images/Desii_icon.png',
     },
   })
 }
