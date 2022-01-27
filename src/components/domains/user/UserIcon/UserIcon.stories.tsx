@@ -27,7 +27,7 @@ const Template: ComponentStory<typeof UserIcon> = ({ size, ...args }) => {
 export const DefaultUserIcon = Template.bind({})
 DefaultUserIcon.args = {
   userName: 'userName',
-  iconImageId: 'iconImageId',
+  imageSrc: 'images/Desii_icon.png',
   userId: 'userId',
   isLink: true,
 }

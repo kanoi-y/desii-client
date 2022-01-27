@@ -69,12 +69,17 @@ export type User = {
   updatedAt: Scalars['DateTime'];
 };
 
+export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: Date, updatedAt: Date } | null | undefined> };
+
 export type GetUserQueryVariables = Exact<{
   getUserId: Scalars['String'];
 }>;
 
 
-export type GetUserQuery = { __typename?: 'Query', getUser?: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: any, updatedAt: any } | null | undefined };
+export type GetUserQuery = { __typename?: 'Query', getUser?: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: Date, updatedAt: Date } | null | undefined };
 
 export type CreateUserMutationMutationVariables = Exact<{
   name: Scalars['String'];
@@ -84,14 +89,14 @@ export type CreateUserMutationMutationVariables = Exact<{
 }>;
 
 
-export type CreateUserMutationMutation = { __typename?: 'Mutation', createUser: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: any, updatedAt: any } };
+export type CreateUserMutationMutation = { __typename?: 'Mutation', createUser: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: Date, updatedAt: Date } };
 
 export type DeleteUserMutationMutationVariables = Exact<{
   deleteUserId: Scalars['String'];
 }>;
 
 
-export type DeleteUserMutationMutation = { __typename?: 'Mutation', deleteUser: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: any, updatedAt: any } };
+export type DeleteUserMutationMutation = { __typename?: 'Mutation', deleteUser: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: Date, updatedAt: Date } };
 
 export type UpdateUserMutationMutationVariables = Exact<{
   updateUserId: Scalars['String'];
@@ -102,9 +107,49 @@ export type UpdateUserMutationMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserMutationMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: any, updatedAt: any } };
+export type UpdateUserMutationMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: Date, updatedAt: Date } };
 
 
+export const UsersDocument = gql`
+    query Users {
+  users {
+    id
+    name
+    email
+    description
+    image
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useUsersQuery__
+ *
+ * To run a query within a React component, call `useUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUsersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useUsersQuery(baseOptions?: Apollo.QueryHookOptions<UsersQuery, UsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
+      }
+export function useUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UsersQuery, UsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
+        }
+export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
+export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
+export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;
 export const GetUserDocument = gql`
     query GetUser($getUserId: String!) {
   getUser(id: $getUserId) {
