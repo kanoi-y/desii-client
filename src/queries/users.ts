@@ -1,13 +1,13 @@
 import { gql } from '@apollo/client'
 
 export const GET_USERS = gql`
-  query GetUsers {
+  query Users {
     users {
-      _id
+      id
       name
-      description
       email
-      iconImageId
+      description
+      image
       createdAt
       updatedAt
     }
@@ -15,13 +15,13 @@ export const GET_USERS = gql`
 `
 
 export const GET_USER_BY_ID = gql`
-  query GetUserById($id: uuid!) {
-    users_by_pk(_id: $id) {
-      _id
+  query GetUser($getUserId: String!) {
+    getUser(id: $getUserId) {
+      id
       name
-      description
       email
-      iconImageId
+      description
+      image
       createdAt
       updatedAt
     }
@@ -29,25 +29,23 @@ export const GET_USER_BY_ID = gql`
 `
 
 export const CREATE_USER = gql`
-  mutation CreateUser(
+  mutation CreateUserMutation(
     $name: String!
-    $description: String!
     $email: String!
-    $iconImageId: uuid!
+    $description: String
+    $image: String
   ) {
-    insert_users_one(
-      object: {
-        name: $name
-        description: $description
-        email: $email
-        iconImageId: $iconImageId
-      }
+    createUser(
+      name: $name
+      email: $email
+      description: $description
+      image: $image
     ) {
-      _id
+      id
       name
-      description
       email
-      iconImageId
+      description
+      image
       createdAt
       updatedAt
     }
@@ -55,13 +53,13 @@ export const CREATE_USER = gql`
 `
 
 export const DELETE_USER = gql`
-  mutation DeleteUser($id: uuid!) {
-    delete_users_by_pk(_id: $id) {
-      _id
+  mutation DeleteUserMutation($deleteUserId: String!) {
+    deleteUser(id: $deleteUserId) {
+      id
       name
-      description
       email
-      iconImageId
+      description
+      image
       createdAt
       updatedAt
     }
@@ -69,30 +67,27 @@ export const DELETE_USER = gql`
 `
 
 export const UPDATE_USER = gql`
-  mutation UpdateUser(
-    $id: uuid!
-    $name: String
+  mutation UpdateUserMutation(
+    $updateUserId: String!
+    $name: String!
+    $email: String!
     $description: String
-    $email: String
-    $iconImageId: uuid
+    $image: String
   ) {
-    update_users_by_pk(
-      pk_columns: { _id: $id }
-      _set: {
-        name: $name
-        description: $description
-        email: $email
-        iconImageId: $iconImageId
-      }
+    updateUser(
+      id: $updateUserId
+      name: $name
+      email: $email
+      description: $description
+      image: $image
     ) {
-      _id
+      id
       name
-      description
       email
-      iconImageId
+      description
+      image
       createdAt
       updatedAt
     }
   }
 `
-

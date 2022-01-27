@@ -1,11 +1,11 @@
 overwrite: true
-schema:
-  - https://desii-development.hasura.app/v1/graphql:
-      headers:
-        'x-hasura-admin-secret': ${NEXT_PUBLIC_HASURA_KEY}
+schema: 'src/graphql/schema.graphql'
 documents: 'src/queries/**/*.ts'
 generates:
   src/types/generated/graphql.tsx:
+    config:
+      scalars:
+        DateTime: Date
     plugins:
       - 'typescript'
       - 'typescript-operations'
