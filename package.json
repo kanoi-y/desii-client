@@ -16,7 +16,7 @@
     "gen-types": "cross-env DOTENV_CONFIG_PATH=./.env.local graphql-codegen --config codegen.yml -r dotenv/config"
   },
   "dependencies": {
-    "@apollo/client": "3.5.7",
+    "@apollo/client": "3.5.8",
     "@apollo/react-hooks": "4.0.0",
     "@chakra-ui/icons": "1.1.1",
     "@chakra-ui/react": "1.7.4",
