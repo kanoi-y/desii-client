@@ -24,16 +24,11 @@ export default function Home() {
     <>
       <Box textAlign="center">
         <Button onClick={handleClick}>Hello World!!</Button>
-        {data?.users.map((user) =>
-          user?.image ? (
-            <UserIcon
-              key={user.id}
-              userName={user.name}
-              imageSrc={user.image}
-              userId={user.id}
-            />
+        {data?.users.map((user, i) =>
+          user ? (
+            <UserIcon key={i} user={user} />
           ) : (
-            <GuestUserIcon key={user?.id} size="md" />
+            <GuestUserIcon key={i} size="md" />
           )
         )}
       </Box>
@@ -46,7 +41,7 @@ export default function Home() {
         ) : (
           <>
             <p>Not signed in</p>
-            <Button onClick={() => signIn()}>Sign in</Button>
+            <Button onClick={() => signIn('google')}>Sign in</Button>
           </>
         )}
       </Box>
