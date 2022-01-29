@@ -3,6 +3,7 @@ import { Box } from '@chakra-ui/react'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import React from 'react'
 import { initializeApollo } from '~/lib/apolloClient'
+import { userFactory } from '~/mocks/factories'
 import { NavigationBar } from './NavigationBar'
 
 export default {
@@ -22,19 +23,21 @@ const Template: ComponentStory<typeof NavigationBar> = ({ ...args }) => {
   )
 }
 
+const mockUser = userFactory({ image: 'images/Desii_icon.png' })
+
 export const DefaultNavigationBar = Template.bind({})
 DefaultNavigationBar.args = {
-  isLogin: false,
+  isLoading: false,
 }
 
 export const GuestNavigationBar = Template.bind({})
 GuestNavigationBar.args = {
-  isLogin: true,
+  isLoading: true,
 }
+
 
 export const UserIconNavigationBar = Template.bind({})
 UserIconNavigationBar.args = {
-  isLogin: true,
-  userName: 'desii',
-  iconImageId: 'iconImageId',
+  isLoading: false,
+  user: mockUser,
 }

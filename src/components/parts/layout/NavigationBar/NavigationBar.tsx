@@ -3,25 +3,21 @@ import Image from 'next/image'
 import { useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Link } from '~/components/parts/commons'
+import { User } from '~/types/generated/graphql'
 
 type Props = {
-  isLogin: boolean
-  userName?: string
-  iconImageId?: string
+  isLoading: boolean
+  user?: User
 }
 
-export const NavigationBar: VFC<Props> = ({
-  isLogin,
-  userName,
-  iconImageId,
-}) => {
+export const NavigationBar: VFC<Props> = ({ isLoading, user }) => {
   const iconContent = useMemo(() => {
-    if (!isLogin) return <Button>ログイン</Button>
+    if (!user && !isLoading) return <Button>ログイン</Button>
 
-    if (!userName || !iconImageId) return <GuestUserIcon />
+    if (!user) return <GuestUserIcon />
 
-    return <UserIcon userName={userName} iconImageId={iconImageId} />
-  }, [isLogin, userName, iconImageId])
+    return <UserIcon user={user} />
+  }, [user, isLoading])
 
   return (
     <Box
