@@ -1,23 +1,19 @@
 import { Box } from '@chakra-ui/react'
 import Image from 'next/image'
-import { useMemo, VFC } from 'react'
+import { useContext, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Link } from '~/components/parts/commons'
-import { User } from '~/types/generated/graphql'
+import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 
-type Props = {
-  isLoading: boolean
-  user?: User
-}
-
-export const NavigationBar: VFC<Props> = ({ isLoading, user }) => {
+export const NavigationBar: VFC = () => {
+  const { currentUser, isLoading } = useContext(CurrentUserContext)
   const iconContent = useMemo(() => {
-    if (!user && !isLoading) return <Button>ログイン</Button>
+    if (!currentUser && !isLoading) return <Button>ログイン</Button>
 
-    if (!user) return <GuestUserIcon />
+    if (!currentUser) return <GuestUserIcon />
 
-    return <UserIcon user={user} />
-  }, [user, isLoading])
+    return <UserIcon user={currentUser} />
+  }, [currentUser, isLoading])
 
   return (
     <Box
