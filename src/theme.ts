@@ -7,7 +7,7 @@ export const theme = extendTheme({
       light: baseTheme.colors.green[50],
     },
     secondary: {
-      main: baseTheme.colors.gray[200],
+      main: baseTheme.colors.gray[100],
       light: baseTheme.colors.gray[50],
     },
     error: {
@@ -15,6 +15,13 @@ export const theme = extendTheme({
     },
     text: {
       main: '#505050',
+    },
+  },
+  styles: {
+    global: {
+      'body': {
+       backgroundColor: 'secondary.main'
+      },
     },
   },
 })
