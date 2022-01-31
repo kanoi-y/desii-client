@@ -7,6 +7,7 @@ import { Component } from './NavigationBar'
 export default {
   title: 'parts/layout/NavigationBar',
   component: Component,
+  argTypes: { onClickButton: { action: 'onClickButton' } },
 } as ComponentMeta<typeof Component>
 
 const Template: ComponentStory<typeof Component> = ({ ...args }) => {
