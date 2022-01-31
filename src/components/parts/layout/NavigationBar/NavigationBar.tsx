@@ -4,9 +4,14 @@ import { useContext, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Link } from '~/components/parts/commons'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
+import { User } from '~/types/generated/graphql'
 
-export const NavigationBar: VFC = () => {
-  const { currentUser, isLoading } = useContext(CurrentUserContext)
+type Props = {
+  currentUser?: User | null
+  isLoading: boolean
+}
+
+export const Component: VFC<Props> = ({ currentUser, isLoading }) => {
   const iconContent = useMemo(() => {
     if (!currentUser && !isLoading) return <Button>ログイン</Button>
 
@@ -22,6 +27,7 @@ export const NavigationBar: VFC = () => {
       display="flex"
       alignItems="center"
       justifyContent="space-between"
+      bgColor="#fff"
     >
       <Link href="/">
         <Box width="100px">
@@ -36,4 +42,9 @@ export const NavigationBar: VFC = () => {
       <Box>{iconContent}</Box>
     </Box>
   )
+}
+
+export const NavigationBar: VFC = () => {
+  const { currentUser, isLoading } = useContext(CurrentUserContext)
+  return <Component currentUser={currentUser} isLoading={isLoading} />
 }

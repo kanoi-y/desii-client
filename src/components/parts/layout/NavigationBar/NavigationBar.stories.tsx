@@ -1,25 +1,19 @@
-import { ApolloProvider } from '@apollo/client'
 import { Box } from '@chakra-ui/react'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import React from 'react'
-import { initializeApollo } from '~/lib/apolloClient'
 import { userFactory } from '~/mocks/factories'
-import { NavigationBar } from './NavigationBar'
+import { Component } from './NavigationBar'
 
 export default {
   title: 'parts/layout/NavigationBar',
-  component: NavigationBar,
-} as ComponentMeta<typeof NavigationBar>
+  component: Component,
+} as ComponentMeta<typeof Component>
 
-const Template: ComponentStory<typeof NavigationBar> = ({ ...args }) => {
-  const client = initializeApollo()
-
+const Template: ComponentStory<typeof Component> = ({ ...args }) => {
   return (
-    <ApolloProvider client={client}>
-      <Box>
-        <NavigationBar {...args} />
-      </Box>
-    </ApolloProvider>
+    <Box>
+      <Component {...args} />
+    </Box>
   )
 }
 
@@ -35,9 +29,8 @@ GuestNavigationBar.args = {
   isLoading: true,
 }
 
-
 export const UserIconNavigationBar = Template.bind({})
 UserIconNavigationBar.args = {
   isLoading: false,
-  user: mockUser,
+  currentUser: mockUser,
 }
