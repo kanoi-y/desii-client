@@ -5093,7 +5093,7 @@
   dependencies:
     "@types/unist" "*"
 
-"@types/micro-cors@^0.1.2":
+"@types/micro-cors@0.1.2":
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@types/micro-cors/-/micro-cors-0.1.2.tgz#3004f5935d06b6f03016aa5975e8851e803d8374"
   integrity sha512-dlNOHHaatKcuYXGMHkqICtFdthd+3tE8pFIrDTbDBYAtlTb7HzYh+NeEgfNWiARgOnsIOuoh2L2XR4UHow84nw==
