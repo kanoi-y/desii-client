@@ -1,1 +1,1 @@
-export { attachmentsFactory } from './attachmentFactory';
+export { userFactory } from './userFactory'

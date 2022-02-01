@@ -2,6 +2,7 @@ import { ApolloProvider } from '@apollo/client'
 import { Box } from '@chakra-ui/react'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { initializeApollo } from '~/lib/apolloClient'
+import { userFactory } from '~/mocks/factories'
 import { GuestUserIcon, UserIcon } from './UserIcon'
 
 export default {
@@ -24,11 +25,11 @@ const Template: ComponentStory<typeof UserIcon> = ({ size, ...args }) => {
   )
 }
 
+const mockUser = userFactory({ image: 'images/Desii_icon.png' })
+
 export const DefaultUserIcon = Template.bind({})
 DefaultUserIcon.args = {
-  userName: 'userName',
-  imageSrc: 'images/Desii_icon.png',
-  userId: 'userId',
+  user: mockUser,
   isLink: true,
 }
 

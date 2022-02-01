@@ -4,7 +4,8 @@ import { NextPage } from 'next'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { ReactNode } from 'react'
-
+import { NavigationBar } from '~/components/parts/layout/NavigationBar'
+import { CurrentUserProvider } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
 import { theme } from '~/theme'
 
@@ -16,11 +17,15 @@ function MyApp({
   pageProps: { session: Session; children?: ReactNode }
 }): JSX.Element {
   const client = initializeApollo()
+
   return (
     <SessionProvider session={pageProps.session}>
       <ApolloProvider client={client}>
         <ChakraProvider theme={theme}>
-          <Component {...pageProps} />
+          <CurrentUserProvider>
+            <NavigationBar />
+            <Component {...pageProps} />
+          </CurrentUserProvider>
         </ChakraProvider>
       </ApolloProvider>
     </SessionProvider>

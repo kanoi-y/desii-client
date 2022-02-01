@@ -1,27 +1,31 @@
 import { Box } from '@chakra-ui/react'
+import { signIn } from 'next-auth/react'
 import Image from 'next/image'
-import { useMemo, VFC } from 'react'
+import { useContext, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Link } from '~/components/parts/commons'
+import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
+import { User } from '~/types/generated/graphql'
 
 type Props = {
-  isLogin: boolean
-  userName?: string
-  iconImageId?: string
+  currentUser?: User | null
+  isLoading: boolean
+  onClickButton: () => void
 }
 
-export const NavigationBar: VFC<Props> = ({
-  isLogin,
-  userName,
-  iconImageId,
+export const Component: VFC<Props> = ({
+  currentUser,
+  isLoading,
+  onClickButton,
 }) => {
   const iconContent = useMemo(() => {
-    if (!isLogin) return <Button>ログイン</Button>
+    if (!currentUser && !isLoading)
+      return <Button onClick={onClickButton}>ログイン</Button>
 
-    if (!userName || !iconImageId) return <GuestUserIcon />
+    if (!currentUser) return <GuestUserIcon />
 
-    return <UserIcon userName={userName} iconImageId={iconImageId} />
-  }, [isLogin, userName, iconImageId])
+    return <UserIcon user={currentUser} />
+  }, [currentUser, isLoading, onClickButton])
 
   return (
     <Box
@@ -30,6 +34,7 @@ export const NavigationBar: VFC<Props> = ({
       display="flex"
       alignItems="center"
       justifyContent="space-between"
+      bgColor="#fff"
     >
       <Link href="/">
         <Box width="100px">
@@ -43,5 +48,17 @@ export const NavigationBar: VFC<Props> = ({
       </Link>
       <Box>{iconContent}</Box>
     </Box>
+  )
+}
+
+export const NavigationBar: VFC = () => {
+  const { currentUser, isLoading } = useContext(CurrentUserContext)
+
+  return (
+    <Component
+      currentUser={currentUser}
+      isLoading={isLoading}
+      onClickButton={() => signIn('google')}
+    />
   )
 }

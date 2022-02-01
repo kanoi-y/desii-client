@@ -22,7 +22,7 @@ export const Button: VFC<Props> = ({
   return (
     <ChakraButton
       boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-      colorScheme="white"
+      bgColor="white"
       color={color}
       disabled={disabled}
       size={size}

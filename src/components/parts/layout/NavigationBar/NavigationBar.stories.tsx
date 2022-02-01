@@ -1,40 +1,37 @@
-import { ApolloProvider } from '@apollo/client'
 import { Box } from '@chakra-ui/react'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import React from 'react'
-import { initializeApollo } from '~/lib/apolloClient'
-import { NavigationBar } from './NavigationBar'
+import { userFactory } from '~/mocks/factories'
+import { Component } from './NavigationBar'
 
 export default {
   title: 'parts/layout/NavigationBar',
-  component: NavigationBar,
-} as ComponentMeta<typeof NavigationBar>
+  component: Component,
+  argTypes: { onClickButton: { action: 'onClickButton' } },
+} as ComponentMeta<typeof Component>
 
-const Template: ComponentStory<typeof NavigationBar> = ({ ...args }) => {
-  const client = initializeApollo()
-
+const Template: ComponentStory<typeof Component> = ({ ...args }) => {
   return (
-    <ApolloProvider client={client}>
-      <Box>
-        <NavigationBar {...args} />
-      </Box>
-    </ApolloProvider>
+    <Box>
+      <Component {...args} />
+    </Box>
   )
 }
 
+const mockUser = userFactory({ image: 'images/Desii_icon.png' })
+
 export const DefaultNavigationBar = Template.bind({})
 DefaultNavigationBar.args = {
-  isLogin: false,
+  isLoading: false,
 }
 
 export const GuestNavigationBar = Template.bind({})
 GuestNavigationBar.args = {
-  isLogin: true,
+  isLoading: true,
 }
 
 export const UserIconNavigationBar = Template.bind({})
 UserIconNavigationBar.args = {
-  isLogin: true,
-  userName: 'desii',
-  iconImageId: 'iconImageId',
+  isLoading: false,
+  currentUser: mockUser,
 }
