@@ -11,7 +11,7 @@ const createApolloClient = () => {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: new HttpLink({
-      uri: process.env.NEXT_PUBLIC_BACKEND_URL,
+      uri: '/api/graphql',
     }),
     cache: new InMemoryCache(),
   })
