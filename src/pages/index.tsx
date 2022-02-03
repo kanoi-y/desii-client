@@ -2,7 +2,7 @@ import { Box } from '@chakra-ui/react'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import React from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
-import { Button } from '~/components/parts/commons'
+import { Button, Text } from '~/components/parts/commons'
 import { useUsersQuery } from '~/types/generated/graphql'
 
 export default function Home() {
@@ -24,6 +24,9 @@ export default function Home() {
     <>
       <Box textAlign="center">
         <Button onClick={handleClick}>Hello World!!</Button>
+        <Text fontSize="lg" isHead>
+          Desii
+        </Text>
         {data?.users.map((user, i) =>
           user ? (
             <UserIcon key={i} user={user} />
