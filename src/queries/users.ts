@@ -69,8 +69,8 @@ export const DELETE_USER = gql`
 export const UPDATE_USER = gql`
   mutation UpdateUserMutation(
     $updateUserId: String!
-    $name: String!
-    $email: String!
+    $name: String
+    $email: String
     $description: String
     $image: String
   ) {

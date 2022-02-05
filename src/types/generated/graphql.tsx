@@ -40,10 +40,10 @@ export type MutationDeleteUserArgs = {
 
 export type MutationUpdateUserArgs = {
   description?: InputMaybe<Scalars['String']>;
-  email: Scalars['String'];
+  email?: InputMaybe<Scalars['String']>;
   id: Scalars['String'];
   image?: InputMaybe<Scalars['String']>;
-  name: Scalars['String'];
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type Query = {
@@ -100,8 +100,8 @@ export type DeleteUserMutationMutation = { __typename?: 'Mutation', deleteUser: 
 
 export type UpdateUserMutationMutationVariables = Exact<{
   updateUserId: Scalars['String'];
-  name: Scalars['String'];
-  email: Scalars['String'];
+  name?: InputMaybe<Scalars['String']>;
+  email?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   image?: InputMaybe<Scalars['String']>;
 }>;
@@ -273,7 +273,7 @@ export type DeleteUserMutationMutationHookResult = ReturnType<typeof useDeleteUs
 export type DeleteUserMutationMutationResult = Apollo.MutationResult<DeleteUserMutationMutation>;
 export type DeleteUserMutationMutationOptions = Apollo.BaseMutationOptions<DeleteUserMutationMutation, DeleteUserMutationMutationVariables>;
 export const UpdateUserMutationDocument = gql`
-    mutation UpdateUserMutation($updateUserId: String!, $name: String!, $email: String!, $description: String, $image: String) {
+    mutation UpdateUserMutation($updateUserId: String!, $name: String, $email: String, $description: String, $image: String) {
   updateUser(
     id: $updateUserId
     name: $name

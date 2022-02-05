@@ -102,22 +102,34 @@ export const UpdateUserMutation = extendType({
       type: 'User',
       args: {
         id: nonNull(stringArg()),
-        name: nonNull(stringArg()),
-        email: nonNull(stringArg()),
+        name: stringArg(),
+        email: stringArg(),
         description: stringArg(),
         image: stringArg(),
       },
-      resolve(_parent, args, ctx) {
+      async resolve(_parent, args, ctx) {
+        const user = await ctx.prisma.user.findUnique({
+          where: {
+            id: args.id,
+          },
+        })
+
+        if (!user) {
+          throw new Error('ユーザーが存在しません')
+        }
+
+        const updateUser = {
+          name: args.name || user.name,
+          email: args.email || user.email,
+          description: args.description || user.description,
+          image: args.image || user.image,
+        }
+
         return ctx.prisma.user.update({
           where: {
             id: args.id,
           },
-          data: {
-            name: args.name,
-            email: args.email,
-            description: args.description,
-            image: args.image,
-          },
+          data: updateUser,
         })
       },
     })

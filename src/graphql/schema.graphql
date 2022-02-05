@@ -10,7 +10,7 @@ scalar DateTime
 type Mutation {
   createUser(description: String, email: String!, image: String, name: String!): User!
   deleteUser(id: String!): User!
-  updateUser(description: String, email: String!, id: String!, image: String, name: String!): User!
+  updateUser(description: String, email: String, id: String!, image: String, name: String): User!
 }
 
 type Query {

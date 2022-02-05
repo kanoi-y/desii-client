@@ -38,7 +38,7 @@ export default function Home() {
       <Box>
         {session ? (
           <>
-            <p>Signed in as {session.user?.name}</p>
+            <p>Signed in as {session.user.name}</p>
             <Button onClick={() => signOut()}>Sign out</Button>
           </>
         ) : (
