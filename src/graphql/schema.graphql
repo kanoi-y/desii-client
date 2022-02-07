@@ -14,11 +14,13 @@ type Mutation {
 }
 
 type Query {
+  getCurrentUser(accessToken: String!): User
   getUser(id: String!): User
   users: [User]!
 }
 
 type User {
+  accessToken: String
   createdAt: DateTime!
   description: String
   email: String!

@@ -11,6 +11,7 @@ export const User = objectType({
     })
     t.string('description')
     t.string('image')
+    t.string('accessToken')
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -27,6 +28,25 @@ export const UsersQuery = extendType({
       type: 'User',
       resolve(_parent, _args, ctx) {
         return ctx.prisma.user.findMany()
+      },
+    })
+  },
+})
+
+export const GetCurrentUserQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.field('getCurrentUser', {
+      type: 'User',
+      args: {
+        accessToken: nonNull(stringArg()),
+      },
+      resolve(_parent, args, ctx) {
+        return ctx.prisma.user.findFirst({
+          where: {
+            accessToken: args.accessToken,
+          },
+        })
       },
     })
   },
@@ -108,6 +128,10 @@ export const UpdateUserMutation = extendType({
         image: stringArg(),
       },
       async resolve(_parent, args, ctx) {
+        if (!ctx.session) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
         const user = await ctx.prisma.user.findUnique({
           where: {
             id: args.id,
