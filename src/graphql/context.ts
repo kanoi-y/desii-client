@@ -1,12 +1,11 @@
 import { PrismaClient } from '@prisma/client'
 import { MicroRequest } from 'apollo-server-micro/dist/types'
-import { Session } from 'next-auth'
-import { getSession } from 'next-auth/react'
+import { User } from '~/types/generated/graphql'
 import { prisma } from '../lib/prisma'
 
 export type Context = {
   prisma: PrismaClient
-  session: Session | null
+  user: User | null
 }
 
 export async function createContext({
@@ -14,9 +13,18 @@ export async function createContext({
 }: {
   req: MicroRequest
 }): Promise<Context> {
-  const session = await getSession({ req })
+  const bearerToken = req.headers.authorization || ''
+
+  const bearer = bearerToken.split(' ')
+  const accessToken = bearer[1]
+
+  const user = await prisma.user.findFirst({
+    where: {
+      accessToken,
+    },
+  })
   return {
     prisma,
-    session,
+    user,
   }
 }

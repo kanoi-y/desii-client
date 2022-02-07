@@ -128,7 +128,7 @@ export const UpdateUserMutation = extendType({
         image: stringArg(),
       },
       async resolve(_parent, args, ctx) {
-        if (!ctx.session) {
+        if (!ctx.user) {
           throw new Error('ログインユーザーが存在しません')
         }
 
