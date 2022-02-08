@@ -22,9 +22,9 @@ export const Component: VFC<Props> = ({
     if (!currentUser && !isLoading)
       return <Button onClick={onClickButton}>ログイン</Button>
 
-    if (!currentUser) return <GuestUserIcon />
+    if (!currentUser) return <GuestUserIcon size="sm" />
 
-    return <UserIcon user={currentUser} />
+    return <UserIcon user={currentUser} size="sm" />
   }, [currentUser, isLoading, onClickButton])
 
   return (

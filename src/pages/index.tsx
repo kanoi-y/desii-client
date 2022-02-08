@@ -1,53 +1,36 @@
 import { Box } from '@chakra-ui/react'
-import { signIn, signOut, useSession } from 'next-auth/react'
-import React from 'react'
-import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
+import { signIn, signOut } from 'next-auth/react'
+import React, { useContext } from 'react'
+import { UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Text } from '~/components/parts/commons'
-import { useUsersQuery } from '~/types/generated/graphql'
+import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 
 export default function Home() {
-  const handleClick = () => {
-    alert('Hello!')
-  }
+  const { currentUser, isLoading } = useContext(CurrentUserContext)
 
-  const { data: session } = useSession()
-
-  const { data, error } = useUsersQuery({
-    fetchPolicy: 'cache-and-network',
-  })
-
-  if (error) {
-    return <p>error</p>
+  if (isLoading) {
+    return <p>loading...</p>
   }
 
   return (
-    <>
-      <Box textAlign="center">
-        <Button onClick={handleClick}>Hello World!!</Button>
-        <Text fontSize="lg" isHead>
-          Desii
-        </Text>
-        {data?.users.map((user, i) =>
-          user ? (
-            <UserIcon key={i} user={user} />
-          ) : (
-            <GuestUserIcon key={i} size="md" />
-          )
-        )}
-      </Box>
-      <Box>
-        {session ? (
-          <>
-            <p>Signed in as {session.user?.name}</p>
-            <Button onClick={() => signOut()}>Sign out</Button>
-          </>
-        ) : (
-          <>
-            <p>Not signed in</p>
-            <Button onClick={() => signIn('google')}>Sign in</Button>
-          </>
-        )}
-      </Box>
-    </>
+    <Box textAlign="center">
+      <Text fontSize="2xl" isHead>
+        Desii
+      </Text>
+      {currentUser ? (
+        <Box
+          display="flex"
+          gap="8px"
+          w="100%"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <UserIcon user={currentUser} />
+          <Button onClick={() => signOut()}>ログアウト</Button>
+        </Box>
+      ) : (
+        <Button onClick={() => signIn('google')}>ログイン</Button>
+      )}
+    </Box>
   )
 }
