@@ -105,9 +105,23 @@ export const DeleteUserMutation = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve(_parent, args, ctx: Context) {
+      async resolve(_parent, args, ctx: Context) {
         if (!ctx.user) {
           throw new Error('ログインユーザーが存在しません')
+        }
+
+        const user = await ctx.prisma.user.findUnique({
+          where: {
+            id: args.id,
+          },
+        })
+
+        if (!user) {
+          throw new Error('ユーザーが存在しません')
+        }
+
+        if (ctx.user.id !== user.id) {
+          throw new Error('ユーザーとログインユーザーが異なっています')
         }
         return ctx.prisma.user.delete({
           where: {
@@ -132,7 +146,6 @@ export const UpdateUserMutation = extendType({
         image: stringArg(),
       },
       async resolve(_parent, args, ctx: Context) {
-      
         if (!ctx.user) {
           throw new Error('ログインユーザーが存在しません')
         }
@@ -145,6 +158,10 @@ export const UpdateUserMutation = extendType({
 
         if (!user) {
           throw new Error('ユーザーが存在しません')
+        }
+
+        if (ctx.user.id !== user.id) {
+          throw new Error('ユーザーとログインユーザーが異なっています')
         }
 
         const updateUser = {
