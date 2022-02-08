@@ -1,4 +1,5 @@
 import { extendType, nonNull, objectType, stringArg } from 'nexus'
+import { Context } from '../context'
 
 export const User = objectType({
   name: 'User',
@@ -104,7 +105,10 @@ export const DeleteUserMutation = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve(_parent, args, ctx) {
+      resolve(_parent, args, ctx: Context) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
         return ctx.prisma.user.delete({
           where: {
             id: args.id,
@@ -127,7 +131,8 @@ export const UpdateUserMutation = extendType({
         description: stringArg(),
         image: stringArg(),
       },
-      async resolve(_parent, args, ctx) {
+      async resolve(_parent, args, ctx: Context) {
+      
         if (!ctx.user) {
           throw new Error('ログインユーザーが存在しません')
         }

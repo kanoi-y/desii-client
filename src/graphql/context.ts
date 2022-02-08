@@ -16,11 +16,13 @@ export async function createContext({
   const bearerToken = req.headers.authorization || ''
 
   const bearer = bearerToken.split(' ')
-  const accessToken = bearer[1]
+  const accessToken = bearer[1] || ''
 
   const user = await prisma.user.findFirst({
     where: {
-      accessToken,
+      accessToken: {
+        equals: accessToken,
+      },
     },
   })
   return {
