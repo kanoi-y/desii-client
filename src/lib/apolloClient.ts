@@ -1,18 +1,35 @@
 import {
   ApolloClient,
-  HttpLink,
+  createHttpLink,
   InMemoryCache,
   NormalizedCacheObject,
 } from '@apollo/client'
+import { setContext } from '@apollo/client/link/context'
 import 'cross-fetch/polyfill'
+import { parseCookies } from 'nookies'
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined
+
+const httpLink = createHttpLink({
+  uri: '/api/graphql',
+})
+
+const authLink = setContext((_, { headers }) => {
+  const cookies = parseCookies()
+
+  const token = cookies['access-token']
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  }
+})
+
 const createApolloClient = () => {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: new HttpLink({
-      uri: '/api/graphql',
-    }),
+    link: authLink.concat(httpLink),
     cache: new InMemoryCache(),
   })
 }

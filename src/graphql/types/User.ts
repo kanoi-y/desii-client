@@ -1,4 +1,5 @@
 import { extendType, nonNull, objectType, stringArg } from 'nexus'
+import { Context } from '../context'
 
 export const User = objectType({
   name: 'User',
@@ -11,6 +12,7 @@ export const User = objectType({
     })
     t.string('description')
     t.string('image')
+    t.string('accessToken')
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -27,6 +29,25 @@ export const UsersQuery = extendType({
       type: 'User',
       resolve(_parent, _args, ctx) {
         return ctx.prisma.user.findMany()
+      },
+    })
+  },
+})
+
+export const GetCurrentUserQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.field('getCurrentUser', {
+      type: 'User',
+      args: {
+        accessToken: nonNull(stringArg()),
+      },
+      resolve(_parent, args, ctx) {
+        return ctx.prisma.user.findFirst({
+          where: {
+            accessToken: args.accessToken,
+          },
+        })
       },
     })
   },
@@ -84,7 +105,24 @@ export const DeleteUserMutation = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve(_parent, args, ctx) {
+      async resolve(_parent, args, ctx: Context) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const user = await ctx.prisma.user.findUnique({
+          where: {
+            id: args.id,
+          },
+        })
+
+        if (!user) {
+          throw new Error('ユーザーが存在しません')
+        }
+
+        if (ctx.user.id !== user.id) {
+          throw new Error('ユーザーとログインユーザーが異なっています')
+        }
         return ctx.prisma.user.delete({
           where: {
             id: args.id,
@@ -102,22 +140,42 @@ export const UpdateUserMutation = extendType({
       type: 'User',
       args: {
         id: nonNull(stringArg()),
-        name: nonNull(stringArg()),
-        email: nonNull(stringArg()),
+        name: stringArg(),
+        email: stringArg(),
         description: stringArg(),
         image: stringArg(),
       },
-      resolve(_parent, args, ctx) {
+      async resolve(_parent, args, ctx: Context) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const user = await ctx.prisma.user.findUnique({
+          where: {
+            id: args.id,
+          },
+        })
+
+        if (!user) {
+          throw new Error('ユーザーが存在しません')
+        }
+
+        if (ctx.user.id !== user.id) {
+          throw new Error('ユーザーとログインユーザーが異なっています')
+        }
+
+        const updateUser = {
+          name: args.name || user.name,
+          email: args.email || user.email,
+          description: args.description || user.description,
+          image: args.image || user.image,
+        }
+
         return ctx.prisma.user.update({
           where: {
             id: args.id,
           },
-          data: {
-            name: args.name,
-            email: args.email,
-            description: args.description,
-            image: args.image,
-          },
+          data: updateUser,
         })
       },
     })

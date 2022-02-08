@@ -14,6 +14,20 @@ export const GET_USERS = gql`
   }
 `
 
+export const GET_CURRENT_USER = gql`
+  query GetCurrentUser($accessToken: String!) {
+    getCurrentUser(accessToken: $accessToken) {
+      id
+      name
+      email
+      description
+      image
+      createdAt
+      updatedAt
+    }
+  }
+`
+
 export const GET_USER_BY_ID = gql`
   query GetUser($getUserId: String!) {
     getUser(id: $getUserId) {
@@ -69,8 +83,8 @@ export const DELETE_USER = gql`
 export const UPDATE_USER = gql`
   mutation UpdateUserMutation(
     $updateUserId: String!
-    $name: String!
-    $email: String!
+    $name: String
+    $email: String
     $description: String
     $image: String
   ) {

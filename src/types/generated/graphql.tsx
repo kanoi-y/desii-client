@@ -40,16 +40,22 @@ export type MutationDeleteUserArgs = {
 
 export type MutationUpdateUserArgs = {
   description?: InputMaybe<Scalars['String']>;
-  email: Scalars['String'];
+  email?: InputMaybe<Scalars['String']>;
   id: Scalars['String'];
   image?: InputMaybe<Scalars['String']>;
-  name: Scalars['String'];
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type Query = {
   __typename?: 'Query';
+  getCurrentUser?: Maybe<User>;
   getUser?: Maybe<User>;
   users: Array<Maybe<User>>;
+};
+
+
+export type QueryGetCurrentUserArgs = {
+  accessToken: Scalars['String'];
 };
 
 
@@ -59,6 +65,7 @@ export type QueryGetUserArgs = {
 
 export type User = {
   __typename?: 'User';
+  accessToken?: Maybe<Scalars['String']>;
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
   email: Scalars['String'];
@@ -73,6 +80,13 @@ export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: Date, updatedAt: Date } | null | undefined> };
+
+export type GetCurrentUserQueryVariables = Exact<{
+  accessToken: Scalars['String'];
+}>;
+
+
+export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser?: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: Date, updatedAt: Date } | null | undefined };
 
 export type GetUserQueryVariables = Exact<{
   getUserId: Scalars['String'];
@@ -100,8 +114,8 @@ export type DeleteUserMutationMutation = { __typename?: 'Mutation', deleteUser: 
 
 export type UpdateUserMutationMutationVariables = Exact<{
   updateUserId: Scalars['String'];
-  name: Scalars['String'];
-  email: Scalars['String'];
+  name?: InputMaybe<Scalars['String']>;
+  email?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   image?: InputMaybe<Scalars['String']>;
 }>;
@@ -150,6 +164,47 @@ export function useUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<User
 export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
 export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
 export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;
+export const GetCurrentUserDocument = gql`
+    query GetCurrentUser($accessToken: String!) {
+  getCurrentUser(accessToken: $accessToken) {
+    id
+    name
+    email
+    description
+    image
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetCurrentUserQuery__
+ *
+ * To run a query within a React component, call `useGetCurrentUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCurrentUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCurrentUserQuery({
+ *   variables: {
+ *      accessToken: // value for 'accessToken'
+ *   },
+ * });
+ */
+export function useGetCurrentUserQuery(baseOptions: Apollo.QueryHookOptions<GetCurrentUserQuery, GetCurrentUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCurrentUserQuery, GetCurrentUserQueryVariables>(GetCurrentUserDocument, options);
+      }
+export function useGetCurrentUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCurrentUserQuery, GetCurrentUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCurrentUserQuery, GetCurrentUserQueryVariables>(GetCurrentUserDocument, options);
+        }
+export type GetCurrentUserQueryHookResult = ReturnType<typeof useGetCurrentUserQuery>;
+export type GetCurrentUserLazyQueryHookResult = ReturnType<typeof useGetCurrentUserLazyQuery>;
+export type GetCurrentUserQueryResult = Apollo.QueryResult<GetCurrentUserQuery, GetCurrentUserQueryVariables>;
 export const GetUserDocument = gql`
     query GetUser($getUserId: String!) {
   getUser(id: $getUserId) {
@@ -273,7 +328,7 @@ export type DeleteUserMutationMutationHookResult = ReturnType<typeof useDeleteUs
 export type DeleteUserMutationMutationResult = Apollo.MutationResult<DeleteUserMutationMutation>;
 export type DeleteUserMutationMutationOptions = Apollo.BaseMutationOptions<DeleteUserMutationMutation, DeleteUserMutationMutationVariables>;
 export const UpdateUserMutationDocument = gql`
-    mutation UpdateUserMutation($updateUserId: String!, $name: String!, $email: String!, $description: String, $image: String) {
+    mutation UpdateUserMutation($updateUserId: String!, $name: String, $email: String, $description: String, $image: String) {
   updateUser(
     id: $updateUserId
     name: $name
