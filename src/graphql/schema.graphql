@@ -7,15 +7,31 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+type Group {
+  adminUserId: String!
+  createdAt: DateTime!
+  description: String
+  id: String!
+  image: String!
+  name: String!
+  productId: String!
+  updatedAt: DateTime!
+}
+
 type Mutation {
+  createGroup(description: String, image: String!, name: String!, productId: String!): Group!
   createUser(description: String, email: String!, image: String, name: String!): User!
+  deleteGroup(id: String!): Group!
   deleteUser(id: String!): User!
+  updateGroup(adminUserId: String, description: String, id: String!, image: String, name: String): Group!
   updateUser(description: String, email: String, id: String!, image: String, name: String): User!
 }
 
 type Query {
   getCurrentUser(accessToken: String!): User
+  getGroup(id: String!): Group
   getUser(id: String!): User
+  groups: [Group]!
   users: [User]!
 }
 
