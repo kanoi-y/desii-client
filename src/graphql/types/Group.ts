@@ -21,7 +21,7 @@ export const Group = objectType({
 export const GroupsQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.nonNull.list.field('groups', {
+    t.nonNull.list.nonNull.field('groups', {
       type: 'Group',
       resolve(_parent, _args, ctx) {
         return ctx.prisma.group.findMany()

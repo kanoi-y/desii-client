@@ -31,7 +31,7 @@ type Query {
   getCurrentUser(accessToken: String!): User
   getGroup(id: String!): Group
   getUser(id: String!): User
-  groups: [Group]!
+  groups: [Group!]!
   users: [User]!
 }
 
