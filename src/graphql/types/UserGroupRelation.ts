@@ -13,6 +13,12 @@ export const UserGroupRelation = objectType({
     t.nonNull.field('updatedAt', {
       type: 'DateTime',
     })
+    t.nonNull.field('user', {
+      type: 'User',
+    })
+    t.nonNull.field('group', {
+      type: 'Group',
+    })
   },
 })
 
@@ -32,6 +38,10 @@ export const GetUserGroupRelationsQuery = extendType({
 
         return ctx.prisma.userGroupRelation.findMany({
           where: query,
+          include: {
+            user: true,
+            group: true,
+          },
         })
       },
     })
@@ -76,6 +86,10 @@ export const CreateUserGroupRelationMutation = extendType({
           data: {
             userId: args.userId,
             groupId: args.groupId,
+          },
+          include: {
+            user: true,
+            group: true,
           },
         })
       },
@@ -142,6 +156,10 @@ export const DeleteUserGroupRelationMutation = extendType({
               userId: args.userId,
               groupId: args.groupId,
             },
+          },
+          include: {
+            user: true,
+            group: true,
           },
         })
       },

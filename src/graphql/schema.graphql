@@ -52,8 +52,10 @@ type User {
 
 type UserGroupRelation {
   createdAt: DateTime!
+  group: Group!
   groupId: String!
   id: String!
   updatedAt: DateTime!
+  user: User!
   userId: String!
 }
