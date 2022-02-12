@@ -73,6 +73,8 @@ model UserGroupRelation {
    updatedAt DateTime    @updatedAt
    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
    group         Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+   @@unique(fields: [userId, groupId], name: "relationId")
 }
 
 model VerificationToken {
