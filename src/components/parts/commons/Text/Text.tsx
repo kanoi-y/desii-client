@@ -8,6 +8,7 @@ type Props = {
   isTruncated?: boolean
   color?: ColorVariables
   noOfLines?: number
+  isBold?: boolean
   children: string
 }
 
@@ -17,6 +18,7 @@ export const Text: VFC<Props> = ({
   color = 'text.main',
   fontSize,
   noOfLines,
+  isBold = false,
   children,
 }) => {
   if (isHead)
@@ -26,6 +28,7 @@ export const Text: VFC<Props> = ({
         color={color}
         fontSize={fontSize}
         noOfLines={noOfLines}
+        fontWeight={isBold ? 'bold' : ''}
       >
         {children}
       </Heading>
@@ -36,6 +39,7 @@ export const Text: VFC<Props> = ({
       color={color}
       fontSize={fontSize}
       noOfLines={noOfLines}
+      fontWeight={isBold ? 'bold' : ''}
     >
       {children}
     </ChakraText>
