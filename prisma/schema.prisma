@@ -48,6 +48,33 @@ model User {
   updatedAt     DateTime    @updatedAt
   accounts      Account[]
   sessions      Session[]
+  adminGroups    Group[]
+  userGroupRelations UserGroupRelation[]
+}
+
+model Group {
+  id                 String      @id @default(cuid())
+  name               String
+  description        String?
+  image              String
+  adminUserId        String
+  productId          String      @unique
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  adminUser          User     @relation(fields: [adminUserId], references: [id], onDelete: Restrict)
+  userGroupRelations UserGroupRelation[]
+}
+
+model UserGroupRelation {
+   id        String      @id @default(cuid())
+   userId    String
+   groupId   String
+   createdAt DateTime    @default(now())
+   updatedAt DateTime    @updatedAt
+   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+   group         Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+   @@unique(fields: [userId, groupId], name: "relationId")
 }
 
 model VerificationToken {
