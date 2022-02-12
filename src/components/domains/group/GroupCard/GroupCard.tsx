@@ -1,13 +1,19 @@
 import { Box, Image } from '@chakra-ui/react'
 import { VFC } from 'react'
 import { Text } from '~/components/parts/commons'
-import { Group } from '~/types/generated/graphql'
+import { Group, useGetUserGroupRelationsQuery } from '~/types/generated/graphql'
 
 type Props = {
   group: Group
 }
 
 export const GroupCard: VFC<Props> = ({ group }) => {
+  const { data } = useGetUserGroupRelationsQuery({
+    variables: {
+      groupId: group.id,
+    },
+  })
+
   return (
     <Box>
       <Image src={group.image} alt={group.name} />
@@ -16,7 +22,11 @@ export const GroupCard: VFC<Props> = ({ group }) => {
           <Text fontSize="lg" noOfLines={1}>
             {group.name}
           </Text>
-          <Text fontSize="md">123人</Text>
+          <Text fontSize="md">
+            {data?.GetUserGroupRelations
+              ? data.GetUserGroupRelations.length.toString() + '人'
+              : ''}
+          </Text>
         </Box>
         <Text fontSize="md" noOfLines={2}>
           {group.description || ''}
