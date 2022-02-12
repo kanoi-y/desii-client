@@ -6,6 +6,11 @@ export {
   UPDATE_GROUP,
 } from './group'
 export {
+  CREATE_USER_GROUP_RELATION,
+  DELETE_USER_GROUP_RELATION,
+  GET_USER_GROUP_RELATIONS,
+} from './userGroupRelation'
+export {
   CREATE_USER,
   DELETE_USER,
   GET_CURRENT_USER,

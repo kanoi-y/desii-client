@@ -31,12 +31,20 @@ export type Group = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  DeleteUserGroupRelation: UserGroupRelation;
   createGroup: Group;
   createUser: User;
+  createUserGroupRelation: UserGroupRelation;
   deleteGroup: Group;
   deleteUser: User;
   updateGroup: Group;
   updateUser: User;
+};
+
+
+export type MutationDeleteUserGroupRelationArgs = {
+  groupId: Scalars['String'];
+  userId: Scalars['String'];
 };
 
 
@@ -53,6 +61,12 @@ export type MutationCreateUserArgs = {
   email: Scalars['String'];
   image?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
+};
+
+
+export type MutationCreateUserGroupRelationArgs = {
+  groupId: Scalars['String'];
+  userId: Scalars['String'];
 };
 
 
@@ -85,11 +99,18 @@ export type MutationUpdateUserArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  GetUserGroupRelations: Array<UserGroupRelation>;
   getCurrentUser?: Maybe<User>;
   getGroup?: Maybe<Group>;
   getUser?: Maybe<User>;
   groups: Array<Group>;
   users: Array<Maybe<User>>;
+};
+
+
+export type QueryGetUserGroupRelationsArgs = {
+  groupId?: InputMaybe<Scalars['String']>;
+  userId?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -118,6 +139,15 @@ export type User = {
   image?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   updatedAt: Scalars['DateTime'];
+};
+
+export type UserGroupRelation = {
+  __typename?: 'UserGroupRelation';
+  createdAt: Scalars['DateTime'];
+  groupId: Scalars['String'];
+  id: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+  userId: Scalars['String'];
 };
 
 export type GroupsQueryVariables = Exact<{ [key: string]: never; }>;
@@ -159,6 +189,30 @@ export type UpdateGroupMutationVariables = Exact<{
 
 
 export type UpdateGroupMutation = { __typename?: 'Mutation', updateGroup: { __typename?: 'Group', id: string, name: string, description?: string | null | undefined, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } };
+
+export type GetUserGroupRelationsQueryVariables = Exact<{
+  userId?: InputMaybe<Scalars['String']>;
+  groupId?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetUserGroupRelationsQuery = { __typename?: 'Query', GetUserGroupRelations: Array<{ __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date }> };
+
+export type CreateUserGroupRelationMutationVariables = Exact<{
+  userId: Scalars['String'];
+  groupId: Scalars['String'];
+}>;
+
+
+export type CreateUserGroupRelationMutation = { __typename?: 'Mutation', createUserGroupRelation: { __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date } };
+
+export type DeleteUserGroupRelationMutationVariables = Exact<{
+  userId: Scalars['String'];
+  groupId: Scalars['String'];
+}>;
+
+
+export type DeleteUserGroupRelationMutation = { __typename?: 'Mutation', DeleteUserGroupRelation: { __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date } };
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -429,6 +483,122 @@ export function useUpdateGroupMutation(baseOptions?: Apollo.MutationHookOptions<
 export type UpdateGroupMutationHookResult = ReturnType<typeof useUpdateGroupMutation>;
 export type UpdateGroupMutationResult = Apollo.MutationResult<UpdateGroupMutation>;
 export type UpdateGroupMutationOptions = Apollo.BaseMutationOptions<UpdateGroupMutation, UpdateGroupMutationVariables>;
+export const GetUserGroupRelationsDocument = gql`
+    query GetUserGroupRelations($userId: String, $groupId: String) {
+  GetUserGroupRelations(userId: $userId, groupId: $groupId) {
+    id
+    userId
+    groupId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetUserGroupRelationsQuery__
+ *
+ * To run a query within a React component, call `useGetUserGroupRelationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserGroupRelationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserGroupRelationsQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      groupId: // value for 'groupId'
+ *   },
+ * });
+ */
+export function useGetUserGroupRelationsQuery(baseOptions?: Apollo.QueryHookOptions<GetUserGroupRelationsQuery, GetUserGroupRelationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserGroupRelationsQuery, GetUserGroupRelationsQueryVariables>(GetUserGroupRelationsDocument, options);
+      }
+export function useGetUserGroupRelationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserGroupRelationsQuery, GetUserGroupRelationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserGroupRelationsQuery, GetUserGroupRelationsQueryVariables>(GetUserGroupRelationsDocument, options);
+        }
+export type GetUserGroupRelationsQueryHookResult = ReturnType<typeof useGetUserGroupRelationsQuery>;
+export type GetUserGroupRelationsLazyQueryHookResult = ReturnType<typeof useGetUserGroupRelationsLazyQuery>;
+export type GetUserGroupRelationsQueryResult = Apollo.QueryResult<GetUserGroupRelationsQuery, GetUserGroupRelationsQueryVariables>;
+export const CreateUserGroupRelationDocument = gql`
+    mutation CreateUserGroupRelation($userId: String!, $groupId: String!) {
+  createUserGroupRelation(userId: $userId, groupId: $groupId) {
+    id
+    userId
+    groupId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateUserGroupRelationMutationFn = Apollo.MutationFunction<CreateUserGroupRelationMutation, CreateUserGroupRelationMutationVariables>;
+
+/**
+ * __useCreateUserGroupRelationMutation__
+ *
+ * To run a mutation, you first call `useCreateUserGroupRelationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateUserGroupRelationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createUserGroupRelationMutation, { data, loading, error }] = useCreateUserGroupRelationMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      groupId: // value for 'groupId'
+ *   },
+ * });
+ */
+export function useCreateUserGroupRelationMutation(baseOptions?: Apollo.MutationHookOptions<CreateUserGroupRelationMutation, CreateUserGroupRelationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateUserGroupRelationMutation, CreateUserGroupRelationMutationVariables>(CreateUserGroupRelationDocument, options);
+      }
+export type CreateUserGroupRelationMutationHookResult = ReturnType<typeof useCreateUserGroupRelationMutation>;
+export type CreateUserGroupRelationMutationResult = Apollo.MutationResult<CreateUserGroupRelationMutation>;
+export type CreateUserGroupRelationMutationOptions = Apollo.BaseMutationOptions<CreateUserGroupRelationMutation, CreateUserGroupRelationMutationVariables>;
+export const DeleteUserGroupRelationDocument = gql`
+    mutation DeleteUserGroupRelation($userId: String!, $groupId: String!) {
+  DeleteUserGroupRelation(userId: $userId, groupId: $groupId) {
+    id
+    userId
+    groupId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type DeleteUserGroupRelationMutationFn = Apollo.MutationFunction<DeleteUserGroupRelationMutation, DeleteUserGroupRelationMutationVariables>;
+
+/**
+ * __useDeleteUserGroupRelationMutation__
+ *
+ * To run a mutation, you first call `useDeleteUserGroupRelationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteUserGroupRelationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteUserGroupRelationMutation, { data, loading, error }] = useDeleteUserGroupRelationMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      groupId: // value for 'groupId'
+ *   },
+ * });
+ */
+export function useDeleteUserGroupRelationMutation(baseOptions?: Apollo.MutationHookOptions<DeleteUserGroupRelationMutation, DeleteUserGroupRelationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteUserGroupRelationMutation, DeleteUserGroupRelationMutationVariables>(DeleteUserGroupRelationDocument, options);
+      }
+export type DeleteUserGroupRelationMutationHookResult = ReturnType<typeof useDeleteUserGroupRelationMutation>;
+export type DeleteUserGroupRelationMutationResult = Apollo.MutationResult<DeleteUserGroupRelationMutation>;
+export type DeleteUserGroupRelationMutationOptions = Apollo.BaseMutationOptions<DeleteUserGroupRelationMutation, DeleteUserGroupRelationMutationVariables>;
 export const UsersDocument = gql`
     query Users {
   users {
