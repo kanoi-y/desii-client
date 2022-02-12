@@ -144,9 +144,11 @@ export type User = {
 export type UserGroupRelation = {
   __typename?: 'UserGroupRelation';
   createdAt: Scalars['DateTime'];
+  group: Group;
   groupId: Scalars['String'];
   id: Scalars['String'];
   updatedAt: Scalars['DateTime'];
+  user: User;
   userId: Scalars['String'];
 };
 
@@ -196,7 +198,7 @@ export type GetUserGroupRelationsQueryVariables = Exact<{
 }>;
 
 
-export type GetUserGroupRelationsQuery = { __typename?: 'Query', GetUserGroupRelations: Array<{ __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date }> };
+export type GetUserGroupRelationsQuery = { __typename?: 'Query', GetUserGroupRelations: Array<{ __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, accessToken?: string | null | undefined, createdAt: Date, updatedAt: Date }, group: { __typename?: 'Group', id: string, name: string, description?: string | null | undefined, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } }> };
 
 export type CreateUserGroupRelationMutationVariables = Exact<{
   userId: Scalars['String'];
@@ -204,7 +206,7 @@ export type CreateUserGroupRelationMutationVariables = Exact<{
 }>;
 
 
-export type CreateUserGroupRelationMutation = { __typename?: 'Mutation', createUserGroupRelation: { __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date } };
+export type CreateUserGroupRelationMutation = { __typename?: 'Mutation', createUserGroupRelation: { __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, accessToken?: string | null | undefined, createdAt: Date, updatedAt: Date }, group: { __typename?: 'Group', id: string, name: string, description?: string | null | undefined, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } } };
 
 export type DeleteUserGroupRelationMutationVariables = Exact<{
   userId: Scalars['String'];
@@ -212,7 +214,7 @@ export type DeleteUserGroupRelationMutationVariables = Exact<{
 }>;
 
 
-export type DeleteUserGroupRelationMutation = { __typename?: 'Mutation', DeleteUserGroupRelation: { __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date } };
+export type DeleteUserGroupRelationMutation = { __typename?: 'Mutation', DeleteUserGroupRelation: { __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, accessToken?: string | null | undefined, createdAt: Date, updatedAt: Date }, group: { __typename?: 'Group', id: string, name: string, description?: string | null | undefined, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } } };
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -491,6 +493,26 @@ export const GetUserGroupRelationsDocument = gql`
     groupId
     createdAt
     updatedAt
+    user {
+      id
+      name
+      email
+      description
+      image
+      accessToken
+      createdAt
+      updatedAt
+    }
+    group {
+      id
+      name
+      description
+      image
+      adminUserId
+      productId
+      createdAt
+      updatedAt
+    }
   }
 }
     `;
@@ -531,6 +553,26 @@ export const CreateUserGroupRelationDocument = gql`
     groupId
     createdAt
     updatedAt
+    user {
+      id
+      name
+      email
+      description
+      image
+      accessToken
+      createdAt
+      updatedAt
+    }
+    group {
+      id
+      name
+      description
+      image
+      adminUserId
+      productId
+      createdAt
+      updatedAt
+    }
   }
 }
     `;
@@ -569,6 +611,26 @@ export const DeleteUserGroupRelationDocument = gql`
     groupId
     createdAt
     updatedAt
+    user {
+      id
+      name
+      email
+      description
+      image
+      accessToken
+      createdAt
+      updatedAt
+    }
+    group {
+      id
+      name
+      description
+      image
+      adminUserId
+      productId
+      createdAt
+      updatedAt
+    }
   }
 }
     `;

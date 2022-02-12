@@ -8,6 +8,26 @@ export const GET_USER_GROUP_RELATIONS = gql`
       groupId
       createdAt
       updatedAt
+      user {
+        id
+        name
+        email
+        description
+        image
+        accessToken
+        createdAt
+        updatedAt
+      }
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
+        createdAt
+        updatedAt
+      }
     }
   }
 `
@@ -20,6 +40,26 @@ export const CREATE_USER_GROUP_RELATION = gql`
       groupId
       createdAt
       updatedAt
+      user {
+        id
+        name
+        email
+        description
+        image
+        accessToken
+        createdAt
+        updatedAt
+      }
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
+        createdAt
+        updatedAt
+      }
     }
   }
 `
@@ -32,6 +72,26 @@ export const DELETE_USER_GROUP_RELATION = gql`
       groupId
       createdAt
       updatedAt
+      user {
+        id
+        name
+        email
+        description
+        image
+        accessToken
+        createdAt
+        updatedAt
+      }
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
+        createdAt
+        updatedAt
+      }
     }
   }
 `
