@@ -19,6 +19,7 @@ type Group {
 }
 
 type Mutation {
+  DeleteUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
   createGroup(description: String, image: String!, name: String!, productId: String!): Group!
   createUser(description: String, email: String!, image: String, name: String!): User!
   createUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!

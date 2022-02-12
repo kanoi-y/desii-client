@@ -47,7 +47,31 @@ export const CreateUserGroupRelationMutation = extendType({
         userId: nonNull(stringArg()),
         groupId: nonNull(stringArg()),
       },
-      resolve(_parent, args, ctx) {
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const user = await ctx.prisma.user.findUnique({
+          where: {
+            id: args.userId,
+          },
+        })
+
+        const group = await ctx.prisma.group.findUnique({
+          where: {
+            id: args.groupId,
+          },
+        })
+
+        if (!user || !group) {
+          throw new Error('ユーザー、またはグループが存在しません')
+        }
+
+        if (ctx.user.id !== group.adminUserId) {
+          throw new Error('管理者ユーザーしかユーザーを追加できません')
+        }
+
         return ctx.prisma.userGroupRelation.create({
           data: {
             userId: args.userId,
@@ -59,87 +83,68 @@ export const CreateUserGroupRelationMutation = extendType({
   },
 })
 
-// export const DeleteGroupMutation = extendType({
-//   type: 'Mutation',
-//   definition(t) {
-//     t.nonNull.field('deleteGroup', {
-//       type: 'Group',
-//       args: {
-//         id: nonNull(stringArg()),
-//       },
-//       async resolve(_parent, args, ctx) {
-//         if (!ctx.user) {
-//           throw new Error('ログインユーザーが存在しません')
-//         }
+export const DeleteUserGroupRelationMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.nonNull.field('DeleteUserGroupRelation', {
+      type: 'UserGroupRelation',
+      args: {
+        userId: nonNull(stringArg()),
+        groupId: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
 
-//         const group = await ctx.prisma.group.findUnique({
-//           where: {
-//             id: args.id,
-//           },
-//         })
+        const userGroupRelation = await ctx.prisma.userGroupRelation.findUnique(
+          {
+            where: {
+              relationId: {
+                userId: args.userId,
+                groupId: args.groupId,
+              },
+            },
+          }
+        )
 
-//         if (!group) {
-//           throw new Error('グループが存在しません')
-//         }
+        if (!userGroupRelation) {
+          throw new Error('userGroupRelationが存在しません')
+        }
 
-//         if (ctx.user.id !== group.adminUserId) {
-//           throw new Error('ユーザーがチームの管理者ではありません')
-//         }
-//         return ctx.prisma.group.delete({
-//           where: {
-//             id: args.id,
-//           },
-//         })
-//       },
-//     })
-//   },
-// })
+        const group = await ctx.prisma.group.findUnique({
+          where: {
+            id: userGroupRelation.groupId,
+          },
+        })
 
-// export const UpdateGroupMutation = extendType({
-//   type: 'Mutation',
-//   definition(t) {
-//     t.nonNull.field('updateGroup', {
-//       type: 'Group',
-//       args: {
-//         id: nonNull(stringArg()),
-//         name: stringArg(),
-//         description: stringArg(),
-//         image: stringArg(),
-//         adminUserId: stringArg(),
-//       },
-//       async resolve(_parent, args, ctx) {
-//         if (!ctx.user) {
-//           throw new Error('ログインユーザーが存在しません')
-//         }
+        if (!group) {
+          throw new Error('グループが存在しません')
+        }
 
-//         const group = await ctx.prisma.group.findUnique({
-//           where: {
-//             id: args.id,
-//           },
-//         })
+        if (
+          ctx.user.id !== userGroupRelation.userId &&
+          ctx.user.id !== group.adminUserId
+        ) {
+          throw new Error(
+            '管理者ユーザー以外は、自分以外のユーザーを削除することは出来ません'
+          )
+        }
 
-//         if (!group) {
-//           throw new Error('グループが存在しません')
-//         }
-
-//         if (ctx.user.id !== group.adminUserId) {
-//           throw new Error('ユーザーがチームの管理者ではありません')
-//         }
-
-//         const updateGroup = {
-//           name: args.name || group.name,
-//           description: args.description || group.description,
-//           image: args.image || group.image,
-//           adminUserId: args.adminUserId || group.adminUserId,
-//         }
-
-//         return ctx.prisma.group.update({
-//           where: {
-//             id: args.id,
-//           },
-//           data: updateGroup,
-//         })
-//       },
-//     })
-//   },
-// })
+        if (userGroupRelation.userId === group.adminUserId) {
+          throw new Error(
+            'グループからグループの管理者を削除することは出来ません'
+          )
+        }
+        return ctx.prisma.userGroupRelation.delete({
+          where: {
+            relationId: {
+              userId: args.userId,
+              groupId: args.groupId,
+            },
+          },
+        })
+      },
+    })
+  },
+})
