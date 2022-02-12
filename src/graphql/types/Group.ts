@@ -60,12 +60,12 @@ export const CreateGroupMutation = extendType({
         image: nonNull(stringArg()),
         productId: nonNull(stringArg()),
       },
-      resolve(_parent, args, ctx) {
+      async resolve(_parent, args, ctx) {
         if (!ctx.user) {
           throw new Error('ログインユーザーが存在しません')
         }
 
-        return ctx.prisma.group.create({
+        const group = await ctx.prisma.group.create({
           data: {
             name: args.name,
             description: args.description,
@@ -74,6 +74,16 @@ export const CreateGroupMutation = extendType({
             adminUserId: ctx.user.id,
           },
         })
+
+        // userTeamRelation を生成する
+        await ctx.prisma.userGroupRelation.create({
+          data: {
+            userId: ctx.user.id,
+            groupId: group.id,
+          },
+        })
+
+        return group
       },
     })
   },
