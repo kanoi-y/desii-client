@@ -1,4 +1,4 @@
-import { Group, User } from '~/types/generated/graphql'
+import { Group } from '~/types/generated/graphql'
 import { nextFactoryId } from './factory'
 
 export const groupFactory = (options?: Partial<Group>): Group => {
