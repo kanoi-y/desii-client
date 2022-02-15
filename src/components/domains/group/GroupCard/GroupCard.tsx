@@ -24,6 +24,7 @@ export const GroupCard: VFC<Props> = ({ group }) => {
         h="230px"
         display="flex"
         flexDirection="column"
+        boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
       >
         <Image src={group.image} alt={group.name} flex="1" />
         <Box bgColor="primary.main" p="4px 8px">
@@ -43,9 +44,11 @@ export const GroupCard: VFC<Props> = ({ group }) => {
                 : ''}
             </Text>
           </Box>
-          <Text fontSize="sm" noOfLines={2}>
-            {group.description || ''}
-          </Text>
+          <Box textAlign="left">
+            <Text fontSize="sm" noOfLines={2}>
+              {group.description || ''}
+            </Text>
+          </Box>
         </Box>
       </Box>
     </Link>
