@@ -40,9 +40,11 @@ const Template: ComponentStory<typeof Text> = ({ ...args }) => (
 export const Default = Template.bind({})
 Default.args = {
   color: 'text.main',
+  isBold: false,
 }
 
 export const HeadText = Template.bind({})
 HeadText.args = {
   isHead: true,
+  isBold: false,
 }

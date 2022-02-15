@@ -16,6 +16,7 @@ export const Link: VFC<Props> = ({ children, href, target }) => {
         rel={target ? 'opener noreferrer' : ''}
         _active={{ boxShadow: 'none' }}
         _focus={{ boxShadow: 'none' }}
+        _hover={{ textDecoration: 'none' }}
       >
         {children}
       </ChakraLink>

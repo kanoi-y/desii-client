@@ -9,6 +9,7 @@ export const userFactory = (options?: Partial<User>): User => {
     description: 'description',
     email: 'email',
     image: 'image',
+    accessToken: 'accessToken',
     createdAt: new Date(),
     updatedAt: new Date(),
     ...options,
