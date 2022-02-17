@@ -21,21 +21,41 @@ type Group {
 type Mutation {
   DeleteUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
   createGroup(description: String, image: String!, name: String!, productId: String!): Group!
+  createPost(category: PostCategory!, content: String!, groupId: String, isPrivate: Boolean!, title: String!): Post!
   createUser(description: String, email: String!, image: String, name: String!): User!
   createUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
   deleteGroup(id: String!): Group!
+  deletePost(id: String!): Post!
   deleteUser(id: String!): User!
   updateGroup(adminUserId: String, description: String, id: String!, image: String, name: String): Group!
+  updatePost(category: PostCategory, content: String, id: String!, isPrivate: Boolean, title: String): Post!
   updateUser(description: String, email: String, id: String!, image: String, name: String): User!
 }
 
+type Post {
+  category: PostCategory!
+  content: String!
+  createdAt: DateTime!
+  createdUserId: String!
+  groupId: String
+  id: String!
+  isPrivate: Boolean!
+  title: String!
+  updatedAt: DateTime!
+}
+
+enum PostCategory {
+  GIVE_ME
+  GIVE_YOU
+}
+
 type Query {
+  GetPosts(groupId: String, userId: String): [Post!]!
   GetUserGroupRelations(groupId: String, userId: String): [UserGroupRelation!]!
   getCurrentUser(accessToken: String!): User
   getGroup(id: String!): Group
+  getPost(id: String!): Post
   getUser(id: String!): User
-  groups: [Group!]!
-  users: [User]!
 }
 
 type User {
