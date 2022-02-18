@@ -1,10 +1,16 @@
 export {
   CREATE_GROUP,
   DELETE_GROUP,
-  GET_GROUPS,
   GET_GROUP_BY_ID,
   UPDATE_GROUP,
 } from './group'
+export {
+  CREATE_POST,
+  DELETE_POST,
+  GET_POSTS,
+  GET_POST_BY_ID,
+  UPDATE_POST,
+} from './post'
 export {
   CREATE_USER_GROUP_RELATION,
   DELETE_USER_GROUP_RELATION,

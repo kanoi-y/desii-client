@@ -33,11 +33,14 @@ export type Mutation = {
   __typename?: 'Mutation';
   DeleteUserGroupRelation: UserGroupRelation;
   createGroup: Group;
+  createPost: Post;
   createUser: User;
   createUserGroupRelation: UserGroupRelation;
   deleteGroup: Group;
+  deletePost: Post;
   deleteUser: User;
   updateGroup: Group;
+  updatePost: Post;
   updateUser: User;
 };
 
@@ -53,6 +56,15 @@ export type MutationCreateGroupArgs = {
   image: Scalars['String'];
   name: Scalars['String'];
   productId: Scalars['String'];
+};
+
+
+export type MutationCreatePostArgs = {
+  category: PostCategory;
+  content: Scalars['String'];
+  groupId?: InputMaybe<Scalars['String']>;
+  isPrivate: Scalars['Boolean'];
+  title: Scalars['String'];
 };
 
 
@@ -75,6 +87,11 @@ export type MutationDeleteGroupArgs = {
 };
 
 
+export type MutationDeletePostArgs = {
+  id: Scalars['String'];
+};
+
+
 export type MutationDeleteUserArgs = {
   id: Scalars['String'];
 };
@@ -89,6 +106,15 @@ export type MutationUpdateGroupArgs = {
 };
 
 
+export type MutationUpdatePostArgs = {
+  category?: InputMaybe<PostCategory>;
+  content?: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
+  isPrivate?: InputMaybe<Scalars['Boolean']>;
+  title?: InputMaybe<Scalars['String']>;
+};
+
+
 export type MutationUpdateUserArgs = {
   description?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
@@ -97,14 +123,38 @@ export type MutationUpdateUserArgs = {
   name?: InputMaybe<Scalars['String']>;
 };
 
+export type Post = {
+  __typename?: 'Post';
+  category: PostCategory;
+  content: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  createdUserId: Scalars['String'];
+  groupId?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  isPrivate: Scalars['Boolean'];
+  title: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export enum PostCategory {
+  GiveMe = 'GIVE_ME',
+  GiveYou = 'GIVE_YOU'
+}
+
 export type Query = {
   __typename?: 'Query';
+  GetPosts: Array<Post>;
   GetUserGroupRelations: Array<UserGroupRelation>;
   getCurrentUser?: Maybe<User>;
   getGroup?: Maybe<Group>;
+  getPost?: Maybe<Post>;
   getUser?: Maybe<User>;
-  groups: Array<Group>;
-  users: Array<Maybe<User>>;
+};
+
+
+export type QueryGetPostsArgs = {
+  groupId?: InputMaybe<Scalars['String']>;
+  userId?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -120,6 +170,11 @@ export type QueryGetCurrentUserArgs = {
 
 
 export type QueryGetGroupArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryGetPostArgs = {
   id: Scalars['String'];
 };
 
@@ -151,11 +206,6 @@ export type UserGroupRelation = {
   user: User;
   userId: Scalars['String'];
 };
-
-export type GroupsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'Group', id: string, name: string, description?: string | null | undefined, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date }> };
 
 export type GetGroupQueryVariables = Exact<{
   getGroupId: Scalars['String'];
@@ -192,6 +242,50 @@ export type UpdateGroupMutationVariables = Exact<{
 
 export type UpdateGroupMutation = { __typename?: 'Mutation', updateGroup: { __typename?: 'Group', id: string, name: string, description?: string | null | undefined, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } };
 
+export type GetPostQueryVariables = Exact<{
+  getPostId: Scalars['String'];
+}>;
+
+
+export type GetPostQuery = { __typename?: 'Query', getPost?: { __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null | undefined, createdAt: Date, updatedAt: Date } | null | undefined };
+
+export type GetPostsQueryVariables = Exact<{
+  userId?: InputMaybe<Scalars['String']>;
+  groupId?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetPostsQuery = { __typename?: 'Query', GetPosts: Array<{ __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null | undefined, createdAt: Date, updatedAt: Date }> };
+
+export type CreatePostMutationVariables = Exact<{
+  title: Scalars['String'];
+  content: Scalars['String'];
+  category: PostCategory;
+  isPrivate: Scalars['Boolean'];
+  groupId?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null | undefined, createdAt: Date, updatedAt: Date } };
+
+export type DeletePostMutationVariables = Exact<{
+  deletePostId: Scalars['String'];
+}>;
+
+
+export type DeletePostMutation = { __typename?: 'Mutation', deletePost: { __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null | undefined, createdAt: Date, updatedAt: Date } };
+
+export type UpdatePostMutationVariables = Exact<{
+  updatePostId: Scalars['String'];
+  title?: InputMaybe<Scalars['String']>;
+  content?: InputMaybe<Scalars['String']>;
+  category?: InputMaybe<PostCategory>;
+  isPrivate?: InputMaybe<Scalars['Boolean']>;
+}>;
+
+
+export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: { __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null | undefined, createdAt: Date, updatedAt: Date } };
+
 export type GetUserGroupRelationsQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['String']>;
   groupId?: InputMaybe<Scalars['String']>;
@@ -215,11 +309,6 @@ export type DeleteUserGroupRelationMutationVariables = Exact<{
 
 
 export type DeleteUserGroupRelationMutation = { __typename?: 'Mutation', DeleteUserGroupRelation: { __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, accessToken?: string | null | undefined, createdAt: Date, updatedAt: Date }, group: { __typename?: 'Group', id: string, name: string, description?: string | null | undefined, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } } };
-
-export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: Date, updatedAt: Date } | null | undefined> };
 
 export type GetCurrentUserQueryVariables = Exact<{
   accessToken: Scalars['String'];
@@ -264,47 +353,6 @@ export type UpdateUserMutationMutationVariables = Exact<{
 export type UpdateUserMutationMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, name: string, email: string, description?: string | null | undefined, image?: string | null | undefined, createdAt: Date, updatedAt: Date } };
 
 
-export const GroupsDocument = gql`
-    query Groups {
-  groups {
-    id
-    name
-    description
-    image
-    adminUserId
-    productId
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-/**
- * __useGroupsQuery__
- *
- * To run a query within a React component, call `useGroupsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGroupsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGroupsQuery(baseOptions?: Apollo.QueryHookOptions<GroupsQuery, GroupsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, options);
-      }
-export function useGroupsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GroupsQuery, GroupsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, options);
-        }
-export type GroupsQueryHookResult = ReturnType<typeof useGroupsQuery>;
-export type GroupsLazyQueryHookResult = ReturnType<typeof useGroupsLazyQuery>;
-export type GroupsQueryResult = Apollo.QueryResult<GroupsQuery, GroupsQueryVariables>;
 export const GetGroupDocument = gql`
     query GetGroup($getGroupId: String!) {
   getGroup(id: $getGroupId) {
@@ -485,6 +533,236 @@ export function useUpdateGroupMutation(baseOptions?: Apollo.MutationHookOptions<
 export type UpdateGroupMutationHookResult = ReturnType<typeof useUpdateGroupMutation>;
 export type UpdateGroupMutationResult = Apollo.MutationResult<UpdateGroupMutation>;
 export type UpdateGroupMutationOptions = Apollo.BaseMutationOptions<UpdateGroupMutation, UpdateGroupMutationVariables>;
+export const GetPostDocument = gql`
+    query GetPost($getPostId: String!) {
+  getPost(id: $getPostId) {
+    id
+    title
+    content
+    category
+    createdUserId
+    isPrivate
+    groupId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetPostQuery__
+ *
+ * To run a query within a React component, call `useGetPostQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPostQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPostQuery({
+ *   variables: {
+ *      getPostId: // value for 'getPostId'
+ *   },
+ * });
+ */
+export function useGetPostQuery(baseOptions: Apollo.QueryHookOptions<GetPostQuery, GetPostQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPostQuery, GetPostQueryVariables>(GetPostDocument, options);
+      }
+export function useGetPostLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPostQuery, GetPostQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPostQuery, GetPostQueryVariables>(GetPostDocument, options);
+        }
+export type GetPostQueryHookResult = ReturnType<typeof useGetPostQuery>;
+export type GetPostLazyQueryHookResult = ReturnType<typeof useGetPostLazyQuery>;
+export type GetPostQueryResult = Apollo.QueryResult<GetPostQuery, GetPostQueryVariables>;
+export const GetPostsDocument = gql`
+    query GetPosts($userId: String, $groupId: String) {
+  GetPosts(userId: $userId, groupId: $groupId) {
+    id
+    title
+    content
+    category
+    createdUserId
+    isPrivate
+    groupId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetPostsQuery__
+ *
+ * To run a query within a React component, call `useGetPostsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPostsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPostsQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      groupId: // value for 'groupId'
+ *   },
+ * });
+ */
+export function useGetPostsQuery(baseOptions?: Apollo.QueryHookOptions<GetPostsQuery, GetPostsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPostsQuery, GetPostsQueryVariables>(GetPostsDocument, options);
+      }
+export function useGetPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPostsQuery, GetPostsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPostsQuery, GetPostsQueryVariables>(GetPostsDocument, options);
+        }
+export type GetPostsQueryHookResult = ReturnType<typeof useGetPostsQuery>;
+export type GetPostsLazyQueryHookResult = ReturnType<typeof useGetPostsLazyQuery>;
+export type GetPostsQueryResult = Apollo.QueryResult<GetPostsQuery, GetPostsQueryVariables>;
+export const CreatePostDocument = gql`
+    mutation CreatePost($title: String!, $content: String!, $category: PostCategory!, $isPrivate: Boolean!, $groupId: String) {
+  createPost(
+    title: $title
+    content: $content
+    category: $category
+    isPrivate: $isPrivate
+    groupId: $groupId
+  ) {
+    id
+    title
+    content
+    category
+    createdUserId
+    isPrivate
+    groupId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, CreatePostMutationVariables>;
+
+/**
+ * __useCreatePostMutation__
+ *
+ * To run a mutation, you first call `useCreatePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPostMutation, { data, loading, error }] = useCreatePostMutation({
+ *   variables: {
+ *      title: // value for 'title'
+ *      content: // value for 'content'
+ *      category: // value for 'category'
+ *      isPrivate: // value for 'isPrivate'
+ *      groupId: // value for 'groupId'
+ *   },
+ * });
+ */
+export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<CreatePostMutation, CreatePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument, options);
+      }
+export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
+export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
+export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMutation, CreatePostMutationVariables>;
+export const DeletePostDocument = gql`
+    mutation DeletePost($deletePostId: String!) {
+  deletePost(id: $deletePostId) {
+    id
+    title
+    content
+    category
+    createdUserId
+    isPrivate
+    groupId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type DeletePostMutationFn = Apollo.MutationFunction<DeletePostMutation, DeletePostMutationVariables>;
+
+/**
+ * __useDeletePostMutation__
+ *
+ * To run a mutation, you first call `useDeletePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeletePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deletePostMutation, { data, loading, error }] = useDeletePostMutation({
+ *   variables: {
+ *      deletePostId: // value for 'deletePostId'
+ *   },
+ * });
+ */
+export function useDeletePostMutation(baseOptions?: Apollo.MutationHookOptions<DeletePostMutation, DeletePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeletePostMutation, DeletePostMutationVariables>(DeletePostDocument, options);
+      }
+export type DeletePostMutationHookResult = ReturnType<typeof useDeletePostMutation>;
+export type DeletePostMutationResult = Apollo.MutationResult<DeletePostMutation>;
+export type DeletePostMutationOptions = Apollo.BaseMutationOptions<DeletePostMutation, DeletePostMutationVariables>;
+export const UpdatePostDocument = gql`
+    mutation UpdatePost($updatePostId: String!, $title: String, $content: String, $category: PostCategory, $isPrivate: Boolean) {
+  updatePost(
+    id: $updatePostId
+    title: $title
+    content: $content
+    category: $category
+    isPrivate: $isPrivate
+  ) {
+    id
+    title
+    content
+    category
+    createdUserId
+    isPrivate
+    groupId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdatePostMutationFn = Apollo.MutationFunction<UpdatePostMutation, UpdatePostMutationVariables>;
+
+/**
+ * __useUpdatePostMutation__
+ *
+ * To run a mutation, you first call `useUpdatePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdatePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updatePostMutation, { data, loading, error }] = useUpdatePostMutation({
+ *   variables: {
+ *      updatePostId: // value for 'updatePostId'
+ *      title: // value for 'title'
+ *      content: // value for 'content'
+ *      category: // value for 'category'
+ *      isPrivate: // value for 'isPrivate'
+ *   },
+ * });
+ */
+export function useUpdatePostMutation(baseOptions?: Apollo.MutationHookOptions<UpdatePostMutation, UpdatePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdatePostMutation, UpdatePostMutationVariables>(UpdatePostDocument, options);
+      }
+export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
+export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>;
+export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
 export const GetUserGroupRelationsDocument = gql`
     query GetUserGroupRelations($userId: String, $groupId: String) {
   GetUserGroupRelations(userId: $userId, groupId: $groupId) {
@@ -661,46 +939,6 @@ export function useDeleteUserGroupRelationMutation(baseOptions?: Apollo.Mutation
 export type DeleteUserGroupRelationMutationHookResult = ReturnType<typeof useDeleteUserGroupRelationMutation>;
 export type DeleteUserGroupRelationMutationResult = Apollo.MutationResult<DeleteUserGroupRelationMutation>;
 export type DeleteUserGroupRelationMutationOptions = Apollo.BaseMutationOptions<DeleteUserGroupRelationMutation, DeleteUserGroupRelationMutationVariables>;
-export const UsersDocument = gql`
-    query Users {
-  users {
-    id
-    name
-    email
-    description
-    image
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-/**
- * __useUsersQuery__
- *
- * To run a query within a React component, call `useUsersQuery` and pass it any options that fit your needs.
- * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useUsersQuery({
- *   variables: {
- *   },
- * });
- */
-export function useUsersQuery(baseOptions?: Apollo.QueryHookOptions<UsersQuery, UsersQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
-      }
-export function useUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UsersQuery, UsersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
-        }
-export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
-export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
-export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;
 export const GetCurrentUserDocument = gql`
     query GetCurrentUser($accessToken: String!) {
   getCurrentUser(accessToken: $accessToken) {

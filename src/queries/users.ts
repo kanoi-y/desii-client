@@ -1,19 +1,5 @@
 import { gql } from '@apollo/client'
 
-export const GET_USERS = gql`
-  query Users {
-    users {
-      id
-      name
-      email
-      description
-      image
-      createdAt
-      updatedAt
-    }
-  }
-`
-
 export const GET_CURRENT_USER = gql`
   query GetCurrentUser($accessToken: String!) {
     getCurrentUser(accessToken: $accessToken) {
