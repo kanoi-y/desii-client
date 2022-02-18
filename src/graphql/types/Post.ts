@@ -1,4 +1,4 @@
-import { Post as PostType } from '@prisma/client'
+import { Post as PostType, UserGroupRelation } from '@prisma/client'
 import {
   booleanArg,
   enumType,
@@ -100,7 +100,7 @@ export const CreatePostMutation = extendType({
               },
             })
           const joinedGroupIds = userGroupRelations.map(
-            (userGroupRelation) => userGroupRelation.groupId
+            (userGroupRelation: UserGroupRelation) => userGroupRelation.groupId
           )
           if (!joinedGroupIds.includes(args.groupId)) {
             throw new Error('グループに所属していないユーザーは作成できません')
