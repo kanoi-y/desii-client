@@ -99,7 +99,9 @@ export const CreatePostMutation = extendType({
                 userId: ctx.user.id,
               },
             })
-          const joinedGroupIds = userGroupRelations.map((v) => v.groupId)
+          const joinedGroupIds = userGroupRelations.map(
+            (userGroupRelation) => userGroupRelation.groupId
+          )
           if (!joinedGroupIds.includes(args.groupId)) {
             throw new Error('グループに所属していないユーザーは作成できません')
           }
