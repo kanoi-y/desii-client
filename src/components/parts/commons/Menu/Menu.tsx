@@ -9,7 +9,12 @@ import { ReactElement, ReactNode, VFC } from 'react'
 
 type Props = {
   toggleItem: ReactNode
-  menuList: { text: string; icon?: ReactElement; underline?: boolean }[]
+  menuList: {
+    text: string
+    onClick: () => void
+    icon?: ReactElement
+    underline?: boolean
+  }[]
 }
 
 export const Menu: VFC<Props> = ({ toggleItem, menuList }) => {
@@ -19,7 +24,7 @@ export const Menu: VFC<Props> = ({ toggleItem, menuList }) => {
       <MenuList>
         {menuList.map((menuItem, i) => (
           <>
-            <MenuItem key={i} icon={menuItem.icon}>
+            <MenuItem key={i} icon={menuItem.icon} onClick={menuItem.onClick}>
               {menuItem.text}
             </MenuItem>
             {menuItem.underline && <MenuDivider />}
