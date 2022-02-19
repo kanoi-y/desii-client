@@ -7,7 +7,7 @@ type Props = {
   disabled?: boolean
   color?: ColorVariables
   onClick?: () => void
-  size?: "sm" | "md" | "lg" | "xs"
+  size?: 'sm' | 'md' | 'lg' | 'xs'
   isLoading?: boolean
 }
 

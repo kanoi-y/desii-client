@@ -19,8 +19,8 @@ export const theme = extendTheme({
   },
   styles: {
     global: {
-      'body': {
-       backgroundColor: 'secondary.main'
+      body: {
+        backgroundColor: 'secondary.main',
       },
     },
   },

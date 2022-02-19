@@ -1,1 +1,5 @@
-export type ColorVariables = 'primary.main' | 'secondary.main' | 'error.main' | 'text.main'
+export type ColorVariables =
+  | 'primary.main'
+  | 'secondary.main'
+  | 'error.main'
+  | 'text.main'

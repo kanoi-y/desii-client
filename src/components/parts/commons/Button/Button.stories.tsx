@@ -85,4 +85,3 @@ LoadingButton.args = {
   disabled: false,
   isLoading: true,
 }
-
