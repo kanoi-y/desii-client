@@ -1,9 +1,10 @@
+import { EditIcon, SettingsIcon, StarIcon } from '@chakra-ui/icons'
 import { Box } from '@chakra-ui/react'
 import { signIn } from 'next-auth/react'
 import Image from 'next/image'
 import { useContext, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
-import { Button, Link } from '~/components/parts/commons'
+import { Button, Link, Menu } from '~/components/parts/commons'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 import { User } from '~/types/generated/graphql'
 
@@ -24,7 +25,28 @@ export const Component: VFC<Props> = ({
 
     if (!currentUser) return <GuestUserIcon size="sm" />
 
-    return <UserIcon user={currentUser} size="sm" />
+    return (
+      <Menu
+        toggleItem={<UserIcon user={currentUser} size="sm" />}
+        menuList={[
+          {
+            text: '投稿の管理',
+            icon: <EditIcon />,
+            onClick: () => console.log('投稿の管理'),
+          },
+          {
+            text: 'いいねした投稿',
+            icon: <StarIcon />,
+            onClick: () => console.log('いいねした投稿'),
+          },
+          {
+            text: 'アカウント設定',
+            icon: <SettingsIcon />,
+            onClick: () => console.log('アカウント設定'),
+          },
+        ]}
+      />
+    )
   }, [currentUser, isLoading, onClickButton])
 
   return (
