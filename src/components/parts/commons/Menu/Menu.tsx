@@ -9,7 +9,7 @@ import { ReactElement, ReactNode, VFC } from 'react'
 
 type Props = {
   toggleItem: ReactNode
-  menuList: { text: string; icon?: ReactElement; underline: boolean }[]
+  menuList: { text: string; icon?: ReactElement; underline?: boolean }[]
 }
 
 export const Menu: VFC<Props> = ({ toggleItem, menuList }) => {
