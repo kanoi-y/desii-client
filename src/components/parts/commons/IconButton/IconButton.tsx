@@ -6,30 +6,28 @@ type Props = {
   label: string
   icon: ReactElement
   onClick?: () => void
-  color?: ColorVariables
-  size?: number
+  bgColor?: ColorVariables
   isLoading?: boolean
-  disabled?: boolean
+  isDisabled?: boolean
 }
 
 export const IconButton: VFC<Props> = ({
   label,
   icon,
   onClick,
-  color = 'white.main',
-  size = 24,
+  bgColor = 'white.main',
   isLoading = false,
-  disabled = false,
+  isDisabled = false,
 }) => {
   return (
     <ChakraIconButton
       aria-label={label}
       icon={icon}
-      color={color}
-      size={`${size}px`}
+      boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+      bgColor={bgColor}
       isLoading={isLoading}
       onClick={onClick}
-      isDisabled={disabled}
+      isDisabled={isDisabled}
     />
   )
 }

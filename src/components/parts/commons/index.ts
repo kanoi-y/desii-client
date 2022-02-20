@@ -1,4 +1,6 @@
 export { Button } from './Button'
+export { OutlineIcon, SolidIcon } from './Icon'
+export { IconButton } from './IconButton'
 export { Link } from './Link'
 export { Menu } from './Menu'
 export { Tag } from './Tag'
