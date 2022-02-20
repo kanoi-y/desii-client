@@ -3,3 +3,4 @@ export type ColorVariables =
   | 'secondary.main'
   | 'error.main'
   | 'text.main'
+  | 'white.main'
