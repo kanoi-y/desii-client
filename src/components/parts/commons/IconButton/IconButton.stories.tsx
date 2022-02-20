@@ -36,7 +36,7 @@ DefaultIconButton.args = {
   label: 'DefaultIconButton',
   isLoading: false,
   isDisabled: false,
-  bgColor: 'white.main'
+  bgColor: 'white.main',
 }
 
 export const LoadingIconButton = Template.bind({})
@@ -44,7 +44,7 @@ LoadingIconButton.args = {
   label: 'LoadingIconButton',
   isLoading: true,
   isDisabled: false,
-  bgColor: 'white.main'
+  bgColor: 'white.main',
 }
 
 export const DisabledIconButton = Template.bind({})
@@ -52,5 +52,5 @@ DisabledIconButton.args = {
   label: 'DisabledIconButton',
   isLoading: false,
   isDisabled: true,
-  bgColor: 'white.main'
+  bgColor: 'white.main',
 }
