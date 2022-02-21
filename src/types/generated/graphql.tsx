@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client'
 import * as Apollo from '@apollo/client'
+import { gql } from '@apollo/client'
 export type Maybe<T> = T | null
 export type InputMaybe<T> = Maybe<T>
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -63,6 +63,7 @@ export type MutationCreateGroupArgs = {
 }
 
 export type MutationCreatePostArgs = {
+  bgImage?: InputMaybe<Scalars['String']>
   category: PostCategory
   content: Scalars['String']
   groupId?: InputMaybe<Scalars['String']>
@@ -103,6 +104,7 @@ export type MutationUpdateGroupArgs = {
 }
 
 export type MutationUpdatePostArgs = {
+  bgImage?: InputMaybe<Scalars['String']>
   category?: InputMaybe<PostCategory>
   content?: InputMaybe<Scalars['String']>
   id: Scalars['String']
@@ -120,6 +122,7 @@ export type MutationUpdateUserArgs = {
 
 export type Post = {
   __typename?: 'Post'
+  bgImage?: Maybe<Scalars['String']>
   category: PostCategory
   content: Scalars['String']
   createdAt: Scalars['DateTime']
@@ -202,20 +205,17 @@ export type GetGroupQueryVariables = Exact<{
 
 export type GetGroupQuery = {
   __typename?: 'Query'
-  getGroup?:
-    | {
-        __typename?: 'Group'
-        id: string
-        name: string
-        description?: string | null | undefined
-        image: string
-        adminUserId: string
-        productId: string
-        createdAt: Date
-        updatedAt: Date
-      }
-    | null
-    | undefined
+  getGroup?: {
+    __typename?: 'Group'
+    id: string
+    name: string
+    description?: string | null
+    image: string
+    adminUserId: string
+    productId: string
+    createdAt: Date
+    updatedAt: Date
+  } | null
 }
 
 export type CreateGroupMutationVariables = Exact<{
@@ -231,7 +231,7 @@ export type CreateGroupMutation = {
     __typename?: 'Group'
     id: string
     name: string
-    description?: string | null | undefined
+    description?: string | null
     image: string
     adminUserId: string
     productId: string
@@ -250,7 +250,7 @@ export type DeleteGroupMutation = {
     __typename?: 'Group'
     id: string
     name: string
-    description?: string | null | undefined
+    description?: string | null
     image: string
     adminUserId: string
     productId: string
@@ -273,7 +273,7 @@ export type UpdateGroupMutation = {
     __typename?: 'Group'
     id: string
     name: string
-    description?: string | null | undefined
+    description?: string | null
     image: string
     adminUserId: string
     productId: string
@@ -288,21 +288,19 @@ export type GetPostQueryVariables = Exact<{
 
 export type GetPostQuery = {
   __typename?: 'Query'
-  getPost?:
-    | {
-        __typename?: 'Post'
-        id: string
-        title: string
-        content: string
-        category: PostCategory
-        createdUserId: string
-        isPrivate: boolean
-        groupId?: string | null | undefined
-        createdAt: Date
-        updatedAt: Date
-      }
-    | null
-    | undefined
+  getPost?: {
+    __typename?: 'Post'
+    id: string
+    title: string
+    content: string
+    category: PostCategory
+    createdUserId: string
+    isPrivate: boolean
+    groupId?: string | null
+    bgImage?: string | null
+    createdAt: Date
+    updatedAt: Date
+  } | null
 }
 
 export type GetPostsQueryVariables = Exact<{
@@ -320,7 +318,8 @@ export type GetPostsQuery = {
     category: PostCategory
     createdUserId: string
     isPrivate: boolean
-    groupId?: string | null | undefined
+    groupId?: string | null
+    bgImage?: string | null
     createdAt: Date
     updatedAt: Date
   }>
@@ -332,6 +331,7 @@ export type CreatePostMutationVariables = Exact<{
   category: PostCategory
   isPrivate: Scalars['Boolean']
   groupId?: InputMaybe<Scalars['String']>
+  bgImage?: InputMaybe<Scalars['String']>
 }>
 
 export type CreatePostMutation = {
@@ -344,7 +344,8 @@ export type CreatePostMutation = {
     category: PostCategory
     createdUserId: string
     isPrivate: boolean
-    groupId?: string | null | undefined
+    groupId?: string | null
+    bgImage?: string | null
     createdAt: Date
     updatedAt: Date
   }
@@ -364,7 +365,8 @@ export type DeletePostMutation = {
     category: PostCategory
     createdUserId: string
     isPrivate: boolean
-    groupId?: string | null | undefined
+    groupId?: string | null
+    bgImage?: string | null
     createdAt: Date
     updatedAt: Date
   }
@@ -376,6 +378,7 @@ export type UpdatePostMutationVariables = Exact<{
   content?: InputMaybe<Scalars['String']>
   category?: InputMaybe<PostCategory>
   isPrivate?: InputMaybe<Scalars['Boolean']>
+  bgImage?: InputMaybe<Scalars['String']>
 }>
 
 export type UpdatePostMutation = {
@@ -388,7 +391,8 @@ export type UpdatePostMutation = {
     category: PostCategory
     createdUserId: string
     isPrivate: boolean
-    groupId?: string | null | undefined
+    groupId?: string | null
+    bgImage?: string | null
     createdAt: Date
     updatedAt: Date
   }
@@ -413,9 +417,9 @@ export type GetUserGroupRelationsQuery = {
       id: string
       name: string
       email: string
-      description?: string | null | undefined
-      image?: string | null | undefined
-      accessToken?: string | null | undefined
+      description?: string | null
+      image?: string | null
+      accessToken?: string | null
       createdAt: Date
       updatedAt: Date
     }
@@ -423,7 +427,7 @@ export type GetUserGroupRelationsQuery = {
       __typename?: 'Group'
       id: string
       name: string
-      description?: string | null | undefined
+      description?: string | null
       image: string
       adminUserId: string
       productId: string
@@ -452,9 +456,9 @@ export type CreateUserGroupRelationMutation = {
       id: string
       name: string
       email: string
-      description?: string | null | undefined
-      image?: string | null | undefined
-      accessToken?: string | null | undefined
+      description?: string | null
+      image?: string | null
+      accessToken?: string | null
       createdAt: Date
       updatedAt: Date
     }
@@ -462,7 +466,7 @@ export type CreateUserGroupRelationMutation = {
       __typename?: 'Group'
       id: string
       name: string
-      description?: string | null | undefined
+      description?: string | null
       image: string
       adminUserId: string
       productId: string
@@ -491,9 +495,9 @@ export type DeleteUserGroupRelationMutation = {
       id: string
       name: string
       email: string
-      description?: string | null | undefined
-      image?: string | null | undefined
-      accessToken?: string | null | undefined
+      description?: string | null
+      image?: string | null
+      accessToken?: string | null
       createdAt: Date
       updatedAt: Date
     }
@@ -501,7 +505,7 @@ export type DeleteUserGroupRelationMutation = {
       __typename?: 'Group'
       id: string
       name: string
-      description?: string | null | undefined
+      description?: string | null
       image: string
       adminUserId: string
       productId: string
@@ -517,19 +521,16 @@ export type GetCurrentUserQueryVariables = Exact<{
 
 export type GetCurrentUserQuery = {
   __typename?: 'Query'
-  getCurrentUser?:
-    | {
-        __typename?: 'User'
-        id: string
-        name: string
-        email: string
-        description?: string | null | undefined
-        image?: string | null | undefined
-        createdAt: Date
-        updatedAt: Date
-      }
-    | null
-    | undefined
+  getCurrentUser?: {
+    __typename?: 'User'
+    id: string
+    name: string
+    email: string
+    description?: string | null
+    image?: string | null
+    createdAt: Date
+    updatedAt: Date
+  } | null
 }
 
 export type GetUserQueryVariables = Exact<{
@@ -538,19 +539,16 @@ export type GetUserQueryVariables = Exact<{
 
 export type GetUserQuery = {
   __typename?: 'Query'
-  getUser?:
-    | {
-        __typename?: 'User'
-        id: string
-        name: string
-        email: string
-        description?: string | null | undefined
-        image?: string | null | undefined
-        createdAt: Date
-        updatedAt: Date
-      }
-    | null
-    | undefined
+  getUser?: {
+    __typename?: 'User'
+    id: string
+    name: string
+    email: string
+    description?: string | null
+    image?: string | null
+    createdAt: Date
+    updatedAt: Date
+  } | null
 }
 
 export type CreateUserMutationMutationVariables = Exact<{
@@ -567,8 +565,8 @@ export type CreateUserMutationMutation = {
     id: string
     name: string
     email: string
-    description?: string | null | undefined
-    image?: string | null | undefined
+    description?: string | null
+    image?: string | null
     createdAt: Date
     updatedAt: Date
   }
@@ -585,8 +583,8 @@ export type DeleteUserMutationMutation = {
     id: string
     name: string
     email: string
-    description?: string | null | undefined
-    image?: string | null | undefined
+    description?: string | null
+    image?: string | null
     createdAt: Date
     updatedAt: Date
   }
@@ -607,8 +605,8 @@ export type UpdateUserMutationMutation = {
     id: string
     name: string
     email: string
-    description?: string | null | undefined
-    image?: string | null | undefined
+    description?: string | null
+    image?: string | null
     createdAt: Date
     updatedAt: Date
   }
@@ -884,6 +882,7 @@ export const GetPostDocument = gql`
       createdUserId
       isPrivate
       groupId
+      bgImage
       createdAt
       updatedAt
     }
@@ -940,6 +939,7 @@ export const GetPostsDocument = gql`
       createdUserId
       isPrivate
       groupId
+      bgImage
       createdAt
       updatedAt
     }
@@ -999,6 +999,7 @@ export const CreatePostDocument = gql`
     $category: PostCategory!
     $isPrivate: Boolean!
     $groupId: String
+    $bgImage: String
   ) {
     createPost(
       title: $title
@@ -1006,6 +1007,7 @@ export const CreatePostDocument = gql`
       category: $category
       isPrivate: $isPrivate
       groupId: $groupId
+      bgImage: $bgImage
     ) {
       id
       title
@@ -1014,6 +1016,7 @@ export const CreatePostDocument = gql`
       createdUserId
       isPrivate
       groupId
+      bgImage
       createdAt
       updatedAt
     }
@@ -1042,6 +1045,7 @@ export type CreatePostMutationFn = Apollo.MutationFunction<
  *      category: // value for 'category'
  *      isPrivate: // value for 'isPrivate'
  *      groupId: // value for 'groupId'
+ *      bgImage: // value for 'bgImage'
  *   },
  * });
  */
@@ -1075,6 +1079,7 @@ export const DeletePostDocument = gql`
       createdUserId
       isPrivate
       groupId
+      bgImage
       createdAt
       updatedAt
     }
@@ -1129,6 +1134,7 @@ export const UpdatePostDocument = gql`
     $content: String
     $category: PostCategory
     $isPrivate: Boolean
+    $bgImage: String
   ) {
     updatePost(
       id: $updatePostId
@@ -1136,6 +1142,7 @@ export const UpdatePostDocument = gql`
       content: $content
       category: $category
       isPrivate: $isPrivate
+      bgImage: $bgImage
     ) {
       id
       title
@@ -1144,6 +1151,7 @@ export const UpdatePostDocument = gql`
       createdUserId
       isPrivate
       groupId
+      bgImage
       createdAt
       updatedAt
     }
@@ -1172,6 +1180,7 @@ export type UpdatePostMutationFn = Apollo.MutationFunction<
  *      content: // value for 'content'
  *      category: // value for 'category'
  *      isPrivate: // value for 'isPrivate'
+ *      bgImage: // value for 'bgImage'
  *   },
  * });
  */

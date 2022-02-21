@@ -21,18 +21,19 @@ type Group {
 type Mutation {
   DeleteUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
   createGroup(description: String, image: String!, name: String!, productId: String!): Group!
-  createPost(category: PostCategory!, content: String!, groupId: String, isPrivate: Boolean!, title: String!): Post!
+  createPost(bgImage: String, category: PostCategory!, content: String!, groupId: String, isPrivate: Boolean!, title: String!): Post!
   createUser(description: String, email: String!, image: String, name: String!): User!
   createUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
   deleteGroup(id: String!): Group!
   deletePost(id: String!): Post!
   deleteUser(id: String!): User!
   updateGroup(adminUserId: String, description: String, id: String!, image: String, name: String): Group!
-  updatePost(category: PostCategory, content: String, id: String!, isPrivate: Boolean, title: String): Post!
+  updatePost(bgImage: String, category: PostCategory, content: String, id: String!, isPrivate: Boolean, title: String): Post!
   updateUser(description: String, email: String, id: String!, image: String, name: String): User!
 }
 
 type Post {
+  bgImage: String
   category: PostCategory!
   content: String!
   createdAt: DateTime!

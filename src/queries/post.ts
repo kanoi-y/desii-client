@@ -10,6 +10,7 @@ export const GET_POST_BY_ID = gql`
       createdUserId
       isPrivate
       groupId
+      bgImage
       createdAt
       updatedAt
     }
@@ -26,6 +27,7 @@ export const GET_POSTS = gql`
       createdUserId
       isPrivate
       groupId
+      bgImage
       createdAt
       updatedAt
     }
@@ -39,6 +41,7 @@ export const CREATE_POST = gql`
     $category: PostCategory!
     $isPrivate: Boolean!
     $groupId: String
+    $bgImage: String
   ) {
     createPost(
       title: $title
@@ -46,6 +49,7 @@ export const CREATE_POST = gql`
       category: $category
       isPrivate: $isPrivate
       groupId: $groupId
+      bgImage: $bgImage
     ) {
       id
       title
@@ -54,6 +58,7 @@ export const CREATE_POST = gql`
       createdUserId
       isPrivate
       groupId
+      bgImage
       createdAt
       updatedAt
     }
@@ -69,6 +74,7 @@ export const DELETE_POST = gql`
       createdUserId
       isPrivate
       groupId
+      bgImage
       createdAt
       updatedAt
     }
@@ -82,6 +88,7 @@ export const UPDATE_POST = gql`
     $content: String
     $category: PostCategory
     $isPrivate: Boolean
+    $bgImage: String
   ) {
     updatePost(
       id: $updatePostId
@@ -89,6 +96,7 @@ export const UPDATE_POST = gql`
       content: $content
       category: $category
       isPrivate: $isPrivate
+      bgImage: $bgImage
     ) {
       id
       title
@@ -97,6 +105,7 @@ export const UPDATE_POST = gql`
       createdUserId
       isPrivate
       groupId
+      bgImage
       createdAt
       updatedAt
     }
