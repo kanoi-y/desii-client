@@ -25,6 +25,7 @@ export const Post = objectType({
     t.nonNull.string('createdUserId')
     t.nonNull.boolean('isPrivate')
     t.string('groupId')
+    t.string('bgImage')
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -86,6 +87,7 @@ export const CreatePostMutation = extendType({
         category: nonNull(PostCategory),
         isPrivate: nonNull(booleanArg()),
         groupId: stringArg(),
+        bgImage: stringArg(),
       },
       async resolve(_parent, args, ctx) {
         if (!ctx.user) {
@@ -115,6 +117,7 @@ export const CreatePostMutation = extendType({
             isPrivate: args.isPrivate,
             createdUserId: ctx.user.id,
             groupId: args.groupId,
+            bgImage: args.bgImage,
           },
         })
       },
@@ -169,6 +172,7 @@ export const UpdatePostMutation = extendType({
         content: stringArg(),
         category: PostCategory,
         isPrivate: booleanArg(),
+        bgImage: stringArg(),
       },
       async resolve(_parent, args, ctx) {
         if (!ctx.user) {
@@ -194,6 +198,7 @@ export const UpdatePostMutation = extendType({
           content: args.content || post.content,
           category: args.category || post.category,
           isPrivate: args.isPrivate || post.isPrivate,
+          bgImage: args.bgImage || post.bgImage,
         }
 
         return ctx.prisma.post.update({
