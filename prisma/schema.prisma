@@ -87,6 +87,7 @@ model Post {
    createdUserId String
    isPrivate     Boolean
    groupId       String?
+   bgImage       String?
    createdAt     DateTime    @default(now())
    updatedAt     DateTime    @updatedAt
    createdUser   User     @relation(fields: [createdUserId], references: [id], onDelete: Cascade)
