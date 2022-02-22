@@ -1,3 +1,4 @@
+export { favoriteFactory } from './favoriteFactory'
 export { groupFactory } from './groupFactory'
 export { postFactory } from './postFactory'
 export { userFactory } from './userFactory'
