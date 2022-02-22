@@ -1,4 +1,5 @@
 export * from './DateTime'
+export * from './Favorite'
 export * from './Group'
 export * from './Post'
 export * from './User'

@@ -23,6 +23,17 @@ export type Scalars = {
   DateTime: Date
 }
 
+export type Favorite = {
+  __typename?: 'Favorite'
+  createdAt: Scalars['DateTime']
+  createdUser: User
+  createdUserId: Scalars['String']
+  id: Scalars['String']
+  post: Post
+  postId: Scalars['String']
+  updatedAt: Scalars['DateTime']
+}
+
 export type Group = {
   __typename?: 'Group'
   adminUserId: Scalars['String']
@@ -37,7 +48,9 @@ export type Group = {
 
 export type Mutation = {
   __typename?: 'Mutation'
+  DeleteFavorite: Favorite
   DeleteUserGroupRelation: UserGroupRelation
+  createFavorite: Favorite
   createGroup: Group
   createPost: Post
   createUser: User
@@ -50,9 +63,17 @@ export type Mutation = {
   updateUser: User
 }
 
+export type MutationDeleteFavoriteArgs = {
+  postId: Scalars['String']
+}
+
 export type MutationDeleteUserGroupRelationArgs = {
   groupId: Scalars['String']
   userId: Scalars['String']
+}
+
+export type MutationCreateFavoriteArgs = {
+  postId: Scalars['String']
 }
 
 export type MutationCreateGroupArgs = {
@@ -141,12 +162,18 @@ export enum PostCategory {
 
 export type Query = {
   __typename?: 'Query'
+  GetFavorites: Array<Favorite>
   GetPosts: Array<Post>
   GetUserGroupRelations: Array<UserGroupRelation>
   getCurrentUser?: Maybe<User>
   getGroup?: Maybe<Group>
   getPost?: Maybe<Post>
   getUser?: Maybe<User>
+}
+
+export type QueryGetFavoritesArgs = {
+  createdUserId?: InputMaybe<Scalars['String']>
+  postId?: InputMaybe<Scalars['String']>
 }
 
 export type QueryGetPostsArgs = {
@@ -197,6 +224,128 @@ export type UserGroupRelation = {
   updatedAt: Scalars['DateTime']
   user: User
   userId: Scalars['String']
+}
+
+export type GetFavoritesQueryVariables = Exact<{
+  createdUserId?: InputMaybe<Scalars['String']>
+  postId?: InputMaybe<Scalars['String']>
+}>
+
+export type GetFavoritesQuery = {
+  __typename?: 'Query'
+  GetFavorites: Array<{
+    __typename?: 'Favorite'
+    id: string
+    createdUserId: string
+    postId: string
+    createdAt: Date
+    updatedAt: Date
+    createdUser: {
+      __typename?: 'User'
+      id: string
+      name: string
+      email: string
+      emailVerified?: Date | null
+      description?: string | null
+      image?: string | null
+      accessToken?: string | null
+      createdAt: Date
+      updatedAt: Date
+    }
+    post: {
+      __typename?: 'Post'
+      id: string
+      title: string
+      content: string
+      category: PostCategory
+      createdUserId: string
+      isPrivate: boolean
+      groupId?: string | null
+      bgImage?: string | null
+      createdAt: Date
+      updatedAt: Date
+    }
+  }>
+}
+
+export type CreateFavoriteMutationVariables = Exact<{
+  postId: Scalars['String']
+}>
+
+export type CreateFavoriteMutation = {
+  __typename?: 'Mutation'
+  createFavorite: {
+    __typename?: 'Favorite'
+    id: string
+    createdUserId: string
+    postId: string
+    createdAt: Date
+    updatedAt: Date
+    createdUser: {
+      __typename?: 'User'
+      id: string
+      name: string
+      email: string
+      emailVerified?: Date | null
+      description?: string | null
+      image?: string | null
+      accessToken?: string | null
+      createdAt: Date
+      updatedAt: Date
+    }
+    post: {
+      __typename?: 'Post'
+      id: string
+      title: string
+      content: string
+      category: PostCategory
+      createdUserId: string
+      isPrivate: boolean
+      groupId?: string | null
+      bgImage?: string | null
+      createdAt: Date
+      updatedAt: Date
+    }
+  }
+}
+
+export type DeleteUserGroupRelationMutationVariables = Exact<{
+  userId: Scalars['String']
+  groupId: Scalars['String']
+}>
+
+export type DeleteUserGroupRelationMutation = {
+  __typename?: 'Mutation'
+  DeleteUserGroupRelation: {
+    __typename?: 'UserGroupRelation'
+    id: string
+    userId: string
+    groupId: string
+    createdAt: Date
+    updatedAt: Date
+    user: {
+      __typename?: 'User'
+      id: string
+      name: string
+      email: string
+      description?: string | null
+      image?: string | null
+      accessToken?: string | null
+      createdAt: Date
+      updatedAt: Date
+    }
+    group: {
+      __typename?: 'Group'
+      id: string
+      name: string
+      description?: string | null
+      image: string
+      adminUserId: string
+      productId: string
+      createdAt: Date
+      updatedAt: Date
+    }
+  }
 }
 
 export type GetGroupQueryVariables = Exact<{
@@ -476,39 +625,41 @@ export type CreateUserGroupRelationMutation = {
   }
 }
 
-export type DeleteUserGroupRelationMutationVariables = Exact<{
-  userId: Scalars['String']
-  groupId: Scalars['String']
+export type DeleteFavoriteMutationVariables = Exact<{
+  postId: Scalars['String']
 }>
 
-export type DeleteUserGroupRelationMutation = {
+export type DeleteFavoriteMutation = {
   __typename?: 'Mutation'
-  DeleteUserGroupRelation: {
-    __typename?: 'UserGroupRelation'
+  DeleteFavorite: {
+    __typename?: 'Favorite'
     id: string
-    userId: string
-    groupId: string
+    createdUserId: string
+    postId: string
     createdAt: Date
     updatedAt: Date
-    user: {
+    createdUser: {
       __typename?: 'User'
       id: string
       name: string
       email: string
+      emailVerified?: Date | null
       description?: string | null
       image?: string | null
       accessToken?: string | null
       createdAt: Date
       updatedAt: Date
     }
-    group: {
-      __typename?: 'Group'
+    post: {
+      __typename?: 'Post'
       id: string
-      name: string
-      description?: string | null
-      image: string
-      adminUserId: string
-      productId: string
+      title: string
+      content: string
+      category: PostCategory
+      createdUserId: string
+      isPrivate: boolean
+      groupId?: string | null
+      bgImage?: string | null
       createdAt: Date
       updatedAt: Date
     }
@@ -612,6 +763,244 @@ export type UpdateUserMutationMutation = {
   }
 }
 
+export const GetFavoritesDocument = gql`
+  query GetFavorites($createdUserId: String, $postId: String) {
+    GetFavorites(createdUserId: $createdUserId, postId: $postId) {
+      id
+      createdUserId
+      postId
+      createdAt
+      updatedAt
+      createdUser {
+        id
+        name
+        email
+        emailVerified
+        description
+        image
+        accessToken
+        createdAt
+        updatedAt
+      }
+      post {
+        id
+        title
+        content
+        category
+        createdUserId
+        isPrivate
+        groupId
+        bgImage
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`
+
+/**
+ * __useGetFavoritesQuery__
+ *
+ * To run a query within a React component, call `useGetFavoritesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFavoritesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFavoritesQuery({
+ *   variables: {
+ *      createdUserId: // value for 'createdUserId'
+ *      postId: // value for 'postId'
+ *   },
+ * });
+ */
+export function useGetFavoritesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetFavoritesQuery,
+    GetFavoritesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GetFavoritesQuery, GetFavoritesQueryVariables>(
+    GetFavoritesDocument,
+    options
+  )
+}
+export function useGetFavoritesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFavoritesQuery,
+    GetFavoritesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GetFavoritesQuery, GetFavoritesQueryVariables>(
+    GetFavoritesDocument,
+    options
+  )
+}
+export type GetFavoritesQueryHookResult = ReturnType<
+  typeof useGetFavoritesQuery
+>
+export type GetFavoritesLazyQueryHookResult = ReturnType<
+  typeof useGetFavoritesLazyQuery
+>
+export type GetFavoritesQueryResult = Apollo.QueryResult<
+  GetFavoritesQuery,
+  GetFavoritesQueryVariables
+>
+export const CreateFavoriteDocument = gql`
+  mutation CreateFavorite($postId: String!) {
+    createFavorite(postId: $postId) {
+      id
+      createdUserId
+      postId
+      createdAt
+      updatedAt
+      createdUser {
+        id
+        name
+        email
+        emailVerified
+        description
+        image
+        accessToken
+        createdAt
+        updatedAt
+      }
+      post {
+        id
+        title
+        content
+        category
+        createdUserId
+        isPrivate
+        groupId
+        bgImage
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`
+export type CreateFavoriteMutationFn = Apollo.MutationFunction<
+  CreateFavoriteMutation,
+  CreateFavoriteMutationVariables
+>
+
+/**
+ * __useCreateFavoriteMutation__
+ *
+ * To run a mutation, you first call `useCreateFavoriteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateFavoriteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createFavoriteMutation, { data, loading, error }] = useCreateFavoriteMutation({
+ *   variables: {
+ *      postId: // value for 'postId'
+ *   },
+ * });
+ */
+export function useCreateFavoriteMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateFavoriteMutation,
+    CreateFavoriteMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    CreateFavoriteMutation,
+    CreateFavoriteMutationVariables
+  >(CreateFavoriteDocument, options)
+}
+export type CreateFavoriteMutationHookResult = ReturnType<
+  typeof useCreateFavoriteMutation
+>
+export type CreateFavoriteMutationResult =
+  Apollo.MutationResult<CreateFavoriteMutation>
+export type CreateFavoriteMutationOptions = Apollo.BaseMutationOptions<
+  CreateFavoriteMutation,
+  CreateFavoriteMutationVariables
+>
+export const DeleteUserGroupRelationDocument = gql`
+  mutation DeleteUserGroupRelation($userId: String!, $groupId: String!) {
+    DeleteUserGroupRelation(userId: $userId, groupId: $groupId) {
+      id
+      userId
+      groupId
+      createdAt
+      updatedAt
+      user {
+        id
+        name
+        email
+        description
+        image
+        accessToken
+        createdAt
+        updatedAt
+      }
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`
+export type DeleteUserGroupRelationMutationFn = Apollo.MutationFunction<
+  DeleteUserGroupRelationMutation,
+  DeleteUserGroupRelationMutationVariables
+>
+
+/**
+ * __useDeleteUserGroupRelationMutation__
+ *
+ * To run a mutation, you first call `useDeleteUserGroupRelationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteUserGroupRelationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteUserGroupRelationMutation, { data, loading, error }] = useDeleteUserGroupRelationMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      groupId: // value for 'groupId'
+ *   },
+ * });
+ */
+export function useDeleteUserGroupRelationMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteUserGroupRelationMutation,
+    DeleteUserGroupRelationMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    DeleteUserGroupRelationMutation,
+    DeleteUserGroupRelationMutationVariables
+  >(DeleteUserGroupRelationDocument, options)
+}
+export type DeleteUserGroupRelationMutationHookResult = ReturnType<
+  typeof useDeleteUserGroupRelationMutation
+>
+export type DeleteUserGroupRelationMutationResult =
+  Apollo.MutationResult<DeleteUserGroupRelationMutation>
+export type DeleteUserGroupRelationMutationOptions = Apollo.BaseMutationOptions<
+  DeleteUserGroupRelationMutation,
+  DeleteUserGroupRelationMutationVariables
+>
 export const GetGroupDocument = gql`
   query GetGroup($getGroupId: String!) {
     getGroup(id: $getGroupId) {
@@ -1362,80 +1751,82 @@ export type CreateUserGroupRelationMutationOptions = Apollo.BaseMutationOptions<
   CreateUserGroupRelationMutation,
   CreateUserGroupRelationMutationVariables
 >
-export const DeleteUserGroupRelationDocument = gql`
-  mutation DeleteUserGroupRelation($userId: String!, $groupId: String!) {
-    DeleteUserGroupRelation(userId: $userId, groupId: $groupId) {
+export const DeleteFavoriteDocument = gql`
+  mutation DeleteFavorite($postId: String!) {
+    DeleteFavorite(postId: $postId) {
       id
-      userId
-      groupId
+      createdUserId
+      postId
       createdAt
       updatedAt
-      user {
+      createdUser {
         id
         name
         email
+        emailVerified
         description
         image
         accessToken
         createdAt
         updatedAt
       }
-      group {
+      post {
         id
-        name
-        description
-        image
-        adminUserId
-        productId
+        title
+        content
+        category
+        createdUserId
+        isPrivate
+        groupId
+        bgImage
         createdAt
         updatedAt
       }
     }
   }
 `
-export type DeleteUserGroupRelationMutationFn = Apollo.MutationFunction<
-  DeleteUserGroupRelationMutation,
-  DeleteUserGroupRelationMutationVariables
+export type DeleteFavoriteMutationFn = Apollo.MutationFunction<
+  DeleteFavoriteMutation,
+  DeleteFavoriteMutationVariables
 >
 
 /**
- * __useDeleteUserGroupRelationMutation__
+ * __useDeleteFavoriteMutation__
  *
- * To run a mutation, you first call `useDeleteUserGroupRelationMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteUserGroupRelationMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useDeleteFavoriteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFavoriteMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [deleteUserGroupRelationMutation, { data, loading, error }] = useDeleteUserGroupRelationMutation({
+ * const [deleteFavoriteMutation, { data, loading, error }] = useDeleteFavoriteMutation({
  *   variables: {
- *      userId: // value for 'userId'
- *      groupId: // value for 'groupId'
+ *      postId: // value for 'postId'
  *   },
  * });
  */
-export function useDeleteUserGroupRelationMutation(
+export function useDeleteFavoriteMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    DeleteUserGroupRelationMutation,
-    DeleteUserGroupRelationMutationVariables
+    DeleteFavoriteMutation,
+    DeleteFavoriteMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions }
   return Apollo.useMutation<
-    DeleteUserGroupRelationMutation,
-    DeleteUserGroupRelationMutationVariables
-  >(DeleteUserGroupRelationDocument, options)
+    DeleteFavoriteMutation,
+    DeleteFavoriteMutationVariables
+  >(DeleteFavoriteDocument, options)
 }
-export type DeleteUserGroupRelationMutationHookResult = ReturnType<
-  typeof useDeleteUserGroupRelationMutation
+export type DeleteFavoriteMutationHookResult = ReturnType<
+  typeof useDeleteFavoriteMutation
 >
-export type DeleteUserGroupRelationMutationResult =
-  Apollo.MutationResult<DeleteUserGroupRelationMutation>
-export type DeleteUserGroupRelationMutationOptions = Apollo.BaseMutationOptions<
-  DeleteUserGroupRelationMutation,
-  DeleteUserGroupRelationMutationVariables
+export type DeleteFavoriteMutationResult =
+  Apollo.MutationResult<DeleteFavoriteMutation>
+export type DeleteFavoriteMutationOptions = Apollo.BaseMutationOptions<
+  DeleteFavoriteMutation,
+  DeleteFavoriteMutationVariables
 >
 export const GetCurrentUserDocument = gql`
   query GetCurrentUser($accessToken: String!) {

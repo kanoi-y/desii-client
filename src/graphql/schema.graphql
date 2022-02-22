@@ -7,6 +7,16 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+type Favorite {
+  createdAt: DateTime!
+  createdUser: User!
+  createdUserId: String!
+  id: String!
+  post: Post!
+  postId: String!
+  updatedAt: DateTime!
+}
+
 type Group {
   adminUserId: String!
   createdAt: DateTime!
@@ -19,7 +29,9 @@ type Group {
 }
 
 type Mutation {
+  DeleteFavorite(postId: String!): Favorite!
   DeleteUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
+  createFavorite(postId: String!): Favorite!
   createGroup(description: String, image: String!, name: String!, productId: String!): Group!
   createPost(bgImage: String, category: PostCategory!, content: String!, groupId: String, isPrivate: Boolean!, title: String!): Post!
   createUser(description: String, email: String!, image: String, name: String!): User!
@@ -51,6 +63,7 @@ enum PostCategory {
 }
 
 type Query {
+  GetFavorites(createdUserId: String, postId: String): [Favorite!]!
   GetPosts(groupId: String, userId: String): [Post!]!
   GetUserGroupRelations(groupId: String, userId: String): [UserGroupRelation!]!
   getCurrentUser(accessToken: String!): User
