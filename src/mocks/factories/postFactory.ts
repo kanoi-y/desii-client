@@ -11,7 +11,7 @@ export const postFactory = (options?: Partial<Post>): Post => {
     createdUserId: 'createdUserId',
     isPrivate: false,
     groupId: 'groupId',
-    bgImage: '/images/Desii_bgImage.png',
+    bgImage: 'images/Desii_bgImage.png',
     createdAt: new Date(),
     updatedAt: new Date(),
     ...options,

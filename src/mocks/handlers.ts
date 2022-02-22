@@ -22,21 +22,21 @@ export const handlers = [
       })
     )
   }),
-  graphql.query('useGetUserQuery', (req, res, ctx) => {
+  graphql.query('GetUser', (req, res, ctx) => {
     const { getUserId } = req.variables
     return res(
       ctx.data({
-        useGetUserQuery: {
-          ...userFactory({ id: getUserId }),
+        getUser: {
+          ...userFactory({ id: getUserId, image: 'images/Desii_icon.png' }),
         },
       })
     )
   }),
-  graphql.query('useGetFavoritesQuery', (req, res, ctx) => {
+  graphql.query('GetFavorites', (req, res, ctx) => {
     const { postId } = req.variables
     return res(
       ctx.data({
-        useGetFavoritesQuery: [
+        GetFavorites: [
           {
             ...favoriteFactory({ postId }),
           },
