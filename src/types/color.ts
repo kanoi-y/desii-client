@@ -4,3 +4,4 @@ export type ColorVariables =
   | 'error.main'
   | 'text.main'
   | 'white.main'
+  | 'orange.main'
