@@ -51,6 +51,7 @@ model User {
   adminGroups        Group[]
   userGroupRelations UserGroupRelation[]
   posts              Post[]
+  favorites          Favorite[]
 }
 
 model Group {
@@ -92,6 +93,19 @@ model Post {
    updatedAt     DateTime    @updatedAt
    createdUser   User     @relation(fields: [createdUserId], references: [id], onDelete: Cascade)
    group         Group?     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+   favorites     Favorite[]
+}
+
+model Favorite {
+   id            String      @id @default(cuid())
+   createdUserId String
+   postId        String
+   createdAt     DateTime    @default(now())
+   updatedAt     DateTime    @updatedAt
+   createdUser   User     @relation(fields: [createdUserId], references: [id], onDelete: Cascade)
+   post   Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+   @@unique(fields: [createdUserId, postId], name: "favoriteId")
 }
 
 model VerificationToken {
