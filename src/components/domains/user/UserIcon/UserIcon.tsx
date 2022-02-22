@@ -11,7 +11,7 @@ type Props = {
   isLink?: boolean
 }
 
-export const GuestUserIcon: VFC<Pick<Props, 'size'>> = ({ size }) => (
+export const GuestUserIcon: VFC<Pick<Props, 'size'>> = ({ size = 'md' }) => (
   <Avatar size={size} />
 )
 
