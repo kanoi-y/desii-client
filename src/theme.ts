@@ -19,6 +19,10 @@ export const theme = extendTheme({
     white: {
       main: baseTheme.colors.white,
     },
+    orange: {
+      main: baseTheme.colors.orange[200],
+      light: baseTheme.colors.orange[50],
+    },
   },
   styles: {
     global: {
