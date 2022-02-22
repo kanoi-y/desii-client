@@ -3,7 +3,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import { VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
-import { OutlineIcon, Tag, Text } from '~/components/parts/commons'
+import { OutlineIcon, SolidIcon, Tag, Text } from '~/components/parts/commons'
 import {
   Post,
   useGetFavoritesQuery,
@@ -12,9 +12,10 @@ import {
 
 type Props = {
   post: Post
+  currentUserId?: string
 }
 
-export const PostCard: VFC<Props> = ({ post }) => {
+export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
   const { data: FavoritesData } = useGetFavoritesQuery({
     variables: {
       postId: post.id,
@@ -31,6 +32,12 @@ export const PostCard: VFC<Props> = ({ post }) => {
     addSuffix: true,
     locale: ja,
   })
+
+  const isFavorite =
+    !!currentUserId &&
+    FavoritesData?.GetFavorites.some(
+      (favorite) => favorite.createdUserId === currentUserId
+    )
 
   return (
     <Box
@@ -83,7 +90,11 @@ export const PostCard: VFC<Props> = ({ post }) => {
               ? FavoritesData.GetFavorites.length.toString()
               : ''}
           </Text>
-          <OutlineIcon icon="OUTLINE_STAR" />
+          {isFavorite ? (
+            <SolidIcon icon="SOLID_STAR" />
+          ) : (
+            <OutlineIcon icon="OUTLINE_STAR" />
+          )}
         </Box>
       </Box>
     </Box>
