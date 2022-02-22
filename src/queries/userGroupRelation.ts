@@ -76,7 +76,6 @@ export const DELETE_USER_GROUP_RELATION = gql`
         id
         name
         email
-        emailVerified
         description
         image
         accessToken

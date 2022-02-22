@@ -12,7 +12,6 @@ export const GET_FAVORITES = gql`
         id
         name
         email
-        emailVerified
         description
         image
         accessToken
@@ -46,7 +45,6 @@ export const CREATE_FAVORITE = gql`
         id
         name
         email
-        emailVerified
         description
         image
         accessToken

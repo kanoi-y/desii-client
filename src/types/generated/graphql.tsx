@@ -245,7 +245,6 @@ export type GetFavoritesQuery = {
       id: string
       name: string
       email: string
-      emailVerified?: Date | null
       description?: string | null
       image?: string | null
       accessToken?: string | null
@@ -286,7 +285,6 @@ export type CreateFavoriteMutation = {
       id: string
       name: string
       email: string
-      emailVerified?: Date | null
       description?: string | null
       image?: string | null
       accessToken?: string | null
@@ -643,7 +641,6 @@ export type DeleteFavoriteMutation = {
       id: string
       name: string
       email: string
-      emailVerified?: Date | null
       description?: string | null
       image?: string | null
       accessToken?: string | null
@@ -775,7 +772,6 @@ export const GetFavoritesDocument = gql`
         id
         name
         email
-        emailVerified
         description
         image
         accessToken
@@ -861,7 +857,6 @@ export const CreateFavoriteDocument = gql`
         id
         name
         email
-        emailVerified
         description
         image
         accessToken
@@ -1763,7 +1758,6 @@ export const DeleteFavoriteDocument = gql`
         id
         name
         email
-        emailVerified
         description
         image
         accessToken
