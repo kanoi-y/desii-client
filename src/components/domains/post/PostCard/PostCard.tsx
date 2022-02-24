@@ -1,4 +1,4 @@
-import { Box, SkeletonText } from '@chakra-ui/react'
+import { Box, Skeleton, SkeletonText } from '@chakra-ui/react'
 import { formatDistanceToNow } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import { MouseEvent, VFC } from 'react'
@@ -22,6 +22,62 @@ import {
 type Props = {
   post: Post
   currentUserId?: string
+}
+
+export const SkeletonPostCard: VFC = () => {
+  return (
+    <Box
+      borderRadius="lg"
+      overflow="hidden"
+      boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+    >
+      <Skeleton>
+        <Box
+          backgroundImage="images/Desii_bgImage.png"
+          backgroundSize="cover"
+          backgroundPosition="center"
+          w="100%"
+          pt="52.5%"
+          position="relative"
+        >
+          <Box position="absolute" top="12px" left="12px" zIndex="2">
+            <SkeletonText w="40px" noOfLines={1} />
+          </Box>
+          <Box
+            position="absolute"
+            top="50%"
+            left="50%"
+            transform="translate(-50%, -50%)"
+            w="fit-content"
+            maxW="90%"
+            zIndex="2"
+          >
+            <SkeletonText w="100px" noOfLines={1} />
+          </Box>
+        </Box>
+      </Skeleton>
+      <Box
+        bgColor="primary.main"
+        p="8px"
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Box display="flex" alignItems="center" gap="8px">
+          <GuestUserIcon size="sm" />
+          <SkeletonText w="40px" noOfLines={2} spacing="2" />
+        </Box>
+        <Box display="flex" alignItems="center" gap="4px">
+          <SkeletonText w="10px" noOfLines={1} />
+          <IconButton
+            icon={<OutlineIcon icon="OUTLINE_STAR" />}
+            label="outlineStar"
+            isRound
+          />
+        </Box>
+      </Box>
+    </Box>
+  )
 }
 
 export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
