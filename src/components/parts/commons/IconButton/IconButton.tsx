@@ -1,14 +1,15 @@
 import { IconButton as ChakraIconButton } from '@chakra-ui/react'
-import { ReactElement, VFC } from 'react'
+import { MouseEvent, ReactElement, VFC } from 'react'
 import { ColorVariables } from '~/types/color'
 
 type Props = {
   label: string
   icon: ReactElement
-  onClick?: () => void
+  onClick?: (e: MouseEvent<HTMLButtonElement>) => void
   bgColor?: ColorVariables
   isLoading?: boolean
   isDisabled?: boolean
+  isRound?: boolean
 }
 
 export const IconButton: VFC<Props> = ({
@@ -16,6 +17,7 @@ export const IconButton: VFC<Props> = ({
   icon,
   onClick,
   bgColor = 'white.main',
+  isRound = false,
   isLoading = false,
   isDisabled = false,
 }) => {
@@ -28,6 +30,7 @@ export const IconButton: VFC<Props> = ({
       isLoading={isLoading}
       onClick={onClick}
       isDisabled={isDisabled}
+      isRound={isRound}
     />
   )
 }

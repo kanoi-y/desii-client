@@ -11,7 +11,7 @@ type Props = {
   isLink?: boolean
 }
 
-export const GuestUserIcon: VFC<Pick<Props, 'size'>> = ({ size }) => (
+export const GuestUserIcon: VFC<Pick<Props, 'size'>> = ({ size = 'md' }) => (
   <Avatar size={size} />
 )
 
@@ -23,7 +23,7 @@ export const UserIcon: VFC<Props> = ({ user, size = 'md', isLink = false }) => {
           name={user.name}
           size={size}
           src={user.image || ''}
-          bg={user.image ? 'transparent' : 'primary.main'}
+          bg={user.image ? 'white.main' : 'primary.main'}
           _hover={{
             background: `${user.image && 'secondary.light'}`,
           }}
@@ -37,7 +37,7 @@ export const UserIcon: VFC<Props> = ({ user, size = 'md', isLink = false }) => {
       name={user.name}
       size={size}
       src={user.image || ''}
-      bg={user.image ? 'transparent' : 'primary.main'}
+      bg={user.image ? 'white.main' : 'primary.main'}
       _hover={{
         background: `${user.image && 'secondary.light'}`,
       }}

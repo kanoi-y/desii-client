@@ -65,33 +65,30 @@ export const CREATE_USER_GROUP_RELATION = gql`
 `
 
 export const DELETE_USER_GROUP_RELATION = gql`
-  mutation DeleteFavorite($postId: String!) {
-    DeleteFavorite(postId: $postId) {
+  mutation DeleteUserGroupRelation($userId: String!, $groupId: String!) {
+    DeleteUserGroupRelation(userId: $userId, groupId: $groupId) {
       id
-      createdUserId
-      postId
+      userId
+      groupId
       createdAt
       updatedAt
-      createdUser {
+      user {
         id
         name
         email
-        emailVerified
         description
         image
         accessToken
         createdAt
         updatedAt
       }
-      post {
+      group {
         id
-        title
-        content
-        category
-        createdUserId
-        isPrivate
-        groupId
-        bgImage
+        name
+        description
+        image
+        adminUserId
+        productId
         createdAt
         updatedAt
       }

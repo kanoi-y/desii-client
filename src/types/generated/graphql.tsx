@@ -245,7 +245,6 @@ export type GetFavoritesQuery = {
       id: string
       name: string
       email: string
-      emailVerified?: Date | null
       description?: string | null
       image?: string | null
       accessToken?: string | null
@@ -286,7 +285,6 @@ export type CreateFavoriteMutation = {
       id: string
       name: string
       email: string
-      emailVerified?: Date | null
       description?: string | null
       image?: string | null
       accessToken?: string | null
@@ -309,21 +307,20 @@ export type CreateFavoriteMutation = {
   }
 }
 
-export type DeleteUserGroupRelationMutationVariables = Exact<{
-  userId: Scalars['String']
-  groupId: Scalars['String']
+export type DeleteFavoriteMutationVariables = Exact<{
+  postId: Scalars['String']
 }>
 
-export type DeleteUserGroupRelationMutation = {
+export type DeleteFavoriteMutation = {
   __typename?: 'Mutation'
-  DeleteUserGroupRelation: {
-    __typename?: 'UserGroupRelation'
+  DeleteFavorite: {
+    __typename?: 'Favorite'
     id: string
-    userId: string
-    groupId: string
+    createdUserId: string
+    postId: string
     createdAt: Date
     updatedAt: Date
-    user: {
+    createdUser: {
       __typename?: 'User'
       id: string
       name: string
@@ -334,14 +331,16 @@ export type DeleteUserGroupRelationMutation = {
       createdAt: Date
       updatedAt: Date
     }
-    group: {
-      __typename?: 'Group'
+    post: {
+      __typename?: 'Post'
       id: string
-      name: string
-      description?: string | null
-      image: string
-      adminUserId: string
-      productId: string
+      title: string
+      content: string
+      category: PostCategory
+      createdUserId: string
+      isPrivate: boolean
+      groupId?: string | null
+      bgImage?: string | null
       createdAt: Date
       updatedAt: Date
     }
@@ -625,41 +624,39 @@ export type CreateUserGroupRelationMutation = {
   }
 }
 
-export type DeleteFavoriteMutationVariables = Exact<{
-  postId: Scalars['String']
+export type DeleteUserGroupRelationMutationVariables = Exact<{
+  userId: Scalars['String']
+  groupId: Scalars['String']
 }>
 
-export type DeleteFavoriteMutation = {
+export type DeleteUserGroupRelationMutation = {
   __typename?: 'Mutation'
-  DeleteFavorite: {
-    __typename?: 'Favorite'
+  DeleteUserGroupRelation: {
+    __typename?: 'UserGroupRelation'
     id: string
-    createdUserId: string
-    postId: string
+    userId: string
+    groupId: string
     createdAt: Date
     updatedAt: Date
-    createdUser: {
+    user: {
       __typename?: 'User'
       id: string
       name: string
       email: string
-      emailVerified?: Date | null
       description?: string | null
       image?: string | null
       accessToken?: string | null
       createdAt: Date
       updatedAt: Date
     }
-    post: {
-      __typename?: 'Post'
+    group: {
+      __typename?: 'Group'
       id: string
-      title: string
-      content: string
-      category: PostCategory
-      createdUserId: string
-      isPrivate: boolean
-      groupId?: string | null
-      bgImage?: string | null
+      name: string
+      description?: string | null
+      image: string
+      adminUserId: string
+      productId: string
       createdAt: Date
       updatedAt: Date
     }
@@ -775,7 +772,6 @@ export const GetFavoritesDocument = gql`
         id
         name
         email
-        emailVerified
         description
         image
         accessToken
@@ -861,7 +857,6 @@ export const CreateFavoriteDocument = gql`
         id
         name
         email
-        emailVerified
         description
         image
         accessToken
@@ -926,15 +921,15 @@ export type CreateFavoriteMutationOptions = Apollo.BaseMutationOptions<
   CreateFavoriteMutation,
   CreateFavoriteMutationVariables
 >
-export const DeleteUserGroupRelationDocument = gql`
-  mutation DeleteUserGroupRelation($userId: String!, $groupId: String!) {
-    DeleteUserGroupRelation(userId: $userId, groupId: $groupId) {
+export const DeleteFavoriteDocument = gql`
+  mutation DeleteFavorite($postId: String!) {
+    DeleteFavorite(postId: $postId) {
       id
-      userId
-      groupId
+      createdUserId
+      postId
       createdAt
       updatedAt
-      user {
+      createdUser {
         id
         name
         email
@@ -944,62 +939,63 @@ export const DeleteUserGroupRelationDocument = gql`
         createdAt
         updatedAt
       }
-      group {
+      post {
         id
-        name
-        description
-        image
-        adminUserId
-        productId
+        title
+        content
+        category
+        createdUserId
+        isPrivate
+        groupId
+        bgImage
         createdAt
         updatedAt
       }
     }
   }
 `
-export type DeleteUserGroupRelationMutationFn = Apollo.MutationFunction<
-  DeleteUserGroupRelationMutation,
-  DeleteUserGroupRelationMutationVariables
+export type DeleteFavoriteMutationFn = Apollo.MutationFunction<
+  DeleteFavoriteMutation,
+  DeleteFavoriteMutationVariables
 >
 
 /**
- * __useDeleteUserGroupRelationMutation__
+ * __useDeleteFavoriteMutation__
  *
- * To run a mutation, you first call `useDeleteUserGroupRelationMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteUserGroupRelationMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useDeleteFavoriteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFavoriteMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [deleteUserGroupRelationMutation, { data, loading, error }] = useDeleteUserGroupRelationMutation({
+ * const [deleteFavoriteMutation, { data, loading, error }] = useDeleteFavoriteMutation({
  *   variables: {
- *      userId: // value for 'userId'
- *      groupId: // value for 'groupId'
+ *      postId: // value for 'postId'
  *   },
  * });
  */
-export function useDeleteUserGroupRelationMutation(
+export function useDeleteFavoriteMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    DeleteUserGroupRelationMutation,
-    DeleteUserGroupRelationMutationVariables
+    DeleteFavoriteMutation,
+    DeleteFavoriteMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions }
   return Apollo.useMutation<
-    DeleteUserGroupRelationMutation,
-    DeleteUserGroupRelationMutationVariables
-  >(DeleteUserGroupRelationDocument, options)
+    DeleteFavoriteMutation,
+    DeleteFavoriteMutationVariables
+  >(DeleteFavoriteDocument, options)
 }
-export type DeleteUserGroupRelationMutationHookResult = ReturnType<
-  typeof useDeleteUserGroupRelationMutation
+export type DeleteFavoriteMutationHookResult = ReturnType<
+  typeof useDeleteFavoriteMutation
 >
-export type DeleteUserGroupRelationMutationResult =
-  Apollo.MutationResult<DeleteUserGroupRelationMutation>
-export type DeleteUserGroupRelationMutationOptions = Apollo.BaseMutationOptions<
-  DeleteUserGroupRelationMutation,
-  DeleteUserGroupRelationMutationVariables
+export type DeleteFavoriteMutationResult =
+  Apollo.MutationResult<DeleteFavoriteMutation>
+export type DeleteFavoriteMutationOptions = Apollo.BaseMutationOptions<
+  DeleteFavoriteMutation,
+  DeleteFavoriteMutationVariables
 >
 export const GetGroupDocument = gql`
   query GetGroup($getGroupId: String!) {
@@ -1751,82 +1747,80 @@ export type CreateUserGroupRelationMutationOptions = Apollo.BaseMutationOptions<
   CreateUserGroupRelationMutation,
   CreateUserGroupRelationMutationVariables
 >
-export const DeleteFavoriteDocument = gql`
-  mutation DeleteFavorite($postId: String!) {
-    DeleteFavorite(postId: $postId) {
+export const DeleteUserGroupRelationDocument = gql`
+  mutation DeleteUserGroupRelation($userId: String!, $groupId: String!) {
+    DeleteUserGroupRelation(userId: $userId, groupId: $groupId) {
       id
-      createdUserId
-      postId
+      userId
+      groupId
       createdAt
       updatedAt
-      createdUser {
+      user {
         id
         name
         email
-        emailVerified
         description
         image
         accessToken
         createdAt
         updatedAt
       }
-      post {
+      group {
         id
-        title
-        content
-        category
-        createdUserId
-        isPrivate
-        groupId
-        bgImage
+        name
+        description
+        image
+        adminUserId
+        productId
         createdAt
         updatedAt
       }
     }
   }
 `
-export type DeleteFavoriteMutationFn = Apollo.MutationFunction<
-  DeleteFavoriteMutation,
-  DeleteFavoriteMutationVariables
+export type DeleteUserGroupRelationMutationFn = Apollo.MutationFunction<
+  DeleteUserGroupRelationMutation,
+  DeleteUserGroupRelationMutationVariables
 >
 
 /**
- * __useDeleteFavoriteMutation__
+ * __useDeleteUserGroupRelationMutation__
  *
- * To run a mutation, you first call `useDeleteFavoriteMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteFavoriteMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useDeleteUserGroupRelationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteUserGroupRelationMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [deleteFavoriteMutation, { data, loading, error }] = useDeleteFavoriteMutation({
+ * const [deleteUserGroupRelationMutation, { data, loading, error }] = useDeleteUserGroupRelationMutation({
  *   variables: {
- *      postId: // value for 'postId'
+ *      userId: // value for 'userId'
+ *      groupId: // value for 'groupId'
  *   },
  * });
  */
-export function useDeleteFavoriteMutation(
+export function useDeleteUserGroupRelationMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    DeleteFavoriteMutation,
-    DeleteFavoriteMutationVariables
+    DeleteUserGroupRelationMutation,
+    DeleteUserGroupRelationMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions }
   return Apollo.useMutation<
-    DeleteFavoriteMutation,
-    DeleteFavoriteMutationVariables
-  >(DeleteFavoriteDocument, options)
+    DeleteUserGroupRelationMutation,
+    DeleteUserGroupRelationMutationVariables
+  >(DeleteUserGroupRelationDocument, options)
 }
-export type DeleteFavoriteMutationHookResult = ReturnType<
-  typeof useDeleteFavoriteMutation
+export type DeleteUserGroupRelationMutationHookResult = ReturnType<
+  typeof useDeleteUserGroupRelationMutation
 >
-export type DeleteFavoriteMutationResult =
-  Apollo.MutationResult<DeleteFavoriteMutation>
-export type DeleteFavoriteMutationOptions = Apollo.BaseMutationOptions<
-  DeleteFavoriteMutation,
-  DeleteFavoriteMutationVariables
+export type DeleteUserGroupRelationMutationResult =
+  Apollo.MutationResult<DeleteUserGroupRelationMutation>
+export type DeleteUserGroupRelationMutationOptions = Apollo.BaseMutationOptions<
+  DeleteUserGroupRelationMutation,
+  DeleteUserGroupRelationMutationVariables
 >
 export const GetCurrentUserDocument = gql`
   query GetCurrentUser($accessToken: String!) {

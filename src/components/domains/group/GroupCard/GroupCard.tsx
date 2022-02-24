@@ -27,12 +27,11 @@ export const GroupCard: VFC<Props> = ({ group }) => {
         boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
       >
         <Image src={group.image} alt={group.name} flex="1" />
-        <Box bgColor="primary.main" p="4px 8px">
+        <Box bgColor="primary.main" p="8px">
           <Box
             display="flex"
             alignItems="center"
             justifyContent="space-between"
-            mb="4px"
             gap="4px"
           >
             <Text fontSize="lg" noOfLines={1} isBold>
