@@ -31,8 +31,12 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
     },
   })
 
-  const [createFavoriteMutation] = useCreateFavoriteMutation()
-  const [deleteFavoriteMutation] = useDeleteFavoriteMutation()
+  const [createFavoriteMutation] = useCreateFavoriteMutation({
+    refetchQueries: ['GetFavorites'],
+  })
+  const [deleteFavoriteMutation] = useDeleteFavoriteMutation({
+    refetchQueries: ['GetFavorites'],
+  })
 
   const { data: userData } = useGetUserQuery({
     variables: {
@@ -40,7 +44,7 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
     },
   })
 
-  const displayDate = formatDistanceToNow(post.createdAt, {
+  const displayDate = formatDistanceToNow(new Date(post.createdAt), {
     addSuffix: true,
     locale: ja,
   })
@@ -54,6 +58,12 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
   const handleCreateFavorite = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     e.stopPropagation()
+
+    if (!currentUserId) {
+      //TODO: Toastを表示する
+      console.log('ログインユーザーがいません')
+      return
+    }
     try {
       await createFavoriteMutation({
         variables: {
@@ -62,7 +72,7 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
       })
     } catch (err) {
       //TODO: Toastを表示する
-      console.log('error')
+      console.log(err)
     }
   }
 
@@ -77,12 +87,12 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
       })
     } catch (err) {
       //TODO: Toastを表示する
-      console.log('error')
+      console.log(err)
     }
   }
 
   return (
-    <Link href={`/${userData?.getUser?.id}/posts/${post.id}`}>
+    <Link href={`/post/${post.id}`}>
       <Box
         borderRadius="lg"
         overflow="hidden"
