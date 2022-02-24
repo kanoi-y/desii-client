@@ -9,6 +9,7 @@ type Props = {
   bgColor?: ColorVariables
   isLoading?: boolean
   isDisabled?: boolean
+  isRound?: boolean
 }
 
 export const IconButton: VFC<Props> = ({
@@ -16,6 +17,7 @@ export const IconButton: VFC<Props> = ({
   icon,
   onClick,
   bgColor = 'white.main',
+  isRound = false,
   isLoading = false,
   isDisabled = false,
 }) => {
@@ -28,6 +30,7 @@ export const IconButton: VFC<Props> = ({
       isLoading={isLoading}
       onClick={onClick}
       isDisabled={isDisabled}
+      isRound={isRound}
     />
   )
 }
