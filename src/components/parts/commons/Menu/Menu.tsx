@@ -1,4 +1,5 @@
 import {
+  Box,
   Menu as ChakraMenu,
   MenuButton,
   MenuDivider,
@@ -23,12 +24,12 @@ export const Menu: VFC<Props> = ({ toggleItem, menuList }) => {
       <MenuButton>{toggleItem}</MenuButton>
       <MenuList>
         {menuList.map((menuItem, i) => (
-          <>
-            <MenuItem key={i} icon={menuItem.icon} onClick={menuItem.onClick}>
+          <Box key={i}>
+            <MenuItem icon={menuItem.icon} onClick={menuItem.onClick}>
               {menuItem.text}
             </MenuItem>
             {menuItem.underline && <MenuDivider />}
-          </>
+          </Box>
         ))}
       </MenuList>
     </ChakraMenu>
