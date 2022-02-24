@@ -62,11 +62,14 @@ export const GetPostsQuery = extendType({
       args: {
         userId: stringArg(),
         groupId: stringArg(),
+        isPrivate: booleanArg(),
       },
       resolve(_parent, args, ctx) {
         const query: Partial<PostType> = {}
         if (args.userId) query.createdUserId = args.userId
         if (args.groupId) query.groupId = args.groupId
+        if (typeof args.isPrivate === 'boolean')
+          query.isPrivate = args.isPrivate
 
         return ctx.prisma.post.findMany({
           where: query,

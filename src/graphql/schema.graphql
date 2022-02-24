@@ -64,7 +64,7 @@ enum PostCategory {
 
 type Query {
   GetFavorites(createdUserId: String, postId: String): [Favorite!]!
-  GetPosts(groupId: String, userId: String): [Post!]!
+  GetPosts(groupId: String, isPrivate: Boolean, userId: String): [Post!]!
   GetUserGroupRelations(groupId: String, userId: String): [UserGroupRelation!]!
   getCurrentUser(accessToken: String!): User
   getGroup(id: String!): Group
