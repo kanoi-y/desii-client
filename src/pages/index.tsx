@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react'
 import { signIn, signOut } from 'next-auth/react'
 import React, { useContext } from 'react'
-import { PostCard } from '~/components/domains/post/PostCard'
+import { PostCard, SkeletonPostCard } from '~/components/domains/post/PostCard'
 import { UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Text } from '~/components/parts/commons'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
@@ -45,9 +45,17 @@ export default function Home() {
         </Text>
       </Box>
       <Box w="360px" display="flex" flexDirection="column" gap="16px">
-        {data?.GetPosts.map((post) => (
-          <PostCard key={post.id} currentUserId={currentUser?.id} post={post} />
-        ))}
+        {data ? (
+          data.GetPosts.map((post) => (
+            <PostCard
+              key={post.id}
+              currentUserId={currentUser?.id}
+              post={post}
+            />
+          ))
+        ) : (
+          <SkeletonPostCard />
+        )}
       </Box>
     </Box>
   )
