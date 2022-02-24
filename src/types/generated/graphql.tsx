@@ -178,6 +178,7 @@ export type QueryGetFavoritesArgs = {
 
 export type QueryGetPostsArgs = {
   groupId?: InputMaybe<Scalars['String']>
+  isPrivate?: InputMaybe<Scalars['Boolean']>
   userId?: InputMaybe<Scalars['String']>
 }
 
@@ -454,6 +455,7 @@ export type GetPostQuery = {
 export type GetPostsQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['String']>
   groupId?: InputMaybe<Scalars['String']>
+  isPrivate?: InputMaybe<Scalars['Boolean']>
 }>
 
 export type GetPostsQuery = {
@@ -1315,8 +1317,8 @@ export type GetPostQueryResult = Apollo.QueryResult<
   GetPostQueryVariables
 >
 export const GetPostsDocument = gql`
-  query GetPosts($userId: String, $groupId: String) {
-    GetPosts(userId: $userId, groupId: $groupId) {
+  query GetPosts($userId: String, $groupId: String, $isPrivate: Boolean) {
+    GetPosts(userId: $userId, groupId: $groupId, isPrivate: $isPrivate) {
       id
       title
       content
@@ -1345,6 +1347,7 @@ export const GetPostsDocument = gql`
  *   variables: {
  *      userId: // value for 'userId'
  *      groupId: // value for 'groupId'
+ *      isPrivate: // value for 'isPrivate'
  *   },
  * });
  */
