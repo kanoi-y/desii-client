@@ -1,11 +1,11 @@
 import { IconButton as ChakraIconButton } from '@chakra-ui/react'
-import { ReactElement, VFC } from 'react'
+import { MouseEvent, ReactElement, VFC } from 'react'
 import { ColorVariables } from '~/types/color'
 
 type Props = {
   label: string
   icon: ReactElement
-  onClick?: () => void
+  onClick?: (e: MouseEvent<HTMLButtonElement>) => void
   bgColor?: ColorVariables
   isLoading?: boolean
   isDisabled?: boolean

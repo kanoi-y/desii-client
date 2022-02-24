@@ -1,7 +1,7 @@
 import { Box, SkeletonText } from '@chakra-ui/react'
 import { formatDistanceToNow } from 'date-fns'
 import { ja } from 'date-fns/locale'
-import { VFC } from 'react'
+import { MouseEvent, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import {
   IconButton,
@@ -13,6 +13,8 @@ import {
 } from '~/components/parts/commons'
 import {
   Post,
+  useCreateFavoriteMutation,
+  useDeleteFavoriteMutation,
   useGetFavoritesQuery,
   useGetUserQuery,
 } from '~/types/generated/graphql'
@@ -28,6 +30,9 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
       postId: post.id,
     },
   })
+
+  const [createFavoriteMutation] = useCreateFavoriteMutation()
+  const [deleteFavoriteMutation] = useDeleteFavoriteMutation()
 
   const { data: userData } = useGetUserQuery({
     variables: {
@@ -46,6 +51,36 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
       (favorite) => favorite.createdUserId === currentUserId
     )
 
+  const handleCreateFavorite = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    try {
+      await createFavoriteMutation({
+        variables: {
+          postId: post.id,
+        },
+      })
+    } catch (err) {
+      //TODO: Toastを表示する
+      console.log('error')
+    }
+  }
+
+  const handleDeleteFavorite = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    try {
+      await deleteFavoriteMutation({
+        variables: {
+          postId: post.id,
+        },
+      })
+    } catch (err) {
+      //TODO: Toastを表示する
+      console.log('error')
+    }
+  }
+
   return (
     <Link href={`/${userData?.getUser?.id}/posts/${post.id}`}>
       <Box
@@ -61,7 +96,18 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
           pt="52.5%"
           position="relative"
         >
-          <Box position="absolute" top="12px" left="12px">
+          {post.bgImage && (
+            <Box
+              position="absolute"
+              top="0"
+              left="0"
+              w="100%"
+              h="100%"
+              bgColor="rgba(240, 255, 244, 0.7)"
+              zIndex="1"
+            ></Box>
+          )}
+          <Box position="absolute" top="12px" left="12px" zIndex="2">
             <Tag
               text={
                 post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'
@@ -77,6 +123,7 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
             transform="translate(-50%, -50%)"
             w="fit-content"
             maxW="90%"
+            zIndex="2"
           >
             <Text fontSize="lg" isBold noOfLines={3}>
               {post.title}
@@ -120,12 +167,14 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
                 label="solidStar"
                 bgColor="orange.light"
                 isRound
+                onClick={handleDeleteFavorite}
               />
             ) : (
               <IconButton
                 icon={<OutlineIcon icon="OUTLINE_STAR" />}
                 label="outlineStar"
                 isRound
+                onClick={handleCreateFavorite}
               />
             )}
           </Box>

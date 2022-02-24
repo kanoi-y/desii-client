@@ -23,7 +23,13 @@ const Template: ComponentStory<typeof PostCard> = ({ ...args }) => {
   )
 }
 
-export const Default = Template.bind({})
-Default.args = {
+export const DefaultPostCard = Template.bind({})
+DefaultPostCard.args = {
   post: postFactory(),
+}
+
+export const FavoritePostCard = Template.bind({})
+FavoritePostCard.args = {
+  post: postFactory(),
+  currentUserId: 'userId',
 }
