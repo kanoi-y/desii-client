@@ -1,7 +1,10 @@
 export type ColorVariables =
   | 'primary.main'
+  | 'primary.light'
   | 'secondary.main'
+  | 'secondary.light'
   | 'error.main'
   | 'text.main'
   | 'white.main'
   | 'orange.main'
+  | 'orange.light'
