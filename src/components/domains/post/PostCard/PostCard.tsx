@@ -59,54 +59,73 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
           backgroundPosition="center"
           w="100%"
           pt="52.5%"
+          position="relative"
         >
-          <Tag
-            text={post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'}
-          />
-          <Text fontSize="md" isBold>
-            {post.title}
-          </Text>
+          <Box position="absolute" top="12px" left="12px">
+            <Tag
+              text={
+                post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'
+              }
+              bgColor="orange.main"
+              size="sm"
+            />
+          </Box>
+          <Box
+            position="absolute"
+            top="50%"
+            left="50%"
+            transform="translate(-50%, -50%)"
+            w="fit-content"
+            maxW="90%"
+          >
+            <Text fontSize="lg" isBold noOfLines={3}>
+              {post.title}
+            </Text>
+          </Box>
         </Box>
         <Box
           bgColor="primary.main"
-          p="4px 8px"
+          p="8px"
           display="flex"
           alignItems="center"
           justifyContent="space-between"
         >
-          <Box>
+          <Box display="flex" alignItems="center" gap="8px">
             {userData?.getUser ? (
               <>
-                <UserIcon isLink user={userData.getUser} />
+                <UserIcon user={userData.getUser} size="sm" />
                 <Box>
                   <Text fontSize="md" isBold>
                     {userData.getUser.name}
                   </Text>
-                  <Text fontSize="sm">{displayDate}</Text>
+                  <Text fontSize="xs">{displayDate}</Text>
                 </Box>
               </>
             ) : (
               <>
-                <GuestUserIcon />
+                <GuestUserIcon size="sm" />
                 <SkeletonText w="40px" noOfLines={2} spacing="2" />
               </>
             )}
           </Box>
-          <Box display="flex" alignItems="center">
-            <Text fontSize="sm" noWrap>
+          <Box display="flex" alignItems="center" gap="4px">
+            <Text fontSize="sm" noWrap isBold>
               {FavoritesData?.GetFavorites
                 ? FavoritesData.GetFavorites.length.toString()
                 : ''}
             </Text>
             {isFavorite ? (
               <IconButton
-                icon={<SolidIcon icon="SOLID_STAR" />}
+                icon={<SolidIcon icon="SOLID_STAR" color="orange.main" />}
                 label="solidStar"
+                bgColor="orange.light"
+                isRound
               />
             ) : (
               <IconButton
                 icon={<OutlineIcon icon="OUTLINE_STAR" />}
                 label="outlineStar"
+                isRound
               />
             )}
           </Box>
