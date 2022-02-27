@@ -34,6 +34,7 @@ type Mutation {
   createFavorite(postId: String!): Favorite!
   createGroup(description: String, image: String!, name: String!, productId: String!): Group!
   createPost(bgImage: String, category: PostCategory!, content: String!, groupId: String, isPrivate: Boolean!, title: String!): Post!
+  createTag(name: String!): Tag!
   createUser(description: String, email: String!, image: String, name: String!): User!
   createUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
   deleteGroup(id: String!): Group!
@@ -65,11 +66,19 @@ enum PostCategory {
 type Query {
   GetFavorites(createdUserId: String, postId: String): [Favorite!]!
   GetPosts(groupId: String, isPrivate: Boolean, userId: String): [Post!]!
+  GetTagByName(name: String!): Tag
   GetUserGroupRelations(groupId: String, userId: String): [UserGroupRelation!]!
   getCurrentUser(accessToken: String!): User
   getGroup(id: String!): Group
   getPost(id: String!): Post
   getUser(id: String!): User
+}
+
+type Tag {
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
 }
 
 type User {
