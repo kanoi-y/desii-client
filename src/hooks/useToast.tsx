@@ -6,7 +6,6 @@ import { useCallback } from 'react'
 
 const option = {
   isClosable: true,
-  duration: 9000,
   position: 'bottom-left' as ToastPositionWithLogical,
 }
 
@@ -14,7 +13,13 @@ export const useToast = () => {
   const toastOriginal = useToastOriginal()
 
   const toast = useCallback(
-    ({ title, status }: { title: string; status: 'success' | 'error' }) => {
+    ({
+      title,
+      status,
+    }: {
+      title: string
+      status: 'success' | 'error' | 'info' | 'warning'
+    }) => {
       toastOriginal({
         title,
         status,

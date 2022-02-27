@@ -11,6 +11,7 @@ import {
   Tag,
   Text,
 } from '~/components/parts/commons'
+import { useToast } from '~/hooks'
 import {
   Post,
   useCreateFavoriteMutation,
@@ -59,6 +60,7 @@ export const SkeletonPostCard: VFC = () => {
 }
 
 export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
+  const { toast } = useToast()
   const { data: FavoritesData } = useGetFavoritesQuery({
     variables: {
       postId: post.id,
@@ -94,8 +96,8 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
     e.stopPropagation()
 
     if (!currentUserId) {
-      //TODO: Toastを表示する
-      console.log('ログインユーザーがいません')
+      //TODO: ログインページに遷移する
+      toast({ title: 'ログインが必要です!', status: 'warning' })
       return
     }
     try {
@@ -105,8 +107,7 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
         },
       })
     } catch (err) {
-      //TODO: Toastを表示する
-      console.log(err)
+      toast({ title: 'リアクションの送信に失敗しました', status: 'error' })
     }
   }
 
@@ -120,8 +121,7 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
         },
       })
     } catch (err) {
-      //TODO: Toastを表示する
-      console.log(err)
+      toast({ title: 'リアクションの送信に失敗しました', status: 'error' })
     }
   }
 
