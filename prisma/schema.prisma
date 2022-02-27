@@ -94,6 +94,7 @@ model Post {
    createdUser   User     @relation(fields: [createdUserId], references: [id], onDelete: Cascade)
    group         Group?     @relation(fields: [groupId], references: [id], onDelete: Cascade)
    favorites     Favorite[]
+   TagPostRelations TagPostRelation[]
 }
 
 model Favorite {
@@ -106,6 +107,26 @@ model Favorite {
    post   Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
    @@unique(fields: [createdUserId, postId], name: "favoriteId")
+}
+
+model Tag {
+   id            String      @id @default(cuid())
+   name          String      @unique
+   createdAt     DateTime    @default(now())
+   updatedAt     DateTime    @updatedAt
+   TagPostRelations TagPostRelation[]
+}
+
+model TagPostRelation {
+   id            String      @id @default(cuid())
+   tagId         String
+   postId        String
+   createdAt     DateTime    @default(now())
+   updatedAt     DateTime    @updatedAt
+   tag           Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)
+   post          Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+   @@unique(fields: [tagId, postId], name: "tagPostRelationId")
 }
 
 model VerificationToken {
