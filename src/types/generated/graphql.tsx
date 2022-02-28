@@ -49,10 +49,13 @@ export type Group = {
 export type Mutation = {
   __typename?: 'Mutation'
   DeleteFavorite: Favorite
+  DeleteTagPostRelation: TagPostRelation
   DeleteUserGroupRelation: UserGroupRelation
   createFavorite: Favorite
   createGroup: Group
   createPost: Post
+  createTag: Tag
+  createTagPostRelation: TagPostRelation
   createUser: User
   createUserGroupRelation: UserGroupRelation
   deleteGroup: Group
@@ -65,6 +68,11 @@ export type Mutation = {
 
 export type MutationDeleteFavoriteArgs = {
   postId: Scalars['String']
+}
+
+export type MutationDeleteTagPostRelationArgs = {
+  postId: Scalars['String']
+  tagId: Scalars['String']
 }
 
 export type MutationDeleteUserGroupRelationArgs = {
@@ -90,6 +98,15 @@ export type MutationCreatePostArgs = {
   groupId?: InputMaybe<Scalars['String']>
   isPrivate: Scalars['Boolean']
   title: Scalars['String']
+}
+
+export type MutationCreateTagArgs = {
+  name: Scalars['String']
+}
+
+export type MutationCreateTagPostRelationArgs = {
+  postId: Scalars['String']
+  tagId: Scalars['String']
 }
 
 export type MutationCreateUserArgs = {
@@ -164,6 +181,8 @@ export type Query = {
   __typename?: 'Query'
   GetFavorites: Array<Favorite>
   GetPosts: Array<Post>
+  GetTagByName?: Maybe<Tag>
+  GetTagPostRelationsQuery: Array<TagPostRelation>
   GetUserGroupRelations: Array<UserGroupRelation>
   getCurrentUser?: Maybe<User>
   getGroup?: Maybe<Group>
@@ -180,6 +199,15 @@ export type QueryGetPostsArgs = {
   groupId?: InputMaybe<Scalars['String']>
   isPrivate?: InputMaybe<Scalars['Boolean']>
   userId?: InputMaybe<Scalars['String']>
+}
+
+export type QueryGetTagByNameArgs = {
+  name: Scalars['String']
+}
+
+export type QueryGetTagPostRelationsQueryArgs = {
+  postId?: InputMaybe<Scalars['String']>
+  tagId?: InputMaybe<Scalars['String']>
 }
 
 export type QueryGetUserGroupRelationsArgs = {
@@ -201,6 +229,25 @@ export type QueryGetPostArgs = {
 
 export type QueryGetUserArgs = {
   id: Scalars['String']
+}
+
+export type Tag = {
+  __typename?: 'Tag'
+  createdAt: Scalars['DateTime']
+  id: Scalars['String']
+  name: Scalars['String']
+  updatedAt: Scalars['DateTime']
+}
+
+export type TagPostRelation = {
+  __typename?: 'TagPostRelation'
+  createdAt: Scalars['DateTime']
+  id: Scalars['String']
+  post: Post
+  postId: Scalars['String']
+  tag: Tag
+  tagId: Scalars['String']
+  updatedAt: Scalars['DateTime']
 }
 
 export type User = {
@@ -545,6 +592,147 @@ export type UpdatePostMutation = {
     bgImage?: string | null
     createdAt: Date
     updatedAt: Date
+  }
+}
+
+export type GetTagByNameQueryVariables = Exact<{
+  name: Scalars['String']
+}>
+
+export type GetTagByNameQuery = {
+  __typename?: 'Query'
+  GetTagByName?: {
+    __typename?: 'Tag'
+    id: string
+    name: string
+    createdAt: Date
+    updatedAt: Date
+  } | null
+}
+
+export type CreateTagMutationVariables = Exact<{
+  name: Scalars['String']
+}>
+
+export type CreateTagMutation = {
+  __typename?: 'Mutation'
+  createTag: {
+    __typename?: 'Tag'
+    id: string
+    name: string
+    createdAt: Date
+    updatedAt: Date
+  }
+}
+
+export type GetTagPostRelationsQueryQueryVariables = Exact<{
+  tagId?: InputMaybe<Scalars['String']>
+  postId?: InputMaybe<Scalars['String']>
+}>
+
+export type GetTagPostRelationsQueryQuery = {
+  __typename?: 'Query'
+  GetTagPostRelationsQuery: Array<{
+    __typename?: 'TagPostRelation'
+    id: string
+    tagId: string
+    postId: string
+    createdAt: Date
+    updatedAt: Date
+    tag: {
+      __typename?: 'Tag'
+      id: string
+      name: string
+      createdAt: Date
+      updatedAt: Date
+    }
+    post: {
+      __typename?: 'Post'
+      id: string
+      title: string
+      content: string
+      category: PostCategory
+      createdUserId: string
+      isPrivate: boolean
+      groupId?: string | null
+      bgImage?: string | null
+      createdAt: Date
+      updatedAt: Date
+    }
+  }>
+}
+
+export type CreateTagPostRelationMutationVariables = Exact<{
+  tagId: Scalars['String']
+  postId: Scalars['String']
+}>
+
+export type CreateTagPostRelationMutation = {
+  __typename?: 'Mutation'
+  createTagPostRelation: {
+    __typename?: 'TagPostRelation'
+    id: string
+    tagId: string
+    postId: string
+    createdAt: Date
+    updatedAt: Date
+    tag: {
+      __typename?: 'Tag'
+      id: string
+      name: string
+      createdAt: Date
+      updatedAt: Date
+    }
+    post: {
+      __typename?: 'Post'
+      id: string
+      title: string
+      content: string
+      category: PostCategory
+      createdUserId: string
+      isPrivate: boolean
+      groupId?: string | null
+      bgImage?: string | null
+      createdAt: Date
+      updatedAt: Date
+    }
+  }
+}
+
+export type DeleteTagPostRelationMutationVariables = Exact<{
+  tagId: Scalars['String']
+  postId: Scalars['String']
+}>
+
+export type DeleteTagPostRelationMutation = {
+  __typename?: 'Mutation'
+  DeleteTagPostRelation: {
+    __typename?: 'TagPostRelation'
+    id: string
+    tagId: string
+    postId: string
+    createdAt: Date
+    updatedAt: Date
+    tag: {
+      __typename?: 'Tag'
+      id: string
+      name: string
+      createdAt: Date
+      updatedAt: Date
+    }
+    post: {
+      __typename?: 'Post'
+      id: string
+      title: string
+      content: string
+      category: PostCategory
+      createdUserId: string
+      isPrivate: boolean
+      groupId?: string | null
+      bgImage?: string | null
+      createdAt: Date
+      updatedAt: Date
+    }
   }
 }
 
@@ -1591,6 +1779,346 @@ export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>
 export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<
   UpdatePostMutation,
   UpdatePostMutationVariables
+>
+export const GetTagByNameDocument = gql`
+  query GetTagByName($name: String!) {
+    GetTagByName(name: $name) {
+      id
+      name
+      createdAt
+      updatedAt
+    }
+  }
+`
+
+/**
+ * __useGetTagByNameQuery__
+ *
+ * To run a query within a React component, call `useGetTagByNameQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTagByNameQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTagByNameQuery({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useGetTagByNameQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTagByNameQuery,
+    GetTagByNameQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GetTagByNameQuery, GetTagByNameQueryVariables>(
+    GetTagByNameDocument,
+    options
+  )
+}
+export function useGetTagByNameLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTagByNameQuery,
+    GetTagByNameQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GetTagByNameQuery, GetTagByNameQueryVariables>(
+    GetTagByNameDocument,
+    options
+  )
+}
+export type GetTagByNameQueryHookResult = ReturnType<
+  typeof useGetTagByNameQuery
+>
+export type GetTagByNameLazyQueryHookResult = ReturnType<
+  typeof useGetTagByNameLazyQuery
+>
+export type GetTagByNameQueryResult = Apollo.QueryResult<
+  GetTagByNameQuery,
+  GetTagByNameQueryVariables
+>
+export const CreateTagDocument = gql`
+  mutation CreateTag($name: String!) {
+    createTag(name: $name) {
+      id
+      name
+      createdAt
+      updatedAt
+    }
+  }
+`
+export type CreateTagMutationFn = Apollo.MutationFunction<
+  CreateTagMutation,
+  CreateTagMutationVariables
+>
+
+/**
+ * __useCreateTagMutation__
+ *
+ * To run a mutation, you first call `useCreateTagMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTagMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTagMutation, { data, loading, error }] = useCreateTagMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useCreateTagMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateTagMutation,
+    CreateTagMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreateTagMutation, CreateTagMutationVariables>(
+    CreateTagDocument,
+    options
+  )
+}
+export type CreateTagMutationHookResult = ReturnType<
+  typeof useCreateTagMutation
+>
+export type CreateTagMutationResult = Apollo.MutationResult<CreateTagMutation>
+export type CreateTagMutationOptions = Apollo.BaseMutationOptions<
+  CreateTagMutation,
+  CreateTagMutationVariables
+>
+export const GetTagPostRelationsQueryDocument = gql`
+  query GetTagPostRelationsQuery($tagId: String, $postId: String) {
+    GetTagPostRelationsQuery(tagId: $tagId, postId: $postId) {
+      id
+      tagId
+      postId
+      createdAt
+      updatedAt
+      tag {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+      post {
+        id
+        title
+        content
+        category
+        createdUserId
+        isPrivate
+        groupId
+        bgImage
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`
+
+/**
+ * __useGetTagPostRelationsQueryQuery__
+ *
+ * To run a query within a React component, call `useGetTagPostRelationsQueryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTagPostRelationsQueryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTagPostRelationsQueryQuery({
+ *   variables: {
+ *      tagId: // value for 'tagId'
+ *      postId: // value for 'postId'
+ *   },
+ * });
+ */
+export function useGetTagPostRelationsQueryQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetTagPostRelationsQueryQuery,
+    GetTagPostRelationsQueryQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<
+    GetTagPostRelationsQueryQuery,
+    GetTagPostRelationsQueryQueryVariables
+  >(GetTagPostRelationsQueryDocument, options)
+}
+export function useGetTagPostRelationsQueryLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTagPostRelationsQueryQuery,
+    GetTagPostRelationsQueryQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    GetTagPostRelationsQueryQuery,
+    GetTagPostRelationsQueryQueryVariables
+  >(GetTagPostRelationsQueryDocument, options)
+}
+export type GetTagPostRelationsQueryQueryHookResult = ReturnType<
+  typeof useGetTagPostRelationsQueryQuery
+>
+export type GetTagPostRelationsQueryLazyQueryHookResult = ReturnType<
+  typeof useGetTagPostRelationsQueryLazyQuery
+>
+export type GetTagPostRelationsQueryQueryResult = Apollo.QueryResult<
+  GetTagPostRelationsQueryQuery,
+  GetTagPostRelationsQueryQueryVariables
+>
+export const CreateTagPostRelationDocument = gql`
+  mutation CreateTagPostRelation($tagId: String!, $postId: String!) {
+    createTagPostRelation(tagId: $tagId, postId: $postId) {
+      id
+      tagId
+      postId
+      createdAt
+      updatedAt
+      tag {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+      post {
+        id
+        title
+        content
+        category
+        createdUserId
+        isPrivate
+        groupId
+        bgImage
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`
+export type CreateTagPostRelationMutationFn = Apollo.MutationFunction<
+  CreateTagPostRelationMutation,
+  CreateTagPostRelationMutationVariables
+>
+
+/**
+ * __useCreateTagPostRelationMutation__
+ *
+ * To run a mutation, you first call `useCreateTagPostRelationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTagPostRelationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTagPostRelationMutation, { data, loading, error }] = useCreateTagPostRelationMutation({
+ *   variables: {
+ *      tagId: // value for 'tagId'
+ *      postId: // value for 'postId'
+ *   },
+ * });
+ */
+export function useCreateTagPostRelationMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateTagPostRelationMutation,
+    CreateTagPostRelationMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    CreateTagPostRelationMutation,
+    CreateTagPostRelationMutationVariables
+  >(CreateTagPostRelationDocument, options)
+}
+export type CreateTagPostRelationMutationHookResult = ReturnType<
+  typeof useCreateTagPostRelationMutation
+>
+export type CreateTagPostRelationMutationResult =
+  Apollo.MutationResult<CreateTagPostRelationMutation>
+export type CreateTagPostRelationMutationOptions = Apollo.BaseMutationOptions<
+  CreateTagPostRelationMutation,
+  CreateTagPostRelationMutationVariables
+>
+export const DeleteTagPostRelationDocument = gql`
+  mutation DeleteTagPostRelation($tagId: String!, $postId: String!) {
+    DeleteTagPostRelation(tagId: $tagId, postId: $postId) {
+      id
+      tagId
+      postId
+      createdAt
+      updatedAt
+      tag {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+      post {
+        id
+        title
+        content
+        category
+        createdUserId
+        isPrivate
+        groupId
+        bgImage
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`
+export type DeleteTagPostRelationMutationFn = Apollo.MutationFunction<
+  DeleteTagPostRelationMutation,
+  DeleteTagPostRelationMutationVariables
+>
+
+/**
+ * __useDeleteTagPostRelationMutation__
+ *
+ * To run a mutation, you first call `useDeleteTagPostRelationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTagPostRelationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTagPostRelationMutation, { data, loading, error }] = useDeleteTagPostRelationMutation({
+ *   variables: {
+ *      tagId: // value for 'tagId'
+ *      postId: // value for 'postId'
+ *   },
+ * });
+ */
+export function useDeleteTagPostRelationMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteTagPostRelationMutation,
+    DeleteTagPostRelationMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    DeleteTagPostRelationMutation,
+    DeleteTagPostRelationMutationVariables
+  >(DeleteTagPostRelationDocument, options)
+}
+export type DeleteTagPostRelationMutationHookResult = ReturnType<
+  typeof useDeleteTagPostRelationMutation
+>
+export type DeleteTagPostRelationMutationResult =
+  Apollo.MutationResult<DeleteTagPostRelationMutation>
+export type DeleteTagPostRelationMutationOptions = Apollo.BaseMutationOptions<
+  DeleteTagPostRelationMutation,
+  DeleteTagPostRelationMutationVariables
 >
 export const GetUserGroupRelationsDocument = gql`
   query GetUserGroupRelations($userId: String, $groupId: String) {
