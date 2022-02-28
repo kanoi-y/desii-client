@@ -12,6 +12,7 @@ export {
   GET_POST_BY_ID,
   UPDATE_POST,
 } from './post'
+export { CREATE_TAG, GET_TAG_BY_NAME } from './tag'
 export {
   CREATE_USER_GROUP_RELATION,
   DELETE_USER_GROUP_RELATION,
