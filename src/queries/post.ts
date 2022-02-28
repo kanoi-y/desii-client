@@ -18,8 +18,18 @@ export const GET_POST_BY_ID = gql`
 `
 
 export const GET_POSTS = gql`
-  query GetPosts($userId: String, $groupId: String, $isPrivate: Boolean) {
-    GetPosts(userId: $userId, groupId: $groupId, isPrivate: $isPrivate) {
+  query GetPosts(
+    $userId: String
+    $groupId: String
+    $isPrivate: Boolean
+    $sort: orderByType
+  ) {
+    GetPosts(
+      userId: $userId
+      groupId: $groupId
+      isPrivate: $isPrivate
+      sort: $sort
+    ) {
       id
       title
       content

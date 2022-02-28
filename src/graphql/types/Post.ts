@@ -1,5 +1,6 @@
 import { Post as PostType, UserGroupRelation } from '@prisma/client'
 import {
+  arg,
   booleanArg,
   enumType,
   extendType,
@@ -11,6 +12,11 @@ import {
 export const PostCategory = enumType({
   name: 'PostCategory',
   members: ['GIVE_ME', 'GIVE_YOU'],
+})
+
+export const OrderByType = enumType({
+  name: 'orderByType',
+  members: ['asc', 'desc'],
 })
 
 export const Post = objectType({
@@ -63,6 +69,10 @@ export const GetPostsQuery = extendType({
         userId: stringArg(),
         groupId: stringArg(),
         isPrivate: booleanArg(),
+        sort: arg({
+          type: OrderByType,
+          default: 'asc',
+        }),
       },
       resolve(_parent, args, ctx) {
         const query: Partial<PostType> = {}
@@ -73,6 +83,9 @@ export const GetPostsQuery = extendType({
 
         return ctx.prisma.post.findMany({
           where: query,
+          orderBy: {
+            createdAt: args.sort || 'asc',
+          },
         })
       },
     })
