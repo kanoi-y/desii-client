@@ -5,7 +5,7 @@ import { PostCard, SkeletonPostCard } from '~/components/domains/post/PostCard'
 import { UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Text } from '~/components/parts/commons'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
-import { useGetPostsQuery } from '~/types/generated/graphql'
+import { OrderByType, useGetPostsQuery } from '~/types/generated/graphql'
 
 export default function Home() {
   const { currentUser, isLoading } = useContext(CurrentUserContext)
@@ -13,6 +13,7 @@ export default function Home() {
   const { data } = useGetPostsQuery({
     variables: {
       isPrivate: false,
+      sort: OrderByType.Desc,
     },
   })
 
