@@ -1,7 +1,7 @@
 import { Box, Skeleton, SkeletonText } from '@chakra-ui/react'
 import { formatDistanceToNow } from 'date-fns'
 import { ja } from 'date-fns/locale'
-import { MouseEvent, VFC } from 'react'
+import { MouseEvent, useCallback, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import {
   IconButton,
@@ -24,6 +24,7 @@ type Props = {
   post: Post
   currentUserId?: string
   isBig?: boolean
+  isLink?: boolean
 }
 
 export const SkeletonPostCard: VFC = () => {
@@ -64,6 +65,7 @@ export const PostCard: VFC<Props> = ({
   post,
   currentUserId,
   isBig = false,
+  isLink = false,
 }) => {
   const { toast } = useToast()
   const { data: FavoritesData } = useGetFavoritesQuery({
@@ -96,42 +98,48 @@ export const PostCard: VFC<Props> = ({
       (favorite) => favorite.createdUserId === currentUserId
     )
 
-  const handleCreateFavorite = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const handleCreateFavorite = useCallback(
+    async (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
 
-    if (!currentUserId) {
-      //TODO: ログインページに遷移する
-      toast({ title: 'ログインが必要です!', status: 'warning' })
-      return
-    }
-    try {
-      await createFavoriteMutation({
-        variables: {
-          postId: post.id,
-        },
-      })
-    } catch (err) {
-      toast({ title: 'リアクションの送信に失敗しました', status: 'error' })
-    }
-  }
+      if (!currentUserId) {
+        //TODO: ログインモーダルを表示する
+        toast({ title: 'ログインが必要です!', status: 'warning' })
+        return
+      }
+      try {
+        await createFavoriteMutation({
+          variables: {
+            postId: post.id,
+          },
+        })
+      } catch (err) {
+        toast({ title: 'リアクションの送信に失敗しました', status: 'error' })
+      }
+    },
+    [createFavoriteMutation, post.id, currentUserId, toast]
+  )
 
-  const handleDeleteFavorite = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    try {
-      await deleteFavoriteMutation({
-        variables: {
-          postId: post.id,
-        },
-      })
-    } catch (err) {
-      toast({ title: 'リアクションの送信に失敗しました', status: 'error' })
-    }
-  }
+  const handleDeleteFavorite = useCallback(
+    async (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      try {
+        await deleteFavoriteMutation({
+          variables: {
+            postId: post.id,
+          },
+        })
+      } catch (err) {
+        toast({ title: 'リアクションの送信に失敗しました', status: 'error' })
+      }
+    },
+    [deleteFavoriteMutation, post.id, toast]
+  )
 
-  return (
-    <Link href={`/post/${post.id}`}>
+  const PostCardContent = useMemo(() => {
+    return (
       <Box
         borderRadius="lg"
         overflow="hidden"
@@ -222,7 +230,7 @@ export const PostCard: VFC<Props> = ({
                   <SolidIcon
                     icon="SOLID_STAR"
                     color="orange.main"
-                    size={isBig ? 36 : 24}
+                    size={isBig ? 30 : 24}
                   />
                 }
                 label="solidStar"
@@ -234,7 +242,7 @@ export const PostCard: VFC<Props> = ({
             ) : (
               <IconButton
                 icon={
-                  <OutlineIcon icon="OUTLINE_STAR" size={isBig ? 36 : 24} />
+                  <OutlineIcon icon="OUTLINE_STAR" size={isBig ? 30 : 24} />
                 }
                 label="outlineStar"
                 isRound
@@ -245,6 +253,20 @@ export const PostCard: VFC<Props> = ({
           </Box>
         </Box>
       </Box>
-    </Link>
-  )
+    )
+  }, [
+    FavoritesData,
+    displayDate,
+    handleCreateFavorite,
+    handleDeleteFavorite,
+    isBig,
+    isFavorite,
+    post,
+    userData,
+  ])
+
+  if (isLink) {
+    return <Link href={`/post/${post.id}`}>{PostCardContent}</Link>
+  }
+  return PostCardContent
 }

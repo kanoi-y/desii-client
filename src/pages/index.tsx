@@ -52,6 +52,7 @@ export default function Home() {
               key={post.id}
               currentUserId={currentUser?.id}
               post={post}
+              isLink
             />
           ))
         ) : (
