@@ -23,6 +23,7 @@ import {
 type Props = {
   post: Post
   currentUserId?: string
+  isBig?: boolean
 }
 
 export const SkeletonPostCard: VFC = () => {
@@ -59,7 +60,11 @@ export const SkeletonPostCard: VFC = () => {
   )
 }
 
-export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
+export const PostCard: VFC<Props> = ({
+  post,
+  currentUserId,
+  isBig = false,
+}) => {
   const { toast } = useToast()
   const { data: FavoritesData } = useGetFavoritesQuery({
     variables: {
@@ -131,6 +136,7 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
         borderRadius="lg"
         overflow="hidden"
         boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+        maxW="700px"
       >
         <Box
           backgroundImage={post.bgImage || 'images/Desii_bgImage.png'}
@@ -151,13 +157,18 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
               zIndex="1"
             ></Box>
           )}
-          <Box position="absolute" top="12px" left="12px" zIndex="2">
+          <Box
+            position="absolute"
+            top={isBig ? '24px' : '12px'}
+            left={isBig ? '24px' : '12px'}
+            zIndex="2"
+          >
             <Tag
               text={
                 post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'
               }
               bgColor="orange.main"
-              size="sm"
+              size={isBig ? 'lg' : 'sm'}
             />
           </Box>
           <Box
@@ -169,56 +180,66 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
             maxW="90%"
             zIndex="2"
           >
-            <Text fontSize="lg" isBold noOfLines={3}>
+            <Text fontSize={isBig ? '3xl' : 'lg'} isBold noOfLines={3}>
               {post.title}
             </Text>
           </Box>
         </Box>
         <Box
           bgColor="primary.main"
-          p="8px"
+          p={isBig ? '16px' : '8px'}
           display="flex"
           alignItems="center"
           justifyContent="space-between"
         >
-          <Box display="flex" alignItems="center" gap="8px">
+          <Box display="flex" alignItems="center" gap={isBig ? '12px' : '8px'}>
             {userData?.getUser ? (
               <>
-                <UserIcon user={userData.getUser} size="sm" />
+                <UserIcon user={userData.getUser} size={isBig ? 'md' : 'sm'} />
                 <Box>
-                  <Text fontSize="md" isBold>
+                  <Text fontSize={isBig ? '2xl' : 'md'} isBold>
                     {userData.getUser.name}
                   </Text>
-                  <Text fontSize="xs">{displayDate}</Text>
+                  <Text fontSize={isBig ? 'sm' : 'xs'}>{displayDate}</Text>
                 </Box>
               </>
             ) : (
               <>
-                <GuestUserIcon size="sm" />
+                <GuestUserIcon size={isBig ? 'lg' : 'sm'} />
                 <SkeletonText w="40px" noOfLines={2} spacing="2" />
               </>
             )}
           </Box>
-          <Box display="flex" alignItems="center" gap="4px">
-            <Text fontSize="sm" noWrap isBold>
+          <Box display="flex" alignItems="center" gap={isBig ? '8px' : '4px'}>
+            <Text fontSize={isBig ? 'lg' : 'sm'} noWrap isBold>
               {FavoritesData?.GetFavorites
                 ? FavoritesData.GetFavorites.length.toString()
                 : ''}
             </Text>
             {isFavorite ? (
               <IconButton
-                icon={<SolidIcon icon="SOLID_STAR" color="orange.main" />}
+                icon={
+                  <SolidIcon
+                    icon="SOLID_STAR"
+                    color="orange.main"
+                    size={isBig ? 36 : 24}
+                  />
+                }
                 label="solidStar"
                 bgColor="orange.light"
                 isRound
                 onClick={handleDeleteFavorite}
+                size={isBig ? 'lg' : 'md'}
               />
             ) : (
               <IconButton
-                icon={<OutlineIcon icon="OUTLINE_STAR" />}
+                icon={
+                  <OutlineIcon icon="OUTLINE_STAR" size={isBig ? 36 : 24} />
+                }
                 label="outlineStar"
                 isRound
                 onClick={handleCreateFavorite}
+                size={isBig ? 'lg' : 'md'}
               />
             )}
           </Box>
