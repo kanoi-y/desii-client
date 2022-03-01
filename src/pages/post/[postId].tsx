@@ -2,12 +2,11 @@ import { Box } from '@chakra-ui/react'
 import { GetStaticPropsContext, NextPage } from 'next'
 import React from 'react'
 import { PostCard } from '~/components/domains/post/PostCard'
-import { initializeApollo } from '~/lib/apolloClient'
-import { GET_POSTS, GET_POST_BY_ID } from '~/queries'
+import { addApolloState, initializeApollo } from '~/lib/apolloClient'
+import { GET_POST_BY_ID } from '~/queries'
 import {
   GetPostQuery,
   GetPostQueryVariables,
-  GetPostsQuery,
   Post,
 } from '~/types/generated/graphql'
 
@@ -27,18 +26,10 @@ const PostPage: NextPage<Props> = ({ post }) => {
   )
 }
 
-export const getStaticPaths = async () => {
-  const {
-    data: { GetPosts },
-  } = await client.query<GetPostsQuery, GetPostQueryVariables>({
-    query: GET_POSTS,
-  })
-  const ids = GetPosts.map((post) => post.id.toString())
-  const paths = ids.map((id) => ({ params: { id } }))
-
+export async function getStaticPaths() {
   return {
-    paths,
-    fallback: true,
+    paths: [],
+    fallback: 'blocking',
   }
 }
 
@@ -75,12 +66,12 @@ export const getStaticProps = async (
       }
     }
 
-    return {
+    return addApolloState(client, {
       props: {
         post: getPost,
       },
       revalidate: 30,
-    }
+    })
   } catch (err) {
     return {
       redirect: {
