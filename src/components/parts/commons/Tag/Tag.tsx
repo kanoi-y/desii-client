@@ -22,6 +22,7 @@ export const Tag: VFC<Props> = ({
       size={size}
       variant="solid"
       borderRadius="full"
+      boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
       bgColor={bgColor}
     >
       <TagLabel>{text}</TagLabel>
