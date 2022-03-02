@@ -6,12 +6,15 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import 'cross-fetch/polyfill'
+import { AppProps } from 'next/app'
 import { parseCookies } from 'nookies'
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined
 
+const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__'
+
 const httpLink = createHttpLink({
-  uri: '/api/graphql',
+  uri: process.env.NEXT_PUBLIC_BACKEND_URL,
 })
 
 const authLink = setContext((_, { headers }) => {
@@ -41,4 +44,15 @@ export const initializeApollo = (initialState = null) => {
   if (!apolloClient) apolloClient = _apolloClient
 
   return _apolloClient
+}
+
+export const addApolloState = (
+  client: ApolloClient<NormalizedCacheObject>,
+  pageProps: AppProps['pageProps']
+) => {
+  if (pageProps?.props) {
+    pageProps.props[APOLLO_STATE_PROP_NAME] = client.cache.extract()
+  }
+
+  return pageProps
 }

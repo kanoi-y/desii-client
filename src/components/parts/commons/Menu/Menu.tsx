@@ -22,7 +22,7 @@ export const Menu: VFC<Props> = ({ toggleItem, menuList }) => {
   return (
     <ChakraMenu>
       <MenuButton>{toggleItem}</MenuButton>
-      <MenuList>
+      <MenuList zIndex={100}>
         {menuList.map((menuItem, i) => (
           <Box key={i}>
             <MenuItem icon={menuItem.icon} onClick={menuItem.onClick}>

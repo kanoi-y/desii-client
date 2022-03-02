@@ -25,7 +25,7 @@ export const TagPostRelation = objectType({
 export const GetTagPostRelationsQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.nonNull.list.nonNull.field('GetTagPostRelationsQuery', {
+    t.nonNull.list.nonNull.field('GetTagPostRelations', {
       type: 'TagPostRelation',
       args: {
         tagId: stringArg(),

@@ -69,7 +69,7 @@ type Query {
   GetFavorites(createdUserId: String, postId: String): [Favorite!]!
   GetPosts(groupId: String, isPrivate: Boolean, sort: orderByType = asc, userId: String): [Post!]!
   GetTagByName(name: String!): Tag
-  GetTagPostRelationsQuery(postId: String, tagId: String): [TagPostRelation!]!
+  GetTagPostRelations(postId: String, tagId: String): [TagPostRelation!]!
   GetUserGroupRelations(groupId: String, userId: String): [UserGroupRelation!]!
   getCurrentUser(accessToken: String!): User
   getGroup(id: String!): Group

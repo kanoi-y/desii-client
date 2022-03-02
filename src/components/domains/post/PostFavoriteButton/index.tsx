@@ -1,0 +1,1 @@
+export { PostFavoriteButton } from './PostFavoriteButton'

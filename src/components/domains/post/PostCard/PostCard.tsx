@@ -1,28 +1,24 @@
 import { Box, Skeleton, SkeletonText } from '@chakra-ui/react'
 import { formatDistanceToNow } from 'date-fns'
 import { ja } from 'date-fns/locale'
-import { MouseEvent, VFC } from 'react'
+import { useRouter } from 'next/router'
+import { useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import {
   IconButton,
   Link,
   OutlineIcon,
-  SolidIcon,
   Tag,
   Text,
 } from '~/components/parts/commons'
-import { useToast } from '~/hooks'
-import {
-  Post,
-  useCreateFavoriteMutation,
-  useDeleteFavoriteMutation,
-  useGetFavoritesQuery,
-  useGetUserQuery,
-} from '~/types/generated/graphql'
+import { Post, useGetUserQuery } from '~/types/generated/graphql'
+import { PostFavoriteButton } from '../PostFavoriteButton'
 
 type Props = {
   post: Post
   currentUserId?: string
+  isBig?: boolean
+  isLink?: boolean
 }
 
 export const SkeletonPostCard: VFC = () => {
@@ -59,20 +55,13 @@ export const SkeletonPostCard: VFC = () => {
   )
 }
 
-export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
-  const { toast } = useToast()
-  const { data: FavoritesData } = useGetFavoritesQuery({
-    variables: {
-      postId: post.id,
-    },
-  })
-
-  const [createFavoriteMutation] = useCreateFavoriteMutation({
-    refetchQueries: ['GetFavorites'],
-  })
-  const [deleteFavoriteMutation] = useDeleteFavoriteMutation({
-    refetchQueries: ['GetFavorites'],
-  })
+export const PostCard: VFC<Props> = ({
+  post,
+  currentUserId,
+  isBig = false,
+  isLink = false,
+}) => {
+  const router = useRouter()
 
   const { data: userData } = useGetUserQuery({
     variables: {
@@ -85,52 +74,13 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
     locale: ja,
   })
 
-  const isFavorite =
-    !!currentUserId &&
-    FavoritesData?.GetFavorites.some(
-      (favorite) => favorite.createdUserId === currentUserId
-    )
-
-  const handleCreateFavorite = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    if (!currentUserId) {
-      //TODO: ログインページに遷移する
-      toast({ title: 'ログインが必要です!', status: 'warning' })
-      return
-    }
-    try {
-      await createFavoriteMutation({
-        variables: {
-          postId: post.id,
-        },
-      })
-    } catch (err) {
-      toast({ title: 'リアクションの送信に失敗しました', status: 'error' })
-    }
-  }
-
-  const handleDeleteFavorite = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    try {
-      await deleteFavoriteMutation({
-        variables: {
-          postId: post.id,
-        },
-      })
-    } catch (err) {
-      toast({ title: 'リアクションの送信に失敗しました', status: 'error' })
-    }
-  }
-
-  return (
-    <Link href={`/post/${post.id}`}>
+  const PostCardContent = useMemo(() => {
+    return (
       <Box
         borderRadius="lg"
         overflow="hidden"
         boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+        maxW="700px"
       >
         <Box
           backgroundImage={post.bgImage || 'images/Desii_bgImage.png'}
@@ -151,13 +101,19 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
               zIndex="1"
             ></Box>
           )}
-          <Box position="absolute" top="12px" left="12px" zIndex="2">
+          <Box
+            position="absolute"
+            top={isBig ? '24px' : '12px'}
+            left={isBig ? '24px' : '12px'}
+            zIndex="2"
+          >
+            {/* TODO: post.categoryを変換するutilを作成 */}
             <Tag
               text={
                 post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'
               }
               bgColor="orange.main"
-              size="sm"
+              size={isBig ? 'lg' : 'sm'}
             />
           </Box>
           <Box
@@ -169,61 +125,58 @@ export const PostCard: VFC<Props> = ({ post, currentUserId }) => {
             maxW="90%"
             zIndex="2"
           >
-            <Text fontSize="lg" isBold noOfLines={3}>
+            <Text fontSize={isBig ? '3xl' : 'lg'} isBold noOfLines={3}>
               {post.title}
             </Text>
           </Box>
         </Box>
         <Box
           bgColor="primary.main"
-          p="8px"
+          p={isBig ? '16px' : '8px'}
           display="flex"
           alignItems="center"
           justifyContent="space-between"
         >
-          <Box display="flex" alignItems="center" gap="8px">
+          <Box display="flex" alignItems="center" gap={isBig ? '12px' : '8px'}>
             {userData?.getUser ? (
               <>
-                <UserIcon user={userData.getUser} size="sm" />
+                <Box onClick={() => router.push(`/user/${post.createdUserId}`)}>
+                  <UserIcon
+                    user={userData.getUser}
+                    size={isBig ? 'md' : 'sm'}
+                  />
+                </Box>
                 <Box>
-                  <Text fontSize="md" isBold>
-                    {userData.getUser.name}
-                  </Text>
-                  <Text fontSize="xs">{displayDate}</Text>
+                  <Box
+                    onClick={() => router.push(`/user/${post.createdUserId}`)}
+                  >
+                    <Text fontSize={isBig ? '2xl' : 'md'} isBold>
+                      {userData.getUser.name}
+                    </Text>
+                  </Box>
+                  <Text fontSize={isBig ? 'sm' : 'xs'}>{displayDate}</Text>
                 </Box>
               </>
             ) : (
               <>
-                <GuestUserIcon size="sm" />
+                <GuestUserIcon size={isBig ? 'lg' : 'sm'} />
                 <SkeletonText w="40px" noOfLines={2} spacing="2" />
               </>
             )}
           </Box>
-          <Box display="flex" alignItems="center" gap="4px">
-            <Text fontSize="sm" noWrap isBold>
-              {FavoritesData?.GetFavorites
-                ? FavoritesData.GetFavorites.length.toString()
-                : ''}
-            </Text>
-            {isFavorite ? (
-              <IconButton
-                icon={<SolidIcon icon="SOLID_STAR" color="orange.main" />}
-                label="solidStar"
-                bgColor="orange.light"
-                isRound
-                onClick={handleDeleteFavorite}
-              />
-            ) : (
-              <IconButton
-                icon={<OutlineIcon icon="OUTLINE_STAR" />}
-                label="outlineStar"
-                isRound
-                onClick={handleCreateFavorite}
-              />
-            )}
-          </Box>
+          <PostFavoriteButton
+            postId={post.id}
+            currentUserId={currentUserId}
+            isBig={isBig}
+            existCount
+          />
         </Box>
       </Box>
-    </Link>
-  )
+    )
+  }, [displayDate, isBig, post, currentUserId, userData, router])
+
+  if (isLink) {
+    return <Link href={`/post/${post.id}`}>{PostCardContent}</Link>
+  }
+  return PostCardContent
 }
