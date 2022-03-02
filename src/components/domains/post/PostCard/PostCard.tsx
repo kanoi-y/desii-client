@@ -1,6 +1,7 @@
 import { Box, Skeleton, SkeletonText } from '@chakra-ui/react'
 import { formatDistanceToNow } from 'date-fns'
 import { ja } from 'date-fns/locale'
+import { useRouter } from 'next/router'
 import { MouseEvent, useCallback, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import {
@@ -67,6 +68,7 @@ export const PostCard: VFC<Props> = ({
   isBig = false,
   isLink = false,
 }) => {
+  const router = useRouter()
   const { toast } = useToast()
   const { data: FavoritesData } = useGetFavoritesQuery({
     variables: {
@@ -203,11 +205,20 @@ export const PostCard: VFC<Props> = ({
           <Box display="flex" alignItems="center" gap={isBig ? '12px' : '8px'}>
             {userData?.getUser ? (
               <>
-                <UserIcon user={userData.getUser} size={isBig ? 'md' : 'sm'} />
+                <Box onClick={() => router.push(`/user/${post.createdUserId}`)}>
+                  <UserIcon
+                    user={userData.getUser}
+                    size={isBig ? 'md' : 'sm'}
+                  />
+                </Box>
                 <Box>
-                  <Text fontSize={isBig ? '2xl' : 'md'} isBold>
-                    {userData.getUser.name}
-                  </Text>
+                  <Box
+                    onClick={() => router.push(`/user/${post.createdUserId}`)}
+                  >
+                    <Text fontSize={isBig ? '2xl' : 'md'} isBold>
+                      {userData.getUser.name}
+                    </Text>
+                  </Box>
                   <Text fontSize={isBig ? 'sm' : 'xs'}>{displayDate}</Text>
                 </Box>
               </>
@@ -263,6 +274,7 @@ export const PostCard: VFC<Props> = ({
     isFavorite,
     post,
     userData,
+    router,
   ])
 
   if (isLink) {
