@@ -3,6 +3,8 @@ import { GetStaticPropsContext, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useContext } from 'react'
 import { PostCard } from '~/components/domains/post/PostCard'
+import { PostFavoriteButton } from '~/components/domains/post/PostFavoriteButton'
+import { Button, Tag } from '~/components/parts/commons'
 import { BREAKPOINTS } from '~/constants'
 import { useWindowDimensions } from '~/hooks'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
@@ -12,12 +14,13 @@ import {
   GetPostQuery,
   GetPostQueryVariables,
   Post,
+  useGetTagPostRelationsQuery,
 } from '~/types/generated/graphql'
 
 const client = initializeApollo()
 
 type Props = {
-  post: Post
+  post?: Post
 }
 
 const PostPage: NextPage<Props> = ({ post }) => {
@@ -26,11 +29,21 @@ const PostPage: NextPage<Props> = ({ post }) => {
 
   const { width } = useWindowDimensions()
 
-  if (router.isFallback) {
+  const { data } = useGetTagPostRelationsQuery({
+    variables: {
+      postId: post?.id,
+    },
+  })
+
+  const handleClickApplyButton = () => {
+    // TODO: 応募した後の処理を実装する
+    console.log('応募する')
+  }
+
+  if (router.isFallback || !post) {
     // TODO: spinnerに変更する
     return <div>Loading...</div>
   }
-
   return (
     <Box p={['20px 10px', '40px 20px']}>
       <Box mx="auto" maxW="700px">
@@ -39,8 +52,41 @@ const PostPage: NextPage<Props> = ({ post }) => {
           isBig={width > BREAKPOINTS.sm}
           currentUserId={currentUser?.id}
         />
+        <Box mt={['20px', '30px']}>
+          <Tag
+            text={post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'}
+            bgColor="orange.main"
+            size="lg"
+          />
+          <Box
+            mt="12px"
+            display="flex"
+            flexWrap="wrap"
+            gap="8px"
+          >
+            {data?.GetTagPostRelations.map((tagPostRelation) => (
+              <Tag key={tagPostRelation.id} text={tagPostRelation.tag.name} />
+            ))}
+          </Box>
+        </Box>
+        <Box
+          m={['32px 0', '40px 0']}
+          p="24px 16px"
+          bgColor="white.main"
+          borderRadius="md"
+        >
+          <Box fontWeight="bold" fontSize="16px" color="text.main">
+            {post.content}
+          </Box>
+        </Box>
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Button onClick={handleClickApplyButton}>応募する</Button>
+          <PostFavoriteButton
+            postId={post.id}
+            currentUserId={currentUser?.id}
+          />
+        </Box>
       </Box>
-      <Box></Box>
     </Box>
   )
 }
