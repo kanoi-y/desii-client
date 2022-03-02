@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
 export const GET_TAG_POST_RELATIONS = gql`
-  query GetTagPostRelationsQuery($tagId: String, $postId: String) {
-    GetTagPostRelationsQuery(tagId: $tagId, postId: $postId) {
+  query GetTagPostRelations($tagId: String, $postId: String) {
+    GetTagPostRelations(tagId: $tagId, postId: $postId) {
       id
       tagId
       postId

@@ -182,7 +182,7 @@ export type Query = {
   GetFavorites: Array<Favorite>
   GetPosts: Array<Post>
   GetTagByName?: Maybe<Tag>
-  GetTagPostRelationsQuery: Array<TagPostRelation>
+  GetTagPostRelations: Array<TagPostRelation>
   GetUserGroupRelations: Array<UserGroupRelation>
   getCurrentUser?: Maybe<User>
   getGroup?: Maybe<Group>
@@ -206,7 +206,7 @@ export type QueryGetTagByNameArgs = {
   name: Scalars['String']
 }
 
-export type QueryGetTagPostRelationsQueryArgs = {
+export type QueryGetTagPostRelationsArgs = {
   postId?: InputMaybe<Scalars['String']>
   tagId?: InputMaybe<Scalars['String']>
 }
@@ -632,14 +632,14 @@ export type CreateTagMutation = {
   }
 }
 
-export type GetTagPostRelationsQueryQueryVariables = Exact<{
+export type GetTagPostRelationsQueryVariables = Exact<{
   tagId?: InputMaybe<Scalars['String']>
   postId?: InputMaybe<Scalars['String']>
 }>
 
-export type GetTagPostRelationsQueryQuery = {
+export type GetTagPostRelationsQuery = {
   __typename?: 'Query'
-  GetTagPostRelationsQuery: Array<{
+  GetTagPostRelations: Array<{
     __typename?: 'TagPostRelation'
     id: string
     tagId: string
@@ -1911,9 +1911,9 @@ export type CreateTagMutationOptions = Apollo.BaseMutationOptions<
   CreateTagMutation,
   CreateTagMutationVariables
 >
-export const GetTagPostRelationsQueryDocument = gql`
-  query GetTagPostRelationsQuery($tagId: String, $postId: String) {
-    GetTagPostRelationsQuery(tagId: $tagId, postId: $postId) {
+export const GetTagPostRelationsDocument = gql`
+  query GetTagPostRelations($tagId: String, $postId: String) {
+    GetTagPostRelations(tagId: $tagId, postId: $postId) {
       id
       tagId
       postId
@@ -1942,55 +1942,55 @@ export const GetTagPostRelationsQueryDocument = gql`
 `
 
 /**
- * __useGetTagPostRelationsQueryQuery__
+ * __useGetTagPostRelationsQuery__
  *
- * To run a query within a React component, call `useGetTagPostRelationsQueryQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTagPostRelationsQueryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetTagPostRelationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTagPostRelationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetTagPostRelationsQueryQuery({
+ * const { data, loading, error } = useGetTagPostRelationsQuery({
  *   variables: {
  *      tagId: // value for 'tagId'
  *      postId: // value for 'postId'
  *   },
  * });
  */
-export function useGetTagPostRelationsQueryQuery(
+export function useGetTagPostRelationsQuery(
   baseOptions?: Apollo.QueryHookOptions<
-    GetTagPostRelationsQueryQuery,
-    GetTagPostRelationsQueryQueryVariables
+    GetTagPostRelationsQuery,
+    GetTagPostRelationsQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions }
   return Apollo.useQuery<
-    GetTagPostRelationsQueryQuery,
-    GetTagPostRelationsQueryQueryVariables
-  >(GetTagPostRelationsQueryDocument, options)
+    GetTagPostRelationsQuery,
+    GetTagPostRelationsQueryVariables
+  >(GetTagPostRelationsDocument, options)
 }
-export function useGetTagPostRelationsQueryLazyQuery(
+export function useGetTagPostRelationsLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    GetTagPostRelationsQueryQuery,
-    GetTagPostRelationsQueryQueryVariables
+    GetTagPostRelationsQuery,
+    GetTagPostRelationsQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions }
   return Apollo.useLazyQuery<
-    GetTagPostRelationsQueryQuery,
-    GetTagPostRelationsQueryQueryVariables
-  >(GetTagPostRelationsQueryDocument, options)
+    GetTagPostRelationsQuery,
+    GetTagPostRelationsQueryVariables
+  >(GetTagPostRelationsDocument, options)
 }
-export type GetTagPostRelationsQueryQueryHookResult = ReturnType<
-  typeof useGetTagPostRelationsQueryQuery
+export type GetTagPostRelationsQueryHookResult = ReturnType<
+  typeof useGetTagPostRelationsQuery
 >
-export type GetTagPostRelationsQueryLazyQueryHookResult = ReturnType<
-  typeof useGetTagPostRelationsQueryLazyQuery
+export type GetTagPostRelationsLazyQueryHookResult = ReturnType<
+  typeof useGetTagPostRelationsLazyQuery
 >
-export type GetTagPostRelationsQueryQueryResult = Apollo.QueryResult<
-  GetTagPostRelationsQueryQuery,
-  GetTagPostRelationsQueryQueryVariables
+export type GetTagPostRelationsQueryResult = Apollo.QueryResult<
+  GetTagPostRelationsQuery,
+  GetTagPostRelationsQueryVariables
 >
 export const CreateTagPostRelationDocument = gql`
   mutation CreateTagPostRelation($tagId: String!, $postId: String!) {
