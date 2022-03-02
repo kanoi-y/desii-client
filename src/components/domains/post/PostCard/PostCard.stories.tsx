@@ -31,7 +31,7 @@ DefaultPostCard.args = {
 export const BigPostCard = Template.bind({})
 BigPostCard.args = {
   post: postFactory(),
-  isBig: true
+  isBig: true,
 }
 
 export const FavoritePostCard = Template.bind({})
