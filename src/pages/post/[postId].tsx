@@ -31,7 +31,7 @@ const PostPage: NextPage<Props> = ({ post }) => {
 
   const { data } = useGetTagPostRelationsQuery({
     variables: {
-      postId: post?.id,
+      postId: post ? post.id : '',
     },
   })
 
@@ -58,12 +58,7 @@ const PostPage: NextPage<Props> = ({ post }) => {
             bgColor="orange.main"
             size="lg"
           />
-          <Box
-            mt="12px"
-            display="flex"
-            flexWrap="wrap"
-            gap="8px"
-          >
+          <Box mt="12px" display="flex" flexWrap="wrap" gap="8px">
             {data?.GetTagPostRelations.map((tagPostRelation) => (
               <Tag key={tagPostRelation.id} text={tagPostRelation.tag.name} />
             ))}

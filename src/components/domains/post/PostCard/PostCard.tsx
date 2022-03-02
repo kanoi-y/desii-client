@@ -107,6 +107,7 @@ export const PostCard: VFC<Props> = ({
             left={isBig ? '24px' : '12px'}
             zIndex="2"
           >
+            {/* TODO: post.categoryを変換するutilを作成 */}
             <Tag
               text={
                 post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'
