@@ -38,5 +38,5 @@ ExistCountPostFavoriteButton.args = {
 export const BigPostFavoriteButton = Template.bind({})
 BigPostFavoriteButton.args = {
   postId: postFactory().id,
-  isBig: true
+  isBig: true,
 }
