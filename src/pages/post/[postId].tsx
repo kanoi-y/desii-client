@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react'
+import { Box, Spinner } from '@chakra-ui/react'
 import { GetStaticPropsContext, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useContext } from 'react'
@@ -41,8 +41,17 @@ const PostPage: NextPage<Props> = ({ post }) => {
   }
 
   if (router.isFallback || !post) {
-    // TODO: spinnerに変更する
-    return <div>Loading...</div>
+    return (
+      <Box
+        w="100%"
+        h="100vh"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Spinner size="lg" />
+      </Box>
+    )
   }
   return (
     <Box p={['20px 10px', '40px 20px']}>

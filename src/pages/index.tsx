@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react'
+import { Box, Spinner } from '@chakra-ui/react'
 import { signIn, signOut } from 'next-auth/react'
 import React, { useContext } from 'react'
 import { PostCard, SkeletonPostCard } from '~/components/domains/post/PostCard'
@@ -18,7 +18,17 @@ export default function Home() {
   })
 
   if (isLoading) {
-    return <p>loading...</p>
+    return (
+      <Box
+        w="100%"
+        h="100vh"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Spinner size="lg" />
+      </Box>
+    )
   }
 
   return (
