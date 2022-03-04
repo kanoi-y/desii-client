@@ -19,7 +19,7 @@
     "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "dependencies": {
-    "@apollo/client": "3.5.9",
+    "@apollo/client": "3.5.10",
     "@apollo/react-hooks": "4.0.0",
     "@chakra-ui/icons": "1.1.7",
     "@chakra-ui/react": "1.8.5",
