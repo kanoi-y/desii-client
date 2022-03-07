@@ -68,7 +68,7 @@
     "eslint-plugin-storybook": "0.5.7",
     "jest": "27.5.1",
     "msw": "0.38.2",
-    "msw-storybook-addon": "1.6.0",
+    "msw-storybook-addon": "1.6.1",
     "next-auth": "4.2.1",
     "prettier": "2.5.1",
     "prisma": "3.10.0",
