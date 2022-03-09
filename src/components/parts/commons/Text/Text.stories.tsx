@@ -19,6 +19,9 @@ const Template: ComponentStory<typeof Text> = ({ ...args }) => (
     <Text {...args} fontSize="lg">
       sample text
     </Text>
+    <Text {...args} fontSize="xl">
+      sample text
+    </Text>
     <Text {...args} fontSize="2xl">
       sample text
     </Text>
