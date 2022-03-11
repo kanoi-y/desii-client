@@ -2,6 +2,7 @@ import { Box, Input, Textarea } from '@chakra-ui/react'
 import styled from '@emotion/styled'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { Button, Text } from '~/components/parts/commons'
 import { initializeApollo } from '~/lib/apolloClient'
@@ -22,6 +23,7 @@ type Props = {
 }
 
 const NewPostPage: NextPage<Props> = ({ currentUser }) => {
+  const router = useRouter()
   const [newPost, setNewPost] = useState<
     Pick<Post, 'title' | 'content' | 'category' | 'isPrivate'>
   >({
@@ -83,15 +85,20 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
             boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
             borderRadius="8px"
             cursor="pointer"
+            gap="4px"
           >
             <CategoryWrap
               isSelected={newPost.category === PostCategory.GiveYou}
+              onClick={() => updatePost({ category: PostCategory.GiveYou })}
             >
               <Text fontSize="lg" isBold>
                 出来ること
               </Text>
             </CategoryWrap>
-            <CategoryWrap isSelected={newPost.category === PostCategory.GiveMe}>
+            <CategoryWrap
+              isSelected={newPost.category === PostCategory.GiveMe}
+              onClick={() => updatePost({ category: PostCategory.GiveMe })}
+            >
               <Text fontSize="lg" isBold>
                 してほしいこと
               </Text>
@@ -110,7 +117,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
           />
         </Box>
         <Box display="flex" alignItems="center" justifyContent="space-evenly">
-          <Button>キャンセル</Button>
+          <Button onClick={() => router.push('/dashboard')}>キャンセル</Button>
           <Button>作成する</Button>
         </Box>
       </Box>
