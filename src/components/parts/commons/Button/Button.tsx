@@ -9,6 +9,7 @@ type Props = {
   onClick?: () => void
   size?: 'sm' | 'md' | 'lg' | 'xs'
   isLoading?: boolean
+  isFullWidth?: boolean
 }
 
 export const Button: VFC<Props> = ({
@@ -16,6 +17,7 @@ export const Button: VFC<Props> = ({
   disabled = false,
   size = 'md',
   isLoading = false,
+  isFullWidth = false,
   onClick,
   children,
 }) => {
@@ -28,6 +30,7 @@ export const Button: VFC<Props> = ({
       size={size}
       onClick={onClick}
       isLoading={isLoading}
+      isFullWidth={isFullWidth}
     >
       {children}
     </ChakraButton>

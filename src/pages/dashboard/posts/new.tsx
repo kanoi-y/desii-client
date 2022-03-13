@@ -143,11 +143,9 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
               マッチングタグ
             </Text>
           </Box>
-          <Input
-            bgColor="white.main"
-            boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-            onClick={onOpen}
-          />
+          <Button isFullWidth onClick={onOpen}>
+            <Box></Box>
+          </Button>
           <Modal
             title="タグを追加する"
             isOpen={isOpen}
