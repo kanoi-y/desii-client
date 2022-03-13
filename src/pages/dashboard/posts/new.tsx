@@ -4,7 +4,7 @@ import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { FormEvent, useState } from 'react'
-import { Button, Modal, OutlineIcon, Tag, Text } from '~/components/parts/commons'
+import { Button, Modal, SolidIcon, Tag, Text } from '~/components/parts/commons'
 import { useToast } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER } from '~/queries'
@@ -15,6 +15,7 @@ import {
   Post,
   PostCategory,
   useCreateTagMutation,
+  useGetAllTagsQuery,
   User,
 } from '~/types/generated/graphql'
 
@@ -39,6 +40,8 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
     category: PostCategory.GiveYou,
     isPrivate: false,
   })
+
+  const { data } = useGetAllTagsQuery()
 
   const updatePost = (newObject: Partial<Post>) => {
     setNewPost((prevState) => {
@@ -157,40 +160,34 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
                   />
                 </form>
                 <Box overflow="auto" mt="12px">
-                  <Box
-                    borderTop={`1px solid ${theme.colors.secondary.main}`}
-                    borderRadius="4px"
-                    p="8px 0 8px 24px"
-                    cursor="pointer"
-                    _hover={{
-                      bgColor: 'secondary.main',
-                    }}
-                  >
-                    <OutlineIcon icon="OUTLINE_CHECK" />
-                    リンゴ
-                  </Box>
-                  <Box
-                    borderTop={`1px solid ${theme.colors.secondary.main}`}
-                    borderRadius="4px"
-                    p="8px 0 8px 24px"
-                    cursor="pointer"
-                    _hover={{
-                      bgColor: 'secondary.main',
-                    }}
-                  >
-                    バナナ
-                  </Box>
-                  <Box
-                    borderTop={`1px solid ${theme.colors.secondary.main}`}
-                    borderRadius="4px"
-                    p="8px 0 8px 24px"
-                    cursor="pointer"
-                    _hover={{
-                      bgColor: 'secondary.main',
-                    }}
-                  >
-                    メロン
-                  </Box>
+                  {data?.getAllTags &&
+                    data.getAllTags.map((tag) => (
+                      <Box
+                        key={tag.id}
+                        borderTop={`1px solid ${theme.colors.secondary.main}`}
+                        borderRadius="4px"
+                        p="8px 0"
+                        cursor="pointer"
+                        display="flex"
+                        alignItems="center"
+                        gap="4px"
+                        _hover={{
+                          bgColor: 'secondary.main',
+                        }}
+                      >
+                        <Box
+                          pl="4px"
+                          visibility={
+                            postTags.some((pTag) => pTag.name === tag.name)
+                              ? 'visible'
+                              : 'hidden'
+                          }
+                        >
+                          <SolidIcon icon="SOLID_CHECK" />
+                        </Box>
+                        {tag.name}
+                      </Box>
+                    ))}
                 </Box>
               </Box>
             }
