@@ -1,10 +1,10 @@
-import { Box, Input, Textarea } from '@chakra-ui/react'
+import { Box, Input, Textarea, useDisclosure } from '@chakra-ui/react'
 import styled from '@emotion/styled'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { FormEvent, useState } from 'react'
-import { Button, Tag, Text } from '~/components/parts/commons'
+import { Button, Modal, OutlineIcon, Tag, Text } from '~/components/parts/commons'
 import { useToast } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER } from '~/queries'
@@ -27,6 +27,8 @@ type Props = {
 const NewPostPage: NextPage<Props> = ({ currentUser }) => {
   const router = useRouter()
   const { toast } = useToast()
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
   const [value, setValue] = useState('')
   const [postTags, setPostTags] = useState<{ name: string }[]>([])
   const [newPost, setNewPost] = useState<
@@ -52,6 +54,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
 
   const handleAddTag = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (value === '') return
     setPostTags([...postTags, { name: value }])
     setValue('')
   }
@@ -130,14 +133,68 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
               マッチングタグ
             </Text>
           </Box>
-          <form onSubmit={(e) => handleAddTag(e)}>
-            <Input
-              bgColor="white.main"
-              boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-            />
-          </form>
+          <Input
+            bgColor="white.main"
+            boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+            onClick={onOpen}
+          />
+          <Modal
+            title="タグを追加する"
+            isOpen={isOpen}
+            onClose={onClose}
+            body={
+              <Box
+                borderTop={`1px solid ${theme.colors.secondary.main}`}
+                pt="12px"
+                mt="-8px"
+              >
+                <form onSubmit={(e) => handleAddTag(e)}>
+                  <Input
+                    bgColor="secondary.light"
+                    boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                  />
+                </form>
+                <Box overflow="auto" mt="12px">
+                  <Box
+                    borderTop={`1px solid ${theme.colors.secondary.main}`}
+                    borderRadius="4px"
+                    p="8px 0 8px 24px"
+                    cursor="pointer"
+                    _hover={{
+                      bgColor: 'secondary.main',
+                    }}
+                  >
+                    <OutlineIcon icon="OUTLINE_CHECK" />
+                    リンゴ
+                  </Box>
+                  <Box
+                    borderTop={`1px solid ${theme.colors.secondary.main}`}
+                    borderRadius="4px"
+                    p="8px 0 8px 24px"
+                    cursor="pointer"
+                    _hover={{
+                      bgColor: 'secondary.main',
+                    }}
+                  >
+                    バナナ
+                  </Box>
+                  <Box
+                    borderTop={`1px solid ${theme.colors.secondary.main}`}
+                    borderRadius="4px"
+                    p="8px 0 8px 24px"
+                    cursor="pointer"
+                    _hover={{
+                      bgColor: 'secondary.main',
+                    }}
+                  >
+                    メロン
+                  </Box>
+                </Box>
+              </Box>
+            }
+          />
           <Box mt="12px" display="flex" flexWrap="wrap" gap="8px">
             {postTags.map((tag, i) => (
               <Tag
