@@ -4,7 +4,7 @@ import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
-import { Button, Text } from '~/components/parts/commons'
+import { Button, Tag, Text } from '~/components/parts/commons'
 import { useToast } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER } from '~/queries'
@@ -28,6 +28,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
   const router = useRouter()
   const { toast } = useToast()
   const [value, setValue] = useState('')
+  const [postTags, setPostTags] = useState<{ name: string }[]>([])
   const [newPost, setNewPost] = useState<
     Pick<Post, 'title' | 'content' | 'category' | 'isPrivate'>
   >({
@@ -49,17 +50,13 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
   // TODO: refetchQueriesを追加する
   const [createTagMutation] = useCreateTagMutation()
 
-  const handleCreateTag = async () => {
-    try {
-      await createTagMutation({
-        variables: {
-          name: value,
-        },
-      })
-      setValue('')
-    } catch (err) {
-      toast({ title: 'タグの作成に失敗しました', status: 'error' })
-    }
+  const handleAddTag = () => {
+    setPostTags([...postTags, { name: value }])
+    setValue('')
+  }
+
+  const handleDeleteTag = (index: number) => {
+    setPostTags(postTags.filter((tag, i) => i !== index))
   }
 
   return (
@@ -138,7 +135,15 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
             value={value}
             onChange={(e) => setValue(e.target.value)}
           />
-          <Button onClick={handleCreateTag}>作成</Button>
+          <Button onClick={handleAddTag}>作成</Button>
+          {postTags.map((tag, i) => (
+            <Tag
+              text={tag.name}
+              key={i}
+              canDelete
+              onClose={() => handleDeleteTag(i)}
+            />
+          ))}
         </Box>
         <Box display="flex" alignItems="center" justifyContent="space-evenly">
           <Button onClick={() => router.push('/dashboard')}>キャンセル</Button>
