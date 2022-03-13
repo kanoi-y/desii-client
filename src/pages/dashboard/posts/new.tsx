@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, { useState } from 'react'
+import React, { FormEvent, useState } from 'react'
 import { Button, Tag, Text } from '~/components/parts/commons'
 import { useToast } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
@@ -50,7 +50,8 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
   // TODO: refetchQueriesを追加する
   const [createTagMutation] = useCreateTagMutation()
 
-  const handleAddTag = () => {
+  const handleAddTag = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     setPostTags([...postTags, { name: value }])
     setValue('')
   }
@@ -129,21 +130,24 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
               マッチングタグ
             </Text>
           </Box>
-          <Input
-            bgColor="white.main"
-            boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-          />
-          <Button onClick={handleAddTag}>作成</Button>
-          {postTags.map((tag, i) => (
-            <Tag
-              text={tag.name}
-              key={i}
-              canDelete
-              onClose={() => handleDeleteTag(i)}
+          <form onSubmit={(e) => handleAddTag(e)}>
+            <Input
+              bgColor="white.main"
+              boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
             />
-          ))}
+          </form>
+          <Box mt="12px" display="flex" flexWrap="wrap" gap="8px">
+            {postTags.map((tag, i) => (
+              <Tag
+                text={tag.name}
+                key={i}
+                canDelete
+                onClose={() => handleDeleteTag(i)}
+              />
+            ))}
+          </Box>
         </Box>
         <Box display="flex" alignItems="center" justifyContent="space-evenly">
           <Button onClick={() => router.push('/dashboard')}>キャンセル</Button>
