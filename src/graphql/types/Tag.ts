@@ -14,6 +14,18 @@ export const Tag = objectType({
   },
 })
 
+export const GetAllTagsQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.nonNull.list.nonNull.field('getAllTags', {
+      type: 'Tag',
+      resolve(_parent, _args, ctx) {
+        return ctx.prisma.tag.findMany()
+      },
+    })
+  },
+})
+
 export const GetTagByNameQuery = extendType({
   type: 'Query',
   definition(t) {
