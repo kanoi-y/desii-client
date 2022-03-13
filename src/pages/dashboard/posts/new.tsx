@@ -66,6 +66,13 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
     setPostTags(postTags.filter((tag, i) => i !== index))
   }
 
+  const handleClickTagField = (name: string) => {
+    if (postTags.some((tag) => tag.name === name)) {
+      setPostTags(postTags.filter((tag) => tag.name !== name))
+    } else {
+      setPostTags([...postTags, { name }])
+    }
+  }
   return (
     <Box p={['28px 10px 0', '40px 20px 0']}>
       <Box mx="auto" maxW="700px">
@@ -174,6 +181,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
                         _hover={{
                           bgColor: 'secondary.main',
                         }}
+                        onClick={() => handleClickTagField(tag.name)}
                       >
                         <Box
                           pl="4px"
