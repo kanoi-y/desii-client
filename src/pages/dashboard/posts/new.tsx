@@ -1,5 +1,4 @@
 import { Box, Input, Textarea, useDisclosure } from '@chakra-ui/react'
-import styled from '@emotion/styled'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
@@ -17,7 +16,7 @@ import {
   PostCategory,
   useCreateTagMutation,
   useGetAllTagsQuery,
-  User
+  User,
 } from '~/types/generated/graphql'
 
 const client = initializeApollo()
@@ -32,6 +31,12 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
   const router = useRouter()
   const { toast } = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const postCategoryList: { name: string; value: keyof typeof PostCategory }[] =
+    [
+      { name: '出来ること', value: 'GiveYou' },
+      { name: 'してほしいこと', value: 'GiveMe' },
+    ]
 
   const [value, setValue] = useState('')
   const [postTags, setPostTags] = useState<{ name: string }[]>([])
@@ -147,22 +152,37 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
             cursor="pointer"
             gap="4px"
           >
-            <CategoryWrap
-              isSelected={newPost.category === PostCategory.GiveYou}
-              onClick={() => updatePost({ category: PostCategory.GiveYou })}
-            >
-              <Text fontSize="lg" isBold>
-                出来ること
-              </Text>
-            </CategoryWrap>
-            <CategoryWrap
-              isSelected={newPost.category === PostCategory.GiveMe}
-              onClick={() => updatePost({ category: PostCategory.GiveMe })}
-            >
-              <Text fontSize="lg" isBold>
-                してほしいこと
-              </Text>
-            </CategoryWrap>
+            {postCategoryList.map((category, i) => {
+              const isSelected =
+                newPost.category === PostCategory[category.value]
+              return (
+                <Box
+                  key={i}
+                  w="100%"
+                  p="16px"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="16px"
+                  bgColor={isSelected ? 'orange.main' : 'white.main'}
+                  boxShadow={
+                    isSelected ? '0 3px 6px rgba(0, 0, 0, 0.16)' : 'none'
+                  }
+                  cursor={isSelected ? 'auto' : 'pointer'}
+                  onClick={() =>
+                    updatePost({ category: PostCategory[category.value] })
+                  }
+                >
+                  <Text
+                    fontSize="lg"
+                    isBold
+                    color={isSelected ? 'white.main' : 'text.main'}
+                  >
+                    {category.name}
+                  </Text>
+                </Box>
+              )
+            })}
           </Box>
         </Box>
         <Box mb="56px">
@@ -245,26 +265,6 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
     </Box>
   )
 }
-
-const CategoryWrap = styled(Box)<{ isSelected: boolean }>`
-  width: 100%;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 16px;
-  ${({ isSelected }) =>
-    isSelected &&
-    `
-  background-color: ${theme.colors.orange.main};
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  cursor: auto;
-  > p {
-    color: ${theme.colors.white.main}
-  }
-
-  `}
-`
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {
