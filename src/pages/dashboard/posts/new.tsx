@@ -21,6 +21,8 @@ import {
 
 const client = initializeApollo()
 
+const MAX_TAGS = 5
+
 type Props = {
   currentUser: User
 }
@@ -58,6 +60,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
   const handleAddTag = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (value === '') return
+    if (postTags.length >= MAX_TAGS) return
     setPostTags([...postTags, { name: value }])
     setValue('')
   }
@@ -70,6 +73,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
     if (postTags.some((tag) => tag.name === name)) {
       setPostTags(postTags.filter((tag) => tag.name !== name))
     } else {
+      if (postTags.length >= MAX_TAGS) return
       setPostTags([...postTags, { name }])
     }
   }
