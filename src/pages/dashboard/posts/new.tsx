@@ -12,6 +12,7 @@ import { theme } from '~/theme'
 import {
   GetCurrentUserQuery,
   GetCurrentUserQueryVariables,
+  OrderByType,
   Post,
   PostCategory,
   useCreateTagMutation,
@@ -43,7 +44,11 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
     isPrivate: false,
   })
 
-  const { data } = useGetAllTagsQuery()
+  const { data } = useGetAllTagsQuery({
+    variables: {
+      sort: OrderByType.Desc,
+    },
+  })
 
   const updatePost = (newObject: Partial<Post>) => {
     setNewPost((prevState) => {
@@ -54,15 +59,33 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
     })
   }
 
-  // TODO: refetchQueriesを追加する
-  const [createTagMutation] = useCreateTagMutation()
+  const [createTagMutation] = useCreateTagMutation({
+    refetchQueries: ['GetAllTags'],
+  })
 
-  const handleAddTag = (e: FormEvent<HTMLFormElement>) => {
+  const handleAddTag = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (value === '') return
     if (postTags.length >= MAX_TAGS) return
-    setPostTags([...postTags, { name: value }])
-    setValue('')
+    if (!data) return
+
+    if (data.getAllTags.some((tag) => tag.name === value)) {
+      setPostTags([...postTags, { name: value }])
+      setValue('')
+      return
+    }
+
+    try {
+      await createTagMutation({
+        variables: {
+          name: value,
+        },
+      })
+      setPostTags([...postTags, { name: value }])
+      setValue('')
+    } catch (err) {
+      toast({ title: 'タグの作成に失敗しました', status: 'error' })
+    }
   }
 
   const handleDeleteTag = (index: number) => {
@@ -141,7 +164,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
             </CategoryWrap>
           </Box>
         </Box>
-        <Box mb="48px">
+        <Box mb="56px">
           <Box mb="12px">
             <Text fontSize="md" isBold>
               マッチングタグ
@@ -168,7 +191,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
                     onChange={(e) => setValue(e.target.value)}
                   />
                 </form>
-                <Box overflow="auto" mt="12px">
+                <Box mt="12px">
                   {data?.getAllTags &&
                     data.getAllTags.map((tag) => (
                       <Box
