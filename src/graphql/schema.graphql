@@ -71,7 +71,7 @@ type Query {
   GetTagByName(name: String!): Tag
   GetTagPostRelations(postId: String, tagId: String): [TagPostRelation!]!
   GetUserGroupRelations(groupId: String, userId: String): [UserGroupRelation!]!
-  getAllTags: [Tag!]!
+  getAllTags(sort: orderByType = asc): [Tag!]!
   getCurrentUser(accessToken: String!): User
   getGroup(id: String!): Group
   getPost(id: String!): Post

@@ -217,6 +217,10 @@ export type QueryGetUserGroupRelationsArgs = {
   userId?: InputMaybe<Scalars['String']>
 }
 
+export type QueryGetAllTagsArgs = {
+  sort?: InputMaybe<OrderByType>
+}
+
 export type QueryGetCurrentUserArgs = {
   accessToken: Scalars['String']
 }
@@ -603,7 +607,9 @@ export type UpdatePostMutation = {
   }
 }
 
-export type GetAllTagsQueryVariables = Exact<{ [key: string]: never }>
+export type GetAllTagsQueryVariables = Exact<{
+  sort?: InputMaybe<OrderByType>
+}>
 
 export type GetAllTagsQuery = {
   __typename?: 'Query'
@@ -1813,8 +1819,8 @@ export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<
   UpdatePostMutationVariables
 >
 export const GetAllTagsDocument = gql`
-  query GetAllTags {
-    getAllTags {
+  query GetAllTags($sort: orderByType) {
+    getAllTags(sort: $sort) {
       id
       name
       createdAt
@@ -1835,6 +1841,7 @@ export const GetAllTagsDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllTagsQuery({
  *   variables: {
+ *      sort: // value for 'sort'
  *   },
  * });
  */
