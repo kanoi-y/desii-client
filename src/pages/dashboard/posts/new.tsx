@@ -17,7 +17,7 @@ import {
   PostCategory,
   useCreateTagMutation,
   useGetAllTagsQuery,
-  User,
+  User
 } from '~/types/generated/graphql'
 
 const client = initializeApollo()
@@ -47,6 +47,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
   const { data } = useGetAllTagsQuery({
     variables: {
       sort: OrderByType.Desc,
+      searchText: value,
     },
   })
 

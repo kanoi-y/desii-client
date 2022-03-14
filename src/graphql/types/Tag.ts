@@ -25,9 +25,15 @@ export const GetAllTagsQuery = extendType({
           type: OrderByType,
           default: 'asc',
         }),
+        searchText: stringArg(),
       },
       resolve(_parent, args, ctx) {
         return ctx.prisma.tag.findMany({
+          where: {
+            name: {
+              contains: args.searchText || '',
+            },
+          },
           orderBy: {
             createdAt: args.sort || 'asc',
           },

@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
 export const GET_ALL_TAGS = gql`
-  query GetAllTags($sort: orderByType) {
-    getAllTags(sort: $sort) {
+  query GetAllTags($sort: orderByType, $searchText: String) {
+    getAllTags(sort: $sort, searchText: $searchText) {
       id
       name
       createdAt
