@@ -17,6 +17,7 @@ import {
   Tag as TagType,
   useCreatePostMutation,
   useCreateTagMutation,
+  useCreateTagPostRelationMutation,
   useGetAllTagsQuery,
   User,
 } from '~/types/generated/graphql'
@@ -56,6 +57,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
       sort: OrderByType.Desc,
       searchText: value,
     },
+    fetchPolicy: 'cache-and-network',
   })
 
   const updatePost = (newObject: Partial<Post>) => {
@@ -73,12 +75,11 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
 
   const [createPostMutation] = useCreatePostMutation({
     variables: {
-      title: newPost.title,
-      content: newPost.content,
-      category: newPost.category,
-      isPrivate: newPost.isPrivate,
+      ...newPost,
     },
   })
+
+  const [createTagPostRelationMutation] = useCreateTagPostRelationMutation()
 
   const handleAddTag = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -130,10 +131,20 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
     try {
       const { data: postData } = await createPostMutation()
 
-      
+      if (!postData) return
+
+      postTags.forEach((tag) => {
+        // TODO: createManyを実装して置き換える
+        createTagPostRelationMutation({
+          variables: {
+            tagId: tag.id,
+            postId: postData.createPost.id,
+          },
+        })
+      })
 
       toast({ title: '投稿が作成されました！', status: 'success' })
-      router.push(`/post/${postData?.createPost.id}`)
+      router.push(`/post/${postData.createPost.id}`)
     } catch (err) {
       toast({ title: '投稿の作成に失敗しました', status: 'error' })
     }
