@@ -1,4 +1,5 @@
-import { extendType, nonNull, objectType, stringArg } from 'nexus'
+import { arg, extendType, nonNull, objectType, stringArg } from 'nexus'
+import { OrderByType } from './Post'
 
 export const Tag = objectType({
   name: 'Tag',
@@ -10,6 +11,34 @@ export const Tag = objectType({
     })
     t.nonNull.field('updatedAt', {
       type: 'DateTime',
+    })
+  },
+})
+
+export const GetAllTagsQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.nonNull.list.nonNull.field('getAllTags', {
+      type: 'Tag',
+      args: {
+        sort: arg({
+          type: OrderByType,
+          default: 'asc',
+        }),
+        searchText: stringArg(),
+      },
+      resolve(_parent, args, ctx) {
+        return ctx.prisma.tag.findMany({
+          where: {
+            name: {
+              contains: args.searchText || '',
+            },
+          },
+          orderBy: {
+            createdAt: args.sort || 'asc',
+          },
+        })
+      },
     })
   },
 })

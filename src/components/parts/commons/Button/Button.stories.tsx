@@ -72,6 +72,7 @@ export const DefaultButton = Template.bind({})
 DefaultButton.args = {
   disabled: false,
   isLoading: false,
+  isFullWidth: false,
 }
 
 export const DisabledButton = Template.bind({})

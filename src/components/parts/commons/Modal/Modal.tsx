@@ -24,9 +24,14 @@ export const Modal: VFC<Props> = ({
   size = 'md',
 }) => {
   return (
-    <ChakraModal size={size} isOpen={isOpen} onClose={onClose}>
+    <ChakraModal
+      size={size}
+      isOpen={isOpen}
+      onClose={onClose}
+      scrollBehavior="inside"
+    >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent overflow="hidden">
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>{body}</ModalBody>

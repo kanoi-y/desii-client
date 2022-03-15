@@ -3,7 +3,17 @@ import { VFC } from 'react'
 import { ColorVariables } from '~/types/color'
 
 type Props = {
-  fontSize: 'xs' | 'sm' | 'md' | 'lg' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl'
+  fontSize:
+    | 'xs'
+    | 'sm'
+    | 'md'
+    | 'lg'
+    | 'xl'
+    | '2xl'
+    | '3xl'
+    | '4xl'
+    | '5xl'
+    | '6xl'
   isHead?: boolean
   color?: ColorVariables
   noOfLines?: number

@@ -41,6 +41,26 @@ const OutlineStar: VFC = () => (
   />
 )
 
+const OutlineCheck: VFC = () => (
+  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+)
+
+const OutlineLogout: VFC = () => (
+  <path
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+  />
+)
+
+const OutlinePencilAlt: VFC = () => (
+  <path
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+  />
+)
+
 const SolidHeart: VFC = () => (
   <path
     fillRule="evenodd"
@@ -57,16 +77,49 @@ const SolidStar: VFC = () => (
   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
 )
 
+const SolidCheck: VFC = () => (
+  <path
+    fillRule="evenodd"
+    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+    clipRule="evenodd"
+  />
+)
+
+const SolidLogout: VFC = () => (
+  <path
+    fillRule="evenodd"
+    d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+    clipRule="evenodd"
+  />
+)
+
+const SolidPencilAlt: VFC = () => (
+  <>
+    <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+    <path
+      fillRule="evenodd"
+      d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+      clipRule="evenodd"
+    />
+  </>
+)
+
 export const OutlineIconMap = {
   OUTLINE_HEART: <OutlineHeart />,
   OUTLINE_BELL: <OutlineBell />,
   OUTLINE_STAR: <OutlineStar />,
+  OUTLINE_CHECK: <OutlineCheck />,
+  OUTLINE_LOGOUT: <OutlineLogout />,
+  OUTLINE_PENCIL_ALT: <OutlinePencilAlt />,
 }
 
 export const SolidIconMap = {
   SOLID_HEART: <SolidHeart />,
   SOLID_BELL: <SolidBell />,
   SOLID_STAR: <SolidStar />,
+  SOLID_CHECK: <SolidCheck />,
+  SOLID_LOGOUT: <SolidLogout />,
+  SOLID_PENCIL_ALT: <SolidPencilAlt />,
 }
 
 export const OutlineIcon: VFC<OutlineIconProps> = ({

@@ -54,7 +54,7 @@ const PostPage: NextPage<Props> = ({ post }) => {
     )
   }
   return (
-    <Box p={['20px 10px', '40px 20px']}>
+    <Box p={['28px 10px 0', '40px 20px 0']}>
       <Box mx="auto" maxW="700px">
         <PostCard
           post={post}
