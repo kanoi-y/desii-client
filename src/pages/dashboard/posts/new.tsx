@@ -2,7 +2,7 @@ import { Box, Input, Textarea, useDisclosure } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, { FormEvent, useState } from 'react'
+import React, { FormEvent, useCallback, useState } from 'react'
 import { Button, Modal, SolidIcon, Tag, Text } from '~/components/parts/commons'
 import { useToast } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
@@ -76,39 +76,42 @@ const NewPostPage: NextPage = () => {
 
   const [createTagPostRelationMutation] = useCreateTagPostRelationMutation()
 
-  const handleAddTag = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (value === '') return
-    if (postTags.length >= MAX_TAGS) {
-      toast({ title: 'タグは5つまでしか設定できません', status: 'warning' })
-      return
-    }
-    if (!data) return
+  const handleAddTag = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      if (value === '') return
+      if (postTags.length >= MAX_TAGS) {
+        toast({ title: 'タグは5つまでしか設定できません', status: 'warning' })
+        return
+      }
+      if (!data) return
 
-    const tag = data.getAllTags.find((tag) => tag.name === value)
+      const tag = data.getAllTags.find((tag) => tag.name === value)
 
-    if (tag) {
-      setPostTags([...postTags, { name: tag.name, id: tag.id }])
-      setValue('')
-      return
-    }
+      if (tag) {
+        setPostTags([...postTags, { name: tag.name, id: tag.id }])
+        setValue('')
+        return
+      }
 
-    try {
-      const { data: TagData } = await createTagMutation({
-        variables: {
-          name: value,
-        },
-      })
-      if (!TagData) return
-      setPostTags([
-        ...postTags,
-        { name: TagData.createTag.name, id: TagData.createTag.id },
-      ])
-      setValue('')
-    } catch (err) {
-      toast({ title: 'タグの作成に失敗しました', status: 'error' })
-    }
-  }
+      try {
+        const { data: TagData } = await createTagMutation({
+          variables: {
+            name: value,
+          },
+        })
+        if (!TagData) return
+        setPostTags([
+          ...postTags,
+          { name: TagData.createTag.name, id: TagData.createTag.id },
+        ])
+        setValue('')
+      } catch (err) {
+        toast({ title: 'タグの作成に失敗しました', status: 'error' })
+      }
+    },
+    [data, postTags, toast, value, createTagMutation]
+  )
 
   const handleDeleteTag = (index: number) => {
     setPostTags(postTags.filter((tag, i) => i !== index))
@@ -119,16 +122,16 @@ const NewPostPage: NextPage = () => {
 
     if (res) {
       setPostTags(postTags.filter((t) => t.name !== tag.name))
-    } else {
-      if (postTags.length >= MAX_TAGS) {
-        toast({ title: 'タグは5つまでしか設定できません', status: 'warning' })
-        return
-      }
-      setPostTags([...postTags, { name: tag.name, id: tag.id }])
+      return
     }
+    if (postTags.length >= MAX_TAGS) {
+      toast({ title: 'タグは5つまでしか設定できません', status: 'warning' })
+      return
+    }
+    setPostTags([...postTags, { name: tag.name, id: tag.id }])
   }
 
-  const handleCreatePost = async () => {
+  const handleCreatePost = useCallback(async () => {
     try {
       const { data: postData } = await createPostMutation()
 
@@ -149,7 +152,13 @@ const NewPostPage: NextPage = () => {
     } catch (err) {
       toast({ title: '投稿の作成に失敗しました', status: 'error' })
     }
-  }
+  }, [
+    postTags,
+    toast,
+    createPostMutation,
+    createTagPostRelationMutation,
+    router,
+  ])
 
   return (
     <Box p={['28px 10px 0', '40px 20px 0']}>
