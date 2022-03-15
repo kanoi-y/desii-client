@@ -14,6 +14,7 @@ import {
   OrderByType,
   Post,
   PostCategory,
+  Tag as TagType,
   useCreateTagMutation,
   useGetAllTagsQuery,
   User,
@@ -39,7 +40,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
     ]
 
   const [value, setValue] = useState('')
-  const [postTags, setPostTags] = useState<{ name: string }[]>([])
+  const [postTags, setPostTags] = useState<{ name: string; id: string }[]>([])
   const [newPost, setNewPost] = useState<
     Pick<Post, 'title' | 'content' | 'category' | 'isPrivate'>
   >({
@@ -75,19 +76,25 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
     if (postTags.length >= MAX_TAGS) return
     if (!data) return
 
-    if (data.getAllTags.some((tag) => tag.name === value)) {
-      setPostTags([...postTags, { name: value }])
+    const tag = data.getAllTags.find((tag) => tag.name === value)
+
+    if (tag) {
+      setPostTags([...postTags, { name: tag.name, id: tag.id }])
       setValue('')
       return
     }
 
     try {
-      await createTagMutation({
+      const { data: TagData } = await createTagMutation({
         variables: {
           name: value,
         },
       })
-      setPostTags([...postTags, { name: value }])
+      if (!TagData) return
+      setPostTags([
+        ...postTags,
+        { name: TagData.createTag.name, id: TagData.createTag.id },
+      ])
       setValue('')
     } catch (err) {
       toast({ title: 'タグの作成に失敗しました', status: 'error' })
@@ -98,12 +105,14 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
     setPostTags(postTags.filter((tag, i) => i !== index))
   }
 
-  const handleClickTagField = (name: string) => {
-    if (postTags.some((tag) => tag.name === name)) {
-      setPostTags(postTags.filter((tag) => tag.name !== name))
+  const handleClickTagField = (tag: TagType) => {
+    const res = postTags.find((t) => t.name === tag.name)
+
+    if (res) {
+      setPostTags(postTags.filter((t) => t.name !== tag.name))
     } else {
       if (postTags.length >= MAX_TAGS) return
-      setPostTags([...postTags, { name }])
+      setPostTags([...postTags, { name: tag.name, id: tag.id }])
     }
   }
   return (
@@ -227,7 +236,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
                         _hover={{
                           bgColor: 'secondary.main',
                         }}
-                        onClick={() => handleClickTagField(tag.name)}
+                        onClick={() => handleClickTagField(tag)}
                       >
                         <Box
                           pl="4px"
