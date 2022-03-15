@@ -31,7 +31,7 @@ export const Modal: VFC<Props> = ({
       scrollBehavior="inside"
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent overflow="hidden">
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>{body}</ModalBody>
