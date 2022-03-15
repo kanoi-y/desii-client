@@ -2,6 +2,7 @@ import { EditIcon, SettingsIcon, StarIcon } from '@chakra-ui/icons'
 import { Box } from '@chakra-ui/react'
 import { signIn } from 'next-auth/react'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { useContext, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Link, Menu } from '~/components/parts/commons'
@@ -19,6 +20,8 @@ export const Component: VFC<Props> = ({
   isLoading,
   onClickButton,
 }) => {
+  const router = useRouter()
+
   const iconContent = useMemo(() => {
     if (!currentUser && !isLoading)
       return <Button onClick={onClickButton}>ログイン</Button>
@@ -30,9 +33,9 @@ export const Component: VFC<Props> = ({
         toggleItem={<UserIcon user={currentUser} size="sm" />}
         menuList={[
           {
-            text: '投稿の管理',
+            text: '投稿を作成',
             icon: <EditIcon />,
-            onClick: () => console.log('投稿の管理'),
+            onClick: () => router.push('/dashboard/posts/new'),
           },
           {
             text: 'いいねした投稿',
@@ -47,7 +50,7 @@ export const Component: VFC<Props> = ({
         ]}
       />
     )
-  }, [currentUser, isLoading, onClickButton])
+  }, [router, currentUser, isLoading, onClickButton])
 
   return (
     <Box
