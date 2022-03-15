@@ -1,11 +1,10 @@
-import { EditIcon, SettingsIcon, StarIcon } from '@chakra-ui/icons'
 import { Box } from '@chakra-ui/react'
-import { signIn } from 'next-auth/react'
+import { signIn, signOut } from 'next-auth/react'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useContext, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
-import { Button, Link, Menu } from '~/components/parts/commons'
+import { Button, Link, Menu, SolidIcon } from '~/components/parts/commons'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 import { User } from '~/types/generated/graphql'
 
@@ -34,18 +33,13 @@ export const Component: VFC<Props> = ({
         menuList={[
           {
             text: '投稿を作成',
-            icon: <EditIcon />,
+            icon: <SolidIcon icon="SOLID_PENCIL_ALT" size={20} />,
             onClick: () => router.push('/dashboard/posts/new'),
           },
           {
-            text: 'いいねした投稿',
-            icon: <StarIcon />,
-            onClick: () => console.log('いいねした投稿'),
-          },
-          {
-            text: 'アカウント設定',
-            icon: <SettingsIcon />,
-            onClick: () => console.log('アカウント設定'),
+            text: 'ログアウト',
+            icon: <SolidIcon icon="SOLID_LOGOUT" size={20} />,
+            onClick: () => signOut(),
           },
         ]}
       />

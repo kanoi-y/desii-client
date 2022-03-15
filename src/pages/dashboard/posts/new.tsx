@@ -19,18 +19,13 @@ import {
   useCreateTagMutation,
   useCreateTagPostRelationMutation,
   useGetAllTagsQuery,
-  User,
 } from '~/types/generated/graphql'
 
 const client = initializeApollo()
 
 const MAX_TAGS = 5
 
-type Props = {
-  currentUser: User
-}
-
-const NewPostPage: NextPage<Props> = ({ currentUser }) => {
+const NewPostPage: NextPage = () => {
   const router = useRouter()
   const { toast } = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -242,7 +237,9 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
             </Text>
           </Box>
           <Button isFullWidth onClick={onOpen}>
-            <Text fontSize="md" color="text.light">タグを検索、または作成する</Text>
+            <Text fontSize="md" color="text.light">
+              タグを検索、または作成する
+            </Text>
           </Button>
           <Modal
             title="タグを追加する"
@@ -362,9 +359,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     }
 
     return {
-      props: {
-        currentUser: getCurrentUser,
-      },
+      props: {},
     }
   } catch (error) {
     return {

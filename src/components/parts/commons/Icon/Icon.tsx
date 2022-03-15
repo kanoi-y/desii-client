@@ -45,6 +45,22 @@ const OutlineCheck: VFC = () => (
   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
 )
 
+const OutlineLogout: VFC = () => (
+  <path
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+  />
+)
+
+const OutlinePencilAlt: VFC = () => (
+  <path
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+  />
+)
+
 const SolidHeart: VFC = () => (
   <path
     fillRule="evenodd"
@@ -69,11 +85,32 @@ const SolidCheck: VFC = () => (
   />
 )
 
+const SolidLogout: VFC = () => (
+  <path
+    fillRule="evenodd"
+    d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+    clipRule="evenodd"
+  />
+)
+
+const SolidPencilAlt: VFC = () => (
+  <>
+    <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+    <path
+      fillRule="evenodd"
+      d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+      clipRule="evenodd"
+    />
+  </>
+)
+
 export const OutlineIconMap = {
   OUTLINE_HEART: <OutlineHeart />,
   OUTLINE_BELL: <OutlineBell />,
   OUTLINE_STAR: <OutlineStar />,
   OUTLINE_CHECK: <OutlineCheck />,
+  OUTLINE_LOGOUT: <OutlineLogout />,
+  OUTLINE_PENCIL_ALT: <OutlinePencilAlt />,
 }
 
 export const SolidIconMap = {
@@ -81,6 +118,8 @@ export const SolidIconMap = {
   SOLID_BELL: <SolidBell />,
   SOLID_STAR: <SolidStar />,
   SOLID_CHECK: <SolidCheck />,
+  SOLID_LOGOUT: <SolidLogout />,
+  SOLID_PENCIL_ALT: <SolidPencilAlt />,
 }
 
 export const OutlineIcon: VFC<OutlineIconProps> = ({
