@@ -15,6 +15,7 @@ import {
   Post,
   PostCategory,
   Tag as TagType,
+  useCreatePostMutation,
   useCreateTagMutation,
   useGetAllTagsQuery,
   User,
@@ -70,6 +71,15 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
     refetchQueries: ['GetAllTags'],
   })
 
+  const [createPostMutation] = useCreatePostMutation({
+    variables: {
+      title: newPost.title,
+      content: newPost.content,
+      category: newPost.category,
+      isPrivate: newPost.isPrivate,
+    },
+  })
+
   const handleAddTag = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (value === '') return
@@ -115,6 +125,20 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
       setPostTags([...postTags, { name: tag.name, id: tag.id }])
     }
   }
+
+  const handleCreatePost = async () => {
+    try {
+      const { data: postData } = await createPostMutation()
+
+      
+
+      toast({ title: '投稿が作成されました！', status: 'success' })
+      router.push(`/post/${postData?.createPost.id}`)
+    } catch (err) {
+      toast({ title: '投稿の作成に失敗しました', status: 'error' })
+    }
+  }
+
   return (
     <Box p={['28px 10px 0', '40px 20px 0']}>
       <Box mx="auto" maxW="700px">
@@ -268,7 +292,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
         </Box>
         <Box display="flex" alignItems="center" justifyContent="space-evenly">
           <Button onClick={() => router.push('/dashboard')}>キャンセル</Button>
-          <Button>作成する</Button>
+          <Button onClick={handleCreatePost}>作成する</Button>
         </Box>
       </Box>
     </Box>
