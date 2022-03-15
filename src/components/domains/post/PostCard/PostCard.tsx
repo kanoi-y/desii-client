@@ -83,7 +83,12 @@ export const PostCard: VFC<Props> = ({
         maxW="700px"
       >
         <Box
-          backgroundImage={post.bgImage || 'images/Desii_bgImage.png'}
+          backgroundImage={
+            post.bgImage ||
+            `${
+              process.env.NEXT_PUBLIC_ROOT_URL || 'http://localhost:3000'
+            }/images/Desii_bgImage.png`
+          }
           backgroundSize="cover"
           backgroundPosition="center"
           w="100%"
