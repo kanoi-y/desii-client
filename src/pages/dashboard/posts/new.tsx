@@ -84,7 +84,10 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
   const handleAddTag = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (value === '') return
-    if (postTags.length >= MAX_TAGS) return
+    if (postTags.length >= MAX_TAGS) {
+      toast({ title: 'タグは5つまでしか設定できません', status: 'warning' })
+      return
+    }
     if (!data) return
 
     const tag = data.getAllTags.find((tag) => tag.name === value)
@@ -122,7 +125,10 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
     if (res) {
       setPostTags(postTags.filter((t) => t.name !== tag.name))
     } else {
-      if (postTags.length >= MAX_TAGS) return
+      if (postTags.length >= MAX_TAGS) {
+        toast({ title: 'タグは5つまでしか設定できません', status: 'warning' })
+        return
+      }
       setPostTags([...postTags, { name: tag.name, id: tag.id }])
     }
   }
@@ -175,7 +181,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
           <Textarea
             bgColor="white.main"
             boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-            rows={10}
+            rows={12}
             value={newPost.content}
             onChange={(e) => updatePost({ content: e.target.value })}
           />
@@ -236,7 +242,7 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
             </Text>
           </Box>
           <Button isFullWidth onClick={onOpen}>
-            <Box></Box>
+            <Text fontSize="md" color="text.light">タグを検索、または作成する</Text>
           </Button>
           <Modal
             title="タグを追加する"
@@ -248,15 +254,21 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
                 pt="12px"
                 mt="-8px"
               >
+                <Box mb="4px" pl="8px">
+                  <Text fontSize="sm" isBold>
+                    タグは、５つまで選択可能
+                  </Text>
+                </Box>
                 <form onSubmit={(e) => handleAddTag(e)}>
                   <Input
                     bgColor="secondary.light"
                     boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
+                    placeholder="タグを検索、または作成する"
                   />
                 </form>
-                <Box mt="12px">
+                <Box mt="16px">
                   {data?.getAllTags &&
                     data.getAllTags.map((tag) => (
                       <Box
@@ -303,7 +315,15 @@ const NewPostPage: NextPage<Props> = ({ currentUser }) => {
         </Box>
         <Box display="flex" alignItems="center" justifyContent="space-evenly">
           <Button onClick={() => router.push('/dashboard')}>キャンセル</Button>
-          <Button onClick={handleCreatePost}>作成する</Button>
+          <Button
+            onClick={handleCreatePost}
+            disabled={
+              newPost.title.trim().length === 0 ||
+              newPost.content.trim().length === 0
+            }
+          >
+            作成する
+          </Button>
         </Box>
       </Box>
     </Box>
