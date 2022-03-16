@@ -4,6 +4,7 @@ import { NextPage } from 'next'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { ReactNode } from 'react'
+import { Footer } from '~/components/parts/layout/Footer'
 import { NavigationBar } from '~/components/parts/layout/NavigationBar'
 import { CurrentUserProvider } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
@@ -25,6 +26,7 @@ function MyApp({
           <CurrentUserProvider>
             <NavigationBar />
             <Component {...pageProps} />
+            <Footer />
           </CurrentUserProvider>
         </ChakraProvider>
       </ApolloProvider>
