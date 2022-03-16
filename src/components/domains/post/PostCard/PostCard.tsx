@@ -1,6 +1,4 @@
 import { Box, Skeleton, SkeletonText } from '@chakra-ui/react'
-import { formatDistanceToNow } from 'date-fns'
-import { ja } from 'date-fns/locale'
 import { useRouter } from 'next/router'
 import { useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
@@ -12,6 +10,7 @@ import {
   Text,
 } from '~/components/parts/commons'
 import { Post, useGetUserQuery } from '~/types/generated/graphql'
+import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 import { PostFavoriteButton } from '../PostFavoriteButton'
 
 type Props = {
@@ -69,10 +68,7 @@ export const PostCard: VFC<Props> = ({
     },
   })
 
-  const displayDate = formatDistanceToNow(new Date(post.createdAt), {
-    addSuffix: true,
-    locale: ja,
-  })
+  const displayDate = formatDistanceToNow(new Date(post.createdAt))
 
   const PostCardContent = useMemo(() => {
     return (
