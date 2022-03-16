@@ -1,0 +1,1 @@
+export { formatDistanceToNow } from './formatDistanceToNow'
