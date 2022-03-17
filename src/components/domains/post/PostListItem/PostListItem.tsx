@@ -34,39 +34,39 @@ export const PostListItem: VFC<Props> = ({
       display="flex"
       alignItems="flex-end"
       justifyContent="space-between"
+      borderBottom="2px solid"
+      borderColor="secondary.light"
     >
       <Box>
-        <Box mb="4px">
+        <Box display="flex" alignItems="center" gap="8px" mb="4px">
+          {userData?.getUser ? (
+            <>
+              <Box onClick={() => router.push(`/user/${post.createdUserId}`)}>
+                <UserIcon user={userData.getUser} size="xs" />
+              </Box>
+              <Box onClick={() => router.push(`/user/${post.createdUserId}`)}>
+                <Text fontSize="sm" isBold color="primary.main">
+                  {userData.getUser.name}
+                </Text>
+              </Box>
+              <Text fontSize="xs">{displayDate}</Text>
+            </>
+          ) : (
+            <>
+              <GuestUserIcon size="xs" />
+              <SkeletonText w="40px" noOfLines={2} spacing="2" />
+            </>
+          )}
+        </Box>
+        <Text fontSize="md" isBold noOfLines={2}>
+          {post.title}
+        </Text>
+        <Box mt="8px">
           <Tag
             text={post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'}
             bgColor="orange.main"
             size="sm"
           />
-        </Box>
-        <Text fontSize="lg" isBold noOfLines={2}>
-          {post.title}
-        </Text>
-        <Box display="flex" alignItems="center" gap="8px">
-          {userData?.getUser ? (
-            <>
-              <Box onClick={() => router.push(`/user/${post.createdUserId}`)}>
-                <UserIcon user={userData.getUser} size="sm" />
-              </Box>
-              <Box>
-                <Box onClick={() => router.push(`/user/${post.createdUserId}`)}>
-                  <Text fontSize="md" isBold>
-                    {userData.getUser.name}
-                  </Text>
-                </Box>
-                <Text fontSize="xs">{displayDate}</Text>
-              </Box>
-            </>
-          ) : (
-            <>
-              <GuestUserIcon size="sm" />
-              <SkeletonText w="40px" noOfLines={2} spacing="2" />
-            </>
-          )}
         </Box>
       </Box>
       <PostFavoriteButton

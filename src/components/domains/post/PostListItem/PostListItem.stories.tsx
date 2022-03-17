@@ -17,6 +17,8 @@ const Template: ComponentStory<typeof PostListItem> = ({ ...args }) => {
     <ApolloProvider client={client}>
       <Box p="20px">
         <PostListItem {...args} />
+        <PostListItem {...args} />
+        <PostListItem {...args} />
       </Box>
     </ApolloProvider>
   )
@@ -24,5 +26,11 @@ const Template: ComponentStory<typeof PostListItem> = ({ ...args }) => {
 
 export const DefaultPostListItem = Template.bind({})
 DefaultPostListItem.args = {
-  post: postFactory(),
+  post: postFactory({ title: 'プログラミングを教えてほしい！'}),
+}
+
+export const FavoritePostListItem = Template.bind({})
+FavoritePostListItem.args = {
+  post: postFactory({ title: 'プログラミングを教えてほしい！'}),
+  currentUserId: 'userId',
 }
