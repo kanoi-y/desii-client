@@ -32,15 +32,17 @@ export const PostListItem: VFC<Props> = ({
     <Box
       p="12px"
       display="flex"
-      alignItems="center"
+      alignItems="flex-end"
       justifyContent="space-between"
     >
       <Box>
-        <Tag
-          text={post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'}
-          bgColor="orange.main"
-          size="sm"
-        />
+        <Box mb="4px">
+          <Tag
+            text={post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'}
+            bgColor="orange.main"
+            size="sm"
+          />
+        </Box>
         <Text fontSize="lg" isBold noOfLines={2}>
           {post.title}
         </Text>
