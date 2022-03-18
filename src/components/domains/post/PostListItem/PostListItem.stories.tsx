@@ -26,7 +26,8 @@ const Template: ComponentStory<typeof PostListItem> = ({ ...args }) => {
 
 export const DefaultPostListItem = Template.bind({})
 DefaultPostListItem.args = {
-  post: postFactory({ title: 'プログラミングを教えてほしい！'}),
+  post: postFactory({ title: 'プログラミングを教えてほしい！' }),
+  isLink: false,
 }
 
 export const FavoritePostListItem = Template.bind({})
