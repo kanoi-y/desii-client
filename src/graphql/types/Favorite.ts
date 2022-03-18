@@ -22,6 +22,7 @@ export const Favorite = objectType({
   },
 })
 
+// TODO: sortを追加する
 export const GetFavoritesQuery = extendType({
   type: 'Query',
   definition(t) {

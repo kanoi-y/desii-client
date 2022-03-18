@@ -2,11 +2,17 @@ import { Box } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React from 'react'
+import {
+  PostListItem,
+  SkeletonPostListItem,
+} from '~/components/domains/post/PostListItem'
+import { SolidIcon, Text } from '~/components/parts/commons'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER } from '~/queries'
 import {
   GetCurrentUserQuery,
   GetCurrentUserQueryVariables,
+  useGetFavoritesQuery,
   User,
 } from '~/types/generated/graphql'
 
@@ -17,9 +23,41 @@ type Props = {
 }
 
 const FavoritesPage: NextPage<Props> = ({ currentUser }) => {
+  const { data } = useGetFavoritesQuery({
+    variables: {
+      createdUserId: currentUser.id,
+    },
+  })
   return (
-    <Box textAlign="center">
-      <p>{currentUser.name}</p>
+    <Box p={['28px 10px 0', '40px 20px 0']}>
+      <Box
+        display="flex"
+        alignItems="center"
+        gap="4px"
+        pb="16px"
+        mb="16px"
+        borderBottom="2px solid"
+        borderColor="secondary.light"
+      >
+        <SolidIcon icon="SOLID_STAR" color="orange.main" size={36} />
+        <Text fontSize="lg" isBold>
+          いいねした投稿
+        </Text>
+      </Box>
+      <Box w="360px" display="flex" flexDirection="column" gap="16px">
+        {data ? (
+          data.GetFavorites.map((favorites) => (
+            <PostListItem
+              key={favorites.post.id}
+              currentUserId={currentUser.id}
+              post={favorites.post}
+              isLink
+            />
+          ))
+        ) : (
+          <SkeletonPostListItem />
+        )}
+      </Box>
     </Box>
   )
 }
