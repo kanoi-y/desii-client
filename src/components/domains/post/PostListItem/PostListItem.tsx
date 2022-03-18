@@ -1,9 +1,15 @@
-import { Box, SkeletonText } from '@chakra-ui/react'
+import { Box, Skeleton, SkeletonText } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { useMemo, VFC } from 'react'
 import { PostFavoriteButton } from '~/components/domains/post/PostFavoriteButton'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
-import { Link, Tag, Text } from '~/components/parts/commons'
+import {
+  IconButton,
+  Link,
+  OutlineIcon,
+  Tag,
+  Text,
+} from '~/components/parts/commons'
 import { Post, useGetUserQuery } from '~/types/generated/graphql'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 
@@ -11,6 +17,40 @@ type Props = {
   post: Post
   currentUserId?: string
   isLink?: boolean
+}
+
+export const SkeletonPostListItem: VFC = () => {
+  return (
+    <Box
+      p="12px"
+      display="flex"
+      alignItems="flex-end"
+      justifyContent="space-between"
+      borderBottom="2px solid"
+      borderColor="secondary.light"
+    >
+      <Box>
+        <Box display="flex" alignItems="center" gap="8px" mb="4px">
+          <GuestUserIcon size="xs" />
+          <SkeletonText w="40px" noOfLines={1} />
+        </Box>
+        <SkeletonText w="100px" noOfLines={1} />
+        <Skeleton>
+          <Box mt="8px">
+            <Tag text="してほしいこと" bgColor="orange.main" size="sm" />
+          </Box>
+        </Skeleton>
+      </Box>
+      <Box display="flex" alignItems="center" gap="4px">
+        <SkeletonText w="20px" noOfLines={1} />
+        <IconButton
+          icon={<OutlineIcon icon="OUTLINE_STAR" />}
+          label="outlineStar"
+          isRound
+        />
+      </Box>
+    </Box>
+  )
 }
 
 export const PostListItem: VFC<Props> = ({

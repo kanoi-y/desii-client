@@ -4,7 +4,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import React from 'react'
 import { initializeApollo } from '~/lib/apolloClient'
 import { postFactory } from '~/mocks/factories'
-import { PostListItem } from './PostListItem'
+import { PostListItem, SkeletonPostListItem } from './PostListItem'
 
 export default {
   title: 'domains/post/PostListItem',
@@ -32,6 +32,18 @@ DefaultPostListItem.args = {
 
 export const FavoritePostListItem = Template.bind({})
 FavoritePostListItem.args = {
-  post: postFactory({ title: 'プログラミングを教えてほしい！'}),
+  post: postFactory({ title: 'プログラミングを教えてほしい！' }),
   currentUserId: 'userId',
 }
+
+const SkeletonTemplate: ComponentStory<typeof SkeletonPostListItem> = ({
+  ...args
+}) => {
+  return (
+    <Box p="20px">
+      <SkeletonPostListItem {...args} />
+    </Box>
+  )
+}
+
+export const Skeleton = SkeletonTemplate.bind({})
