@@ -36,7 +36,7 @@ export const SkeletonPostListItem: VFC = () => {
         </Box>
         <SkeletonText w="100px" noOfLines={1} />
         <Skeleton>
-          <Box mt="8px">
+          <Box mt="12px">
             <Tag text="してほしいこと" bgColor="orange.main" size="sm" />
           </Box>
         </Skeleton>
@@ -102,7 +102,7 @@ export const PostListItem: VFC<Props> = ({
           <Text fontSize="md" isBold noOfLines={2}>
             {post.title}
           </Text>
-          <Box mt="8px">
+          <Box mt="12px">
             <Tag
               text={
                 post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'
