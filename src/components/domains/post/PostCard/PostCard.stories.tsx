@@ -43,14 +43,10 @@ FavoritePostCard.args = {
 const SkeletonTemplate: ComponentStory<typeof SkeletonPostCard> = ({
   ...args
 }) => {
-  const client = initializeApollo()
-
   return (
-    <ApolloProvider client={client}>
-      <Box p="20px">
-        <SkeletonPostCard {...args} />
-      </Box>
-    </ApolloProvider>
+    <Box p="20px">
+      <SkeletonPostCard {...args} />
+    </Box>
   )
 }
 

@@ -42,7 +42,7 @@ export const SkeletonPostCard: VFC = () => {
           <SkeletonText w="40px" noOfLines={2} spacing="2" />
         </Box>
         <Box display="flex" alignItems="center" gap="4px">
-          <SkeletonText w="10px" noOfLines={1} />
+          <SkeletonText w="20px" noOfLines={1} />
           <IconButton
             icon={<OutlineIcon icon="OUTLINE_STAR" />}
             label="outlineStar"
