@@ -1,8 +1,9 @@
-import { Box, Spinner } from '@chakra-ui/react'
+import { Box, Spinner, Tab, TabList, Tabs } from '@chakra-ui/react'
 import { GetStaticPropsContext, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React from 'react'
 import { UserIcon } from '~/components/domains/user/UserIcon'
+import { Text } from '~/components/parts/commons'
 import { addApolloState, initializeApollo } from '~/lib/apolloClient'
 import { GET_USER_BY_ID } from '~/queries'
 import {
@@ -34,7 +35,21 @@ const UserPage: NextPage<Props> = ({ user }) => {
   }
   return (
     <Box p={['28px 10px 0', '40px 20px 0']}>
-      <UserIcon user={user} size="lg" />
+      <Box w="160px" mx="auto" mb="16px">
+        <UserIcon user={user} size="full" />
+      </Box>
+      <Box textAlign="center" mb="24px">
+        <Text fontSize="3xl" isBold>
+          {user.name}
+        </Text>
+      </Box>
+      <Text fontSize="lg">{user.description || ''}</Text>
+      <Tabs mt="40px" size="lg" align="center" isFitted>
+        <TabList>
+          <Tab>出来ること</Tab>
+          <Tab>してほしいこと</Tab>
+        </TabList>
+      </Tabs>
     </Box>
   )
 }
