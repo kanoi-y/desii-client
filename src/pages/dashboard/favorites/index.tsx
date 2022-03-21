@@ -12,6 +12,7 @@ import { GET_CURRENT_USER } from '~/queries'
 import {
   GetCurrentUserQuery,
   GetCurrentUserQueryVariables,
+  OrderByType,
   useGetFavoritesQuery,
   User,
 } from '~/types/generated/graphql'
@@ -26,6 +27,7 @@ const FavoritesPage: NextPage<Props> = ({ currentUser }) => {
   const { data } = useGetFavoritesQuery({
     variables: {
       createdUserId: currentUser.id,
+      sort: OrderByType.Desc,
     },
   })
   return (
