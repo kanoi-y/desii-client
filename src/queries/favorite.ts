@@ -1,8 +1,12 @@
 import { gql } from '@apollo/client'
 
 export const GET_FAVORITES = gql`
-  query GetFavorites($createdUserId: String, $postId: String) {
-    GetFavorites(createdUserId: $createdUserId, postId: $postId) {
+  query GetFavorites(
+    $createdUserId: String
+    $postId: String
+    $sort: orderByType
+  ) {
+    GetFavorites(createdUserId: $createdUserId, postId: $postId, sort: $sort) {
       id
       createdUserId
       postId
