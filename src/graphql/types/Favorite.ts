@@ -1,5 +1,6 @@
 import { Favorite as FavoriteType } from '@prisma/client'
-import { extendType, nonNull, objectType, stringArg } from 'nexus'
+import { arg, extendType, nonNull, objectType, stringArg } from 'nexus'
+import { OrderByType } from './Post'
 
 export const Favorite = objectType({
   name: 'Favorite',
@@ -30,6 +31,10 @@ export const GetFavoritesQuery = extendType({
       args: {
         createdUserId: stringArg(),
         postId: stringArg(),
+        sort: arg({
+          type: OrderByType,
+          default: 'asc',
+        }),
       },
       resolve(_parent, args, ctx) {
         const query: Partial<FavoriteType> = {}
@@ -38,6 +43,9 @@ export const GetFavoritesQuery = extendType({
 
         return ctx.prisma.favorite.findMany({
           where: query,
+          orderBy: {
+            createdAt: args.sort || 'asc',
+          },
           include: {
             createdUser: true,
             post: true,

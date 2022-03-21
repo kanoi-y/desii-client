@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
+import { gql } from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -205,6 +205,7 @@ export type Query = {
 export type QueryGetFavoritesArgs = {
   createdUserId?: InputMaybe<Scalars['String']>;
   postId?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<OrderByType>;
 };
 
 
@@ -309,6 +310,7 @@ export enum OrderByType {
 export type GetFavoritesQueryVariables = Exact<{
   createdUserId?: InputMaybe<Scalars['String']>;
   postId?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<OrderByType>;
 }>;
 
 
@@ -525,8 +527,8 @@ export type UpdateUserMutationMutation = { __typename?: 'Mutation', updateUser: 
 
 
 export const GetFavoritesDocument = gql`
-    query GetFavorites($createdUserId: String, $postId: String) {
-  GetFavorites(createdUserId: $createdUserId, postId: $postId) {
+    query GetFavorites($createdUserId: String, $postId: String, $sort: orderByType) {
+  GetFavorites(createdUserId: $createdUserId, postId: $postId, sort: $sort) {
     id
     createdUserId
     postId
@@ -572,6 +574,7 @@ export const GetFavoritesDocument = gql`
  *   variables: {
  *      createdUserId: // value for 'createdUserId'
  *      postId: // value for 'postId'
+ *      sort: // value for 'sort'
  *   },
  * });
  */
