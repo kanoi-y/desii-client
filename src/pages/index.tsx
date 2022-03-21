@@ -15,6 +15,7 @@ export default function Home() {
       isPrivate: false,
       sort: OrderByType.Desc,
     },
+    fetchPolicy: 'cache-and-network',
   })
 
   if (isLoading) {
