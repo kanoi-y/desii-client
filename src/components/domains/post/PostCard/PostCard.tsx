@@ -1,6 +1,6 @@
 import { Box, Skeleton, SkeletonText } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import { useMemo, VFC } from 'react'
+import { MouseEvent, useCallback, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import {
   IconButton,
@@ -69,6 +69,15 @@ export const PostCard: VFC<Props> = ({
   })
 
   const displayDate = formatDistanceToNow(new Date(post.createdAt))
+
+  const handleTransitionUserPage = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      e.preventDefault()
+
+      router.push(`/user/${post.createdUserId}`)
+    },
+    [post.createdUserId, router]
+  )
 
   const PostCardContent = useMemo(() => {
     return (
@@ -141,16 +150,14 @@ export const PostCard: VFC<Props> = ({
           <Box display="flex" alignItems="center" gap={isBig ? '12px' : '8px'}>
             {userData?.getUser ? (
               <>
-                <Box onClick={() => router.push(`/user/${post.createdUserId}`)}>
+                <Box onClick={handleTransitionUserPage}>
                   <UserIcon
                     user={userData.getUser}
                     size={isBig ? 'md' : 'sm'}
                   />
                 </Box>
                 <Box>
-                  <Box
-                    onClick={() => router.push(`/user/${post.createdUserId}`)}
-                  >
+                  <Box onClick={handleTransitionUserPage}>
                     <Text fontSize={isBig ? '2xl' : 'md'} isBold>
                       {userData.getUser.name}
                     </Text>
@@ -174,7 +181,14 @@ export const PostCard: VFC<Props> = ({
         </Box>
       </Box>
     )
-  }, [displayDate, isBig, post, currentUserId, userData, router])
+  }, [
+    displayDate,
+    isBig,
+    post,
+    currentUserId,
+    userData,
+    handleTransitionUserPage,
+  ])
 
   if (isLink) {
     return <Link href={`/post/${post.id}`}>{PostCardContent}</Link>
