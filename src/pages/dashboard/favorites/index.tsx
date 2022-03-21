@@ -30,33 +30,35 @@ const FavoritesPage: NextPage<Props> = ({ currentUser }) => {
   })
   return (
     <Box p={['28px 10px 0', '40px 20px 0']}>
-      <Box
-        display="flex"
-        alignItems="center"
-        gap="4px"
-        pb="16px"
-        mb="16px"
-        borderBottom="2px solid"
-        borderColor="secondary.light"
-      >
-        <SolidIcon icon="SOLID_STAR" color="orange.main" size={36} />
-        <Text fontSize="lg" isBold>
-          いいねした投稿
-        </Text>
-      </Box>
-      <Box w="360px" display="flex" flexDirection="column" gap="16px">
-        {data ? (
-          data.GetFavorites.map((favorites) => (
-            <PostListItem
-              key={favorites.post.id}
-              currentUserId={currentUser.id}
-              post={favorites.post}
-              isLink
-            />
-          ))
-        ) : (
-          <SkeletonPostListItem />
-        )}
+      <Box mx="auto" maxW="700px">
+        <Box
+          display="flex"
+          alignItems="center"
+          gap="4px"
+          pb="16px"
+          mb="16px"
+          borderBottom="2px solid"
+          borderColor="secondary.light"
+        >
+          <SolidIcon icon="SOLID_STAR" color="orange.main" size={36} />
+          <Text fontSize="lg" isBold>
+            いいねした投稿
+          </Text>
+        </Box>
+        <Box w="100%" display="flex" flexDirection="column" gap="16px">
+          {data ? (
+            data.GetFavorites.map((favorites) => (
+              <PostListItem
+                key={favorites.post.id}
+                currentUserId={currentUser.id}
+                post={favorites.post}
+                isLink
+              />
+            ))
+          ) : (
+            <SkeletonPostListItem />
+          )}
+        </Box>
       </Box>
     </Box>
   )
