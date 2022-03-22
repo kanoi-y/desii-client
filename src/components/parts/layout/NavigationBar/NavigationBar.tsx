@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react'
-import { signIn, signOut } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useContext, useMemo, VFC } from 'react'
@@ -77,12 +77,13 @@ export const Component: VFC<Props> = ({
 
 export const NavigationBar: VFC = () => {
   const { currentUser, isLoading } = useContext(CurrentUserContext)
+  const router = useRouter()
 
   return (
     <Component
       currentUser={currentUser}
       isLoading={isLoading}
-      onClickButton={() => signIn('google')}
+      onClickButton={() => router.push('/login')}
     />
   )
 }
