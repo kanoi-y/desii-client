@@ -12,7 +12,7 @@ import { useRouter } from 'next/router'
 import React, { useContext } from 'react'
 import { PostCard, SkeletonPostCard } from '~/components/domains/post/PostCard'
 import { UserIcon } from '~/components/domains/user/UserIcon'
-import { Text } from '~/components/parts/commons'
+import { Button, Link, Text } from '~/components/parts/commons'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 import { addApolloState, initializeApollo } from '~/lib/apolloClient'
 import { GET_USER_BY_ID } from '~/queries'
@@ -56,18 +56,27 @@ const UserPage: NextPage<Props> = ({ user }) => {
     )
   }
   return (
-    <Box p={['28px 10px 0', '40px 20px 0']}>
-      <Box w="160px" mx="auto" mb="16px">
-        <UserIcon user={user} size="full" />
-      </Box>
-      <Box textAlign="center" mb="24px">
-        <Text fontSize="3xl" isBold>
-          {user.name}
-        </Text>
-      </Box>
-      <Text fontSize="lg">{user.description || ''}</Text>
-      <Box mt="40px" maxW="780px" mx="auto">
-        <Tabs size="lg" align="center" colorScheme="green" isFitted>
+    <Box p={['28px 10px 0', '40px 20px 0']} position="relative">
+      <Box maxW="780px" mx="auto">
+        {user.id === currentUser?.id && (
+          <Box position="absolute">
+            <Link href="/dashboard">
+              <Button>編集</Button>
+            </Link>
+          </Box>
+        )}
+        <Box w="160px" mx="auto" mb="16px">
+          <UserIcon user={user} size="full" />
+        </Box>
+        <Box textAlign="center" mb="24px">
+          <Text fontSize="3xl" isBold>
+            {user.name}
+          </Text>
+        </Box>
+        <Box mx="auto" w="fit-content">
+          <Text fontSize="lg">{user.description || ''}</Text>
+        </Box>
+        <Tabs mt="40px" size="lg" align="center" colorScheme="green" isFitted>
           <TabList mb="40px">
             <Tab>
               <Text fontSize="lg" isBold>
