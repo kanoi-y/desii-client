@@ -29,8 +29,12 @@ export const Component: VFC<Props> = ({
           Googleでログイン
         </Box>
       </Button>
-      <Box mt="16px">
-        <Link href="/term">利用規約</Link>
+      <Box mt="20px" display="flex" alignItems="center">
+        <Link href="/term">
+          <Text fontSize="sm" isBold color="orange.main">
+            利用規約
+          </Text>
+        </Link>
         <Text fontSize="sm">に同意したうえでログインしてください</Text>
       </Box>
     </Box>
