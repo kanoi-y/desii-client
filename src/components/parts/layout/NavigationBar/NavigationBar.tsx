@@ -1,10 +1,11 @@
 import { Box } from '@chakra-ui/react'
-import { signIn, signOut } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useContext, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Link, Menu, SolidIcon } from '~/components/parts/commons'
+import { LoginModalSetIsOpenContext } from '~/hooks'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 import { User } from '~/types/generated/graphql'
 
@@ -77,12 +78,13 @@ export const Component: VFC<Props> = ({
 
 export const NavigationBar: VFC = () => {
   const { currentUser, isLoading } = useContext(CurrentUserContext)
+  const setIsOpen = useContext(LoginModalSetIsOpenContext)
 
   return (
     <Component
       currentUser={currentUser}
       isLoading={isLoading}
-      onClickButton={() => signIn('google')}
+      onClickButton={() => setIsOpen(true)}
     />
   )
 }
