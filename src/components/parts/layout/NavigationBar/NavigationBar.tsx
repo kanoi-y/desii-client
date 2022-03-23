@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import { useContext, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Link, Menu, SolidIcon } from '~/components/parts/commons'
+import { LoginModalSetIsOpenContext } from '~/hooks'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 import { User } from '~/types/generated/graphql'
 
@@ -77,13 +78,14 @@ export const Component: VFC<Props> = ({
 
 export const NavigationBar: VFC = () => {
   const { currentUser, isLoading } = useContext(CurrentUserContext)
+  const setIsOpen = useContext(LoginModalSetIsOpenContext)
   const router = useRouter()
 
   return (
     <Component
       currentUser={currentUser}
       isLoading={isLoading}
-      onClickButton={() => router.push('/login')}
+      onClickButton={() => setIsOpen(true)}
     />
   )
 }

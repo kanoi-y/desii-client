@@ -6,7 +6,7 @@ import { SessionProvider } from 'next-auth/react'
 import { ReactNode } from 'react'
 import { Footer } from '~/components/parts/layout/Footer'
 import { NavigationBar } from '~/components/parts/layout/NavigationBar'
-import { CurrentUserProvider } from '~/hooks'
+import { CurrentUserProvider, LoginModalProvider } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
 import { theme } from '~/theme'
 
@@ -24,9 +24,11 @@ function MyApp({
       <ApolloProvider client={client}>
         <ChakraProvider theme={theme}>
           <CurrentUserProvider>
-            <NavigationBar />
-            <Component {...pageProps} />
-            <Footer />
+            <LoginModalProvider>
+              <NavigationBar />
+              <Component {...pageProps} />
+              <Footer />
+            </LoginModalProvider>
           </CurrentUserProvider>
         </ChakraProvider>
       </ApolloProvider>
