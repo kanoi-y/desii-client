@@ -1,1 +1,1 @@
-export { LoginModal } from './LoginModal'
+export { Component, LoginModal } from './LoginModal'
