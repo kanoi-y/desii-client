@@ -18,10 +18,6 @@ export const LoginModalProvider: FC<{ children: ReactNode }> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false)
 
-  const handleIsOpen = (value: boolean) => {
-    setIsOpen(value)
-  }
-
   return (
     <LoginModalSetIsOpenContext.Provider value={setIsOpen}>
       <LoginModalIsOpenContext.Provider value={isOpen}>

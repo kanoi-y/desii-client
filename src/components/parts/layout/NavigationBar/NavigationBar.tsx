@@ -79,7 +79,6 @@ export const Component: VFC<Props> = ({
 export const NavigationBar: VFC = () => {
   const { currentUser, isLoading } = useContext(CurrentUserContext)
   const setIsOpen = useContext(LoginModalSetIsOpenContext)
-  const router = useRouter()
 
   return (
     <Component
