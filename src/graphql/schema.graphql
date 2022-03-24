@@ -2,6 +2,16 @@
 ### Do not make changes to this file directly
 
 
+type Attachment {
+  createdAt: DateTime!
+  createdUserId: String!
+  filePath: String!
+  id: String!
+  name: String!
+  size: Int!
+  updatedAt: DateTime!
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -32,6 +42,7 @@ type Mutation {
   DeleteFavorite(postId: String!): Favorite!
   DeleteTagPostRelation(postId: String!, tagId: String!): TagPostRelation!
   DeleteUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
+  createAttachment(file: Upload!): Attachment!
   createFavorite(postId: String!): Favorite!
   createGroup(description: String, image: String!, name: String!, productId: String!): Group!
   createPost(bgImage: String, category: PostCategory!, content: String!, groupId: String, isPrivate: Boolean!, title: String!): Post!
@@ -66,6 +77,7 @@ enum PostCategory {
 }
 
 type Query {
+  GetAttachmentById(id: String!): Attachment
   GetFavorites(createdUserId: String, postId: String, sort: orderByType = asc): [Favorite!]!
   GetPosts(groupId: String, isPrivate: Boolean, sort: orderByType = asc, userId: String): [Post!]!
   GetTagByName(name: String!): Tag
@@ -94,6 +106,9 @@ type TagPostRelation {
   tagId: String!
   updatedAt: DateTime!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 type User {
   accessToken: String
