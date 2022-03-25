@@ -399,8 +399,23 @@ const NewPostPage: NextPage = () => {
             </Text>
           </Box>
           {newPost.bgImage ? (
-            <Box>
-              <Image src={newPost.bgImage} alt="" />
+            <Box position="relative">
+              <Box position="absolute" top="4px" left="4px">
+                <IconButton
+                  icon={<SolidIcon icon="SOLID_X" size={16} />}
+                  size="xs"
+                  label="x"
+                  isRound
+                  onClick={() => updatePost({ bgImage: undefined })}
+                />
+              </Box>
+              <Image
+                src={newPost.bgImage}
+                alt="投稿の背景画像"
+                objectFit="cover"
+                w="300px"
+                h="158px"
+              />
             </Box>
           ) : (
             <IconButton
