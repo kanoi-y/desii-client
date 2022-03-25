@@ -69,6 +69,10 @@ const OutlinePhotograph: VFC = () => (
   />
 )
 
+const OutlineX: VFC = () => (
+  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+)
+
 const SolidHeart: VFC = () => (
   <path
     fillRule="evenodd"
@@ -120,6 +124,14 @@ const SolidPhotograph: VFC = () => (
   />
 )
 
+const SolidX: VFC = () => (
+  <path
+    fillRule="evenodd"
+    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+    clipRule="evenodd"
+  />
+)
+
 export const OutlineIconMap = {
   OUTLINE_HEART: <OutlineHeart />,
   OUTLINE_BELL: <OutlineBell />,
@@ -128,6 +140,7 @@ export const OutlineIconMap = {
   OUTLINE_LOGOUT: <OutlineLogout />,
   OUTLINE_PENCIL_ALT: <OutlinePencilAlt />,
   OUTLINE_PHOTOGRAPH: <OutlinePhotograph />,
+  OUTLINE_X: <OutlineX />,
 }
 
 export const SolidIconMap = {
@@ -138,6 +151,7 @@ export const SolidIconMap = {
   SOLID_LOGOUT: <SolidLogout />,
   SOLID_PENCIL_ALT: <SolidPencilAlt />,
   SOLID_PHOTOGRAPH: <SolidPhotograph />,
+  SOLID_X: <SolidX />,
 }
 
 export const OutlineIcon: VFC<OutlineIconProps> = ({
