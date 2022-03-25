@@ -41,7 +41,7 @@ type Mutation {
   DeleteFavorite(postId: String!): Favorite!
   DeleteTagPostRelation(postId: String!, tagId: String!): TagPostRelation!
   DeleteUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
-  createAttachment(file: Upload!): Attachment!
+  createAttachment(fileName: String!): Attachment!
   createFavorite(postId: String!): Favorite!
   createGroup(description: String, image: String!, name: String!, productId: String!): Group!
   createPost(bgImage: String, category: PostCategory!, content: String!, groupId: String, isPrivate: Boolean!, title: String!): Post!

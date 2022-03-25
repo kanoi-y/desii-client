@@ -1,6 +1,4 @@
 import { Storage } from '@google-cloud/storage'
-import { UserInputError } from 'apollo-server-micro'
-import cuid from 'cuid'
 import { FileUpload } from 'graphql-upload'
 import { extendType, nonNull, objectType, stringArg } from 'nexus'
 
@@ -92,45 +90,21 @@ export const CreateAttachmentMutation = extendType({
     t.nonNull.field('createAttachment', {
       type: 'Attachment',
       args: {
-        file: nonNull('Upload'),
+        fileName: nonNull(stringArg()),
       },
       async resolve(_parent, args, ctx) {
         if (!ctx.user) {
           throw new Error('ログインユーザーが存在しません')
         }
 
-        const { filename, createReadStream } = await args.file
-        if (!filename) {
-          throw new Error('filenameが存在しません')
-        }
-        // first check file size before proceeding
-        try {
-          const oneGb: number = 1000000000
-          await checkFileSize(createReadStream, oneGb)
-        } catch (error) {
-          if (typeof error === 'number') {
-            throw new UserInputError('Maximum file size is 1GB')
-          }
-        }
-
-        const uniqueId = cuid()
-        const uniqueFilename = `${uniqueId}/${filename}`
-
-        try {
-          await uploadToGoogleCloud(createReadStream, uniqueFilename)
-
-          const filePath = `https://storage.googleapis.com/${process.env.GCP_BUCKET_ID}/${uniqueFilename}`
-          return ctx.prisma.attachment.create({
-            data: {
-              id: uniqueId,
-              name: filename,
-              filePath,
-              createdUserId: ctx.user.id,
-            },
-          })
-        } catch (err) {
-          throw new UserInputError('画像のアップロードに失敗しました')
-        }
+        const filePath = `https://storage.googleapis.com/${process.env.GCP_BUCKET_ID}/${uniqueFilename}`
+        return ctx.prisma.attachment.create({
+          data: {
+            name: args.fileName,
+            filePath,
+            createdUserId: ctx.user.id,
+          },
+        })
       },
     })
   },

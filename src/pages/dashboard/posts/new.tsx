@@ -1,5 +1,14 @@
-import { Box, Input, Spinner, Textarea, useDisclosure } from '@chakra-ui/react'
+import {
+  Box,
+  Image,
+  Input,
+  Spinner,
+  Textarea,
+  useDisclosure,
+} from '@chakra-ui/react'
 import styled from '@emotion/styled'
+import axios from 'axios'
+import cuid from 'cuid'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
@@ -23,6 +32,7 @@ import {
   Post,
   PostCategory,
   Tag as TagType,
+  useCreateAttachmentMutation,
   useCreatePostMutation,
   useCreateTagMutation,
   useCreateTagPostRelationMutation,
@@ -85,6 +95,8 @@ const NewPostPage: NextPage = () => {
   })
 
   const [createTagPostRelationMutation] = useCreateTagPostRelationMutation()
+
+  const [createAttachmentMutation] = useCreateAttachmentMutation()
 
   const handleAddTag = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
@@ -172,8 +184,29 @@ const NewPostPage: NextPage = () => {
 
   const uploadFIle = useCallback(
     async (file: File) => {
+      setIsUploading(true)
       try {
+        const uniqueFileName = `${cuid()}/${file.name}`;
+        const res = await axios.post(
+          `${
+            process.env.NEXT_PUBLIC_ROOT_URL || 'http://localhost:3000'
+          }/api/signedUrl?fileName=${uniqueFileName}`
+        )
+        const signed_url = res.data[0]
+
+        if (typeof signed_url !== 'string') return
+        await axios.put(signed_url, file, {
+          headers: {
+            'Content-Type': 'application/octet-stream',
+          },
+        })
+        updatePost({
+          bgImage: `https://storage.googleapis.com/${
+            process.env.GCP_BUCKET_ID || 'desii-dev'
+          }/${uniqueFileName}`,
+        })
       } catch (error) {
+        console.log(error)
         toast({ title: '画像のアップロードに失敗しました！', status: 'error' })
       } finally {
         setIsUploading(false)
@@ -356,25 +389,31 @@ const NewPostPage: NextPage = () => {
               背景画像
             </Text>
           </Box>
-          <IconButton
-            icon={
-              <StyledLabel htmlFor="image">
-                <SolidIcon icon="SOLID_PHOTOGRAPH" />
-                <Box display="none">
-                  <input
-                    type="file"
-                    name="image"
-                    id="image"
-                    onChange={handleUploadFile}
-                    accept="image/*"
-                  />
-                </Box>
-                {isUploading && <Spinner />}
-              </StyledLabel>
-            }
-            label="PHOTOGRAPH"
-            isRound
-          />
+          {newPost.bgImage ? (
+            <Box>
+              <Image src={newPost.bgImage} alt="" />
+            </Box>
+          ) : (
+            <IconButton
+              icon={
+                <StyledLabel htmlFor="image">
+                  <SolidIcon icon="SOLID_PHOTOGRAPH" />
+                  <Box display="none">
+                    <input
+                      type="file"
+                      name="image"
+                      id="image"
+                      onChange={handleUploadFile}
+                      accept="image/*"
+                    />
+                  </Box>
+                  {isUploading && <Spinner />}
+                </StyledLabel>
+              }
+              label="PHOTOGRAPH"
+              isRound
+            />
+          )}
         </Box>
         <Box display="flex" alignItems="center" justifyContent="space-evenly">
           <Button onClick={() => router.push('/dashboard')}>キャンセル</Button>
