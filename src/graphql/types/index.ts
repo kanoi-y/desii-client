@@ -1,4 +1,3 @@
-export * from './Attachment'
 export * from './DateTime'
 export * from './Favorite'
 export * from './Group'

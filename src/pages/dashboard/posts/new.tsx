@@ -32,7 +32,6 @@ import {
   Post,
   PostCategory,
   Tag as TagType,
-  useCreateAttachmentMutation,
   useCreatePostMutation,
   useCreateTagMutation,
   useCreateTagPostRelationMutation,
@@ -96,8 +95,6 @@ const NewPostPage: NextPage = () => {
   })
 
   const [createTagPostRelationMutation] = useCreateTagPostRelationMutation()
-
-  const [createAttachmentMutation] = useCreateAttachmentMutation()
 
   const handleAddTag = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
