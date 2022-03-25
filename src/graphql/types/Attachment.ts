@@ -5,7 +5,6 @@ export const Attachment = objectType({
   definition(t) {
     t.nonNull.string('id')
     t.nonNull.string('name')
-    t.nonNull.int('size')
     t.nonNull.string('filePath')
     t.nonNull.string('createdUserId')
     t.nonNull.field('createdAt', {
