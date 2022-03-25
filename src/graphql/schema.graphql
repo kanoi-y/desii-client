@@ -8,7 +8,6 @@ type Attachment {
   filePath: String!
   id: String!
   name: String!
-  size: Int!
   updatedAt: DateTime!
 }
 
