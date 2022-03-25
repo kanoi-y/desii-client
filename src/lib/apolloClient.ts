@@ -1,10 +1,10 @@
 import {
   ApolloClient,
-  createHttpLink,
   InMemoryCache,
   NormalizedCacheObject,
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
+import { createUploadLink } from 'apollo-upload-client'
 import 'cross-fetch/polyfill'
 import { AppProps } from 'next/app'
 import { parseCookies } from 'nookies'
@@ -13,7 +13,7 @@ let apolloClient: ApolloClient<NormalizedCacheObject> | undefined
 
 const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__'
 
-const httpLink = createHttpLink({
+const httpLink = createUploadLink({
   uri: process.env.NEXT_PUBLIC_BACKEND_URL,
 })
 
