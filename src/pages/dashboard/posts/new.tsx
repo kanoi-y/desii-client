@@ -42,6 +42,7 @@ import {
 const client = initializeApollo()
 
 const MAX_TAGS = 5
+const ONE_MB = 10000000
 
 const NewPostPage: NextPage = () => {
   const router = useRouter()
@@ -185,8 +186,18 @@ const NewPostPage: NextPage = () => {
   const uploadFIle = useCallback(
     async (file: File) => {
       setIsUploading(true)
+
+      if (file.size > ONE_MB) {
+        setIsUploading(false)
+        toast({
+          title: '10MBを超えるファイルをアップロードすることは出来ません',
+          status: 'error',
+        })
+        return
+      }
+
       try {
-        const uniqueFileName = `${cuid()}/${file.name}`;
+        const uniqueFileName = `${cuid()}/${file.name}`
         const res = await axios.post(
           `${
             process.env.NEXT_PUBLIC_ROOT_URL || 'http://localhost:3000'
@@ -194,7 +205,6 @@ const NewPostPage: NextPage = () => {
         )
         const signed_url = res.data[0]
 
-        if (typeof signed_url !== 'string') return
         await axios.put(signed_url, file, {
           headers: {
             'Content-Type': 'application/octet-stream',
@@ -206,7 +216,6 @@ const NewPostPage: NextPage = () => {
           }/${uniqueFileName}`,
         })
       } catch (error) {
-        console.log(error)
         toast({ title: '画像のアップロードに失敗しました！', status: 'error' })
       } finally {
         setIsUploading(false)
