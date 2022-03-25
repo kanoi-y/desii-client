@@ -15,6 +15,18 @@ export type Scalars = {
   Float: number;
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   DateTime: Date;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: File;
+};
+
+export type Attachment = {
+  __typename?: 'Attachment';
+  createdAt: Scalars['DateTime'];
+  createdUserId: Scalars['String'];
+  filePath: Scalars['String'];
+  id: Scalars['String'];
+  name: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
 };
 
 export type Favorite = {
@@ -45,6 +57,7 @@ export type Mutation = {
   DeleteFavorite: Favorite;
   DeleteTagPostRelation: TagPostRelation;
   DeleteUserGroupRelation: UserGroupRelation;
+  createAttachment: Attachment;
   createFavorite: Favorite;
   createGroup: Group;
   createPost: Post;
@@ -75,6 +88,11 @@ export type MutationDeleteTagPostRelationArgs = {
 export type MutationDeleteUserGroupRelationArgs = {
   groupId: Scalars['String'];
   userId: Scalars['String'];
+};
+
+
+export type MutationCreateAttachmentArgs = {
+  file: Scalars['Upload'];
 };
 
 
@@ -189,6 +207,7 @@ export enum PostCategory {
 
 export type Query = {
   __typename?: 'Query';
+  GetAttachmentById?: Maybe<Attachment>;
   GetFavorites: Array<Favorite>;
   GetPosts: Array<Post>;
   GetTagByName?: Maybe<Tag>;
@@ -199,6 +218,11 @@ export type Query = {
   getGroup?: Maybe<Group>;
   getPost?: Maybe<Post>;
   getUser?: Maybe<User>;
+};
+
+
+export type QueryGetAttachmentByIdArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -306,6 +330,20 @@ export enum OrderByType {
   Asc = 'asc',
   Desc = 'desc'
 }
+
+export type GetAttachmentByIdQueryVariables = Exact<{
+  getAttachmentByIdId: Scalars['String'];
+}>;
+
+
+export type GetAttachmentByIdQuery = { __typename?: 'Query', GetAttachmentById?: { __typename?: 'Attachment', id: string, name: string, filePath: string, createdUserId: string, createdAt: Date, updatedAt: Date } | null };
+
+export type CreateAttachmentMutationVariables = Exact<{
+  file: Scalars['Upload'];
+}>;
+
+
+export type CreateAttachmentMutation = { __typename?: 'Mutation', createAttachment: { __typename?: 'Attachment', id: string, name: string, filePath: string, createdUserId: string, createdAt: Date, updatedAt: Date } };
 
 export type GetFavoritesQueryVariables = Exact<{
   createdUserId?: InputMaybe<Scalars['String']>;
@@ -526,6 +564,84 @@ export type UpdateUserMutationMutationVariables = Exact<{
 export type UpdateUserMutationMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } };
 
 
+export const GetAttachmentByIdDocument = gql`
+    query GetAttachmentById($getAttachmentByIdId: String!) {
+  GetAttachmentById(id: $getAttachmentByIdId) {
+    id
+    name
+    filePath
+    createdUserId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetAttachmentByIdQuery__
+ *
+ * To run a query within a React component, call `useGetAttachmentByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAttachmentByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAttachmentByIdQuery({
+ *   variables: {
+ *      getAttachmentByIdId: // value for 'getAttachmentByIdId'
+ *   },
+ * });
+ */
+export function useGetAttachmentByIdQuery(baseOptions: Apollo.QueryHookOptions<GetAttachmentByIdQuery, GetAttachmentByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAttachmentByIdQuery, GetAttachmentByIdQueryVariables>(GetAttachmentByIdDocument, options);
+      }
+export function useGetAttachmentByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAttachmentByIdQuery, GetAttachmentByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAttachmentByIdQuery, GetAttachmentByIdQueryVariables>(GetAttachmentByIdDocument, options);
+        }
+export type GetAttachmentByIdQueryHookResult = ReturnType<typeof useGetAttachmentByIdQuery>;
+export type GetAttachmentByIdLazyQueryHookResult = ReturnType<typeof useGetAttachmentByIdLazyQuery>;
+export type GetAttachmentByIdQueryResult = Apollo.QueryResult<GetAttachmentByIdQuery, GetAttachmentByIdQueryVariables>;
+export const CreateAttachmentDocument = gql`
+    mutation CreateAttachment($file: Upload!) {
+  createAttachment(file: $file) {
+    id
+    name
+    filePath
+    createdUserId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateAttachmentMutationFn = Apollo.MutationFunction<CreateAttachmentMutation, CreateAttachmentMutationVariables>;
+
+/**
+ * __useCreateAttachmentMutation__
+ *
+ * To run a mutation, you first call `useCreateAttachmentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateAttachmentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createAttachmentMutation, { data, loading, error }] = useCreateAttachmentMutation({
+ *   variables: {
+ *      file: // value for 'file'
+ *   },
+ * });
+ */
+export function useCreateAttachmentMutation(baseOptions?: Apollo.MutationHookOptions<CreateAttachmentMutation, CreateAttachmentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateAttachmentMutation, CreateAttachmentMutationVariables>(CreateAttachmentDocument, options);
+      }
+export type CreateAttachmentMutationHookResult = ReturnType<typeof useCreateAttachmentMutation>;
+export type CreateAttachmentMutationResult = Apollo.MutationResult<CreateAttachmentMutation>;
+export type CreateAttachmentMutationOptions = Apollo.BaseMutationOptions<CreateAttachmentMutation, CreateAttachmentMutationVariables>;
 export const GetFavoritesDocument = gql`
     query GetFavorites($createdUserId: String, $postId: String, $sort: orderByType) {
   GetFavorites(createdUserId: $createdUserId, postId: $postId, sort: $sort) {

@@ -6,6 +6,7 @@ generates:
     config:
       scalars:
         DateTime: Date
+        Upload: File
     plugins:
       - 'typescript'
       - 'typescript-operations'
