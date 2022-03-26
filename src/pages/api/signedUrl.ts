@@ -22,11 +22,15 @@ const signedUrl = async (req: NextApiRequest, res: NextApiResponse) => {
     expires: Date.now() + 15 * 60 * 1000,
     contentType: 'application/octet-stream',
   }
-  const url = await storage
-    .bucket(process.env.GCP_BUCKET_ID || '')
-    .file(req.query.fileName as string)
-    .getSignedUrl(options)
-  res.send(url)
+  try {
+    const url = await storage
+      .bucket(process.env.GCP_BUCKET_ID || '')
+      .file(req.query.fileName as string)
+      .getSignedUrl(options)
+    res.send(url)
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 export default signedUrl
