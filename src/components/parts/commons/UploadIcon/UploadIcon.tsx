@@ -4,34 +4,30 @@ import { ChangeEvent, VFC } from 'react'
 import { GuestUserIcon } from '~/components/domains/user/UserIcon'
 import { SolidIcon, Text } from '~/components/parts/commons'
 
-type sizeType = 'xs' | 'sm' | 'md' | 'lg' | 'full'
-
 type Props = {
   onSelectImage: (file: ChangeEvent<HTMLInputElement>) => void
   currentImagePath?: string
-  size?: sizeType
   disabled?: boolean
 }
 
 export const UploadIcon: VFC<Props> = ({
   onSelectImage,
   currentImagePath,
-  size = 'md',
   disabled = false,
 }) => {
   return (
     <StyledLabel htmlFor="image" aria-disabled={disabled}>
       {currentImagePath ? (
-        <Avatar size={size} src={currentImagePath} />
+        <Avatar size="full" src={currentImagePath} />
       ) : (
-        <GuestUserIcon size={size} />
+        <GuestUserIcon size="full" />
       )}
       {!disabled && (
         <Box
           display="flex"
           alignItems="center"
           justifyContent="center"
-          gap="8px"
+          gap="4px"
           position="absolute"
           top="0"
           left="0"
@@ -45,8 +41,8 @@ export const UploadIcon: VFC<Props> = ({
           cursor="pointer"
           _hover={{ opacity: 1 }}
         >
-          <SolidIcon icon="SOLID_PHOTOGRAPH" size={20} />
-          <Text color="white.main" fontSize="sm">
+          <SolidIcon icon="SOLID_PHOTOGRAPH" size={16} color="white.main" />
+          <Text color="white.main" fontSize="xs">
             写真を変更
           </Text>
         </Box>
@@ -67,4 +63,5 @@ export const UploadIcon: VFC<Props> = ({
 
 const StyledLabel = styled('label')`
   position: relative;
+  display: block;
 `
