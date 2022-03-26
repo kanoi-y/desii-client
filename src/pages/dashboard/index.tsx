@@ -2,6 +2,7 @@ import { Box } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React from 'react'
+import { UserIcon } from '~/components/domains/user/UserIcon'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER } from '~/queries'
 import {
@@ -18,8 +19,10 @@ type Props = {
 
 const ProfilePage: NextPage<Props> = ({ currentUser }) => {
   return (
-    <Box textAlign="center">
-      <p>{currentUser.name}</p>
+    <Box p={['28px 10px 0', '40px 20px 0']}>
+      <Box mx="auto" maxW="700px">
+        <UserIcon user={currentUser} size="lg" />
+      </Box>
     </Box>
   )
 }
