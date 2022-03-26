@@ -1,9 +1,26 @@
-import { Box, Input, Textarea, useDisclosure } from '@chakra-ui/react'
+import {
+  Box,
+  Image,
+  Input,
+  Spinner,
+  Textarea,
+  useDisclosure,
+} from '@chakra-ui/react'
+import styled from '@emotion/styled'
+import axios from 'axios'
+import cuid from 'cuid'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, { FormEvent, useCallback, useState } from 'react'
-import { Button, Modal, SolidIcon, Tag, Text } from '~/components/parts/commons'
+import React, { ChangeEvent, FormEvent, useCallback, useState } from 'react'
+import {
+  Button,
+  IconButton,
+  Modal,
+  SolidIcon,
+  Tag,
+  Text,
+} from '~/components/parts/commons'
 import { useToast } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER } from '~/queries'
@@ -24,6 +41,7 @@ import {
 const client = initializeApollo()
 
 const MAX_TAGS = 5
+const ONE_MB = 10000000
 
 const NewPostPage: NextPage = () => {
   const router = useRouter()
@@ -39,13 +57,15 @@ const NewPostPage: NextPage = () => {
   const [value, setValue] = useState('')
   const [postTags, setPostTags] = useState<{ name: string; id: string }[]>([])
   const [newPost, setNewPost] = useState<
-    Pick<Post, 'title' | 'content' | 'category' | 'isPrivate'>
+    Pick<Post, 'title' | 'content' | 'category' | 'isPrivate' | 'bgImage'>
   >({
     title: '',
     content: '',
     category: PostCategory.GiveYou,
     isPrivate: false,
+    bgImage: undefined,
   })
+  const [isUploading, setIsUploading] = useState(false)
 
   const { data } = useGetAllTagsQuery({
     variables: {
@@ -160,6 +180,56 @@ const NewPostPage: NextPage = () => {
     router,
   ])
 
+  const uploadFIle = useCallback(
+    async (file: File) => {
+      setIsUploading(true)
+
+      if (file.size > ONE_MB) {
+        setIsUploading(false)
+        toast({
+          title: '10MBを超えるファイルをアップロードすることは出来ません',
+          status: 'error',
+        })
+        return
+      }
+
+      try {
+        const uniqueFileName = `${cuid()}/${file.name}`
+        const res = await axios.post(
+          `${
+            process.env.NEXT_PUBLIC_ROOT_URL || 'http://localhost:3000'
+          }/api/signedUrl?fileName=${uniqueFileName}`
+        )
+        const signed_url = res.data[0]
+
+        await axios.put(signed_url, file, {
+          headers: {
+            'Content-Type': 'application/octet-stream',
+          },
+        })
+        updatePost({
+          bgImage: `https://storage.googleapis.com/${
+            process.env.GCP_BUCKET_ID || 'desii-dev'
+          }/${uniqueFileName}`,
+        })
+      } catch (error) {
+        toast({ title: '画像のアップロードに失敗しました！', status: 'error' })
+      } finally {
+        setIsUploading(false)
+      }
+    },
+    [toast]
+  )
+
+  const handleUploadFile = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) {
+      return
+    }
+    const file = e.target.files[0]
+    await uploadFIle(file)
+    e.target.value = ''
+  }
+
   return (
     <Box p={['28px 10px 0', '40px 20px 0']}>
       <Box mx="auto" maxW="700px">
@@ -239,7 +309,7 @@ const NewPostPage: NextPage = () => {
             })}
           </Box>
         </Box>
-        <Box mb="56px">
+        <Box mb="32px">
           <Box mb="12px">
             <Text fontSize="md" isBold>
               マッチングタグ
@@ -319,6 +389,53 @@ const NewPostPage: NextPage = () => {
             ))}
           </Box>
         </Box>
+        <Box mb="56px">
+          <Box mb="12px">
+            <Text fontSize="md" isBold>
+              背景画像
+            </Text>
+          </Box>
+          {newPost.bgImage ? (
+            <Box position="relative">
+              <Box position="absolute" top="4px" left="4px">
+                <IconButton
+                  icon={<SolidIcon icon="SOLID_X" size={16} />}
+                  size="xs"
+                  label="x"
+                  isRound
+                  onClick={() => updatePost({ bgImage: undefined })}
+                />
+              </Box>
+              <Image
+                src={newPost.bgImage}
+                alt="投稿の背景画像"
+                objectFit="cover"
+                w="300px"
+                h="158px"
+              />
+            </Box>
+          ) : (
+            <IconButton
+              icon={
+                <StyledLabel htmlFor="image">
+                  <SolidIcon icon="SOLID_PHOTOGRAPH" />
+                  <Box display="none">
+                    <input
+                      type="file"
+                      name="image"
+                      id="image"
+                      onChange={handleUploadFile}
+                      accept="image/*"
+                    />
+                  </Box>
+                  {isUploading && <Spinner />}
+                </StyledLabel>
+              }
+              label="PHOTOGRAPH"
+              isRound
+            />
+          )}
+        </Box>
         <Box display="flex" alignItems="center" justifyContent="space-evenly">
           <Button onClick={() => router.push('/dashboard')}>キャンセル</Button>
           <Button
@@ -335,6 +452,10 @@ const NewPostPage: NextPage = () => {
     </Box>
   )
 }
+
+const StyledLabel = styled('label')`
+  cursor: pointer;
+`
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {

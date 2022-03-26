@@ -1,5 +1,5 @@
-import * as Apollo from '@apollo/client';
 import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -15,6 +15,18 @@ export type Scalars = {
   Float: number;
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   DateTime: Date;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: File;
+};
+
+export type Attachment = {
+  __typename?: 'Attachment';
+  createdAt: Scalars['DateTime'];
+  createdUserId: Scalars['String'];
+  filePath: Scalars['String'];
+  id: Scalars['String'];
+  name: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
 };
 
 export type Favorite = {
@@ -45,6 +57,7 @@ export type Mutation = {
   DeleteFavorite: Favorite;
   DeleteTagPostRelation: TagPostRelation;
   DeleteUserGroupRelation: UserGroupRelation;
+  createAttachment: Attachment;
   createFavorite: Favorite;
   createGroup: Group;
   createPost: Post;
@@ -75,6 +88,11 @@ export type MutationDeleteTagPostRelationArgs = {
 export type MutationDeleteUserGroupRelationArgs = {
   groupId: Scalars['String'];
   userId: Scalars['String'];
+};
+
+
+export type MutationCreateAttachmentArgs = {
+  fileName: Scalars['String'];
 };
 
 
@@ -189,6 +207,7 @@ export enum PostCategory {
 
 export type Query = {
   __typename?: 'Query';
+  GetAttachmentById?: Maybe<Attachment>;
   GetFavorites: Array<Favorite>;
   GetPosts: Array<Post>;
   GetTagByName?: Maybe<Tag>;
@@ -199,6 +218,11 @@ export type Query = {
   getGroup?: Maybe<Group>;
   getPost?: Maybe<Post>;
   getUser?: Maybe<User>;
+};
+
+
+export type QueryGetAttachmentByIdArgs = {
+  id: Scalars['String'];
 };
 
 

@@ -37,15 +37,15 @@ model Session {
 }
 
 model User {
-  id                 String      @id @default(cuid())
+  id                 String              @id @default(cuid())
   name               String
-  email              String      @unique
+  email              String              @unique
   emailVerified      DateTime?
   description        String?
   image              String?
-  accessToken        String?     @db.Text
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
+  accessToken        String?             @db.Text
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
   accounts           Account[]
   sessions           Session[]
   adminGroups        Group[]
@@ -55,78 +55,78 @@ model User {
 }
 
 model Group {
-  id                 String      @id @default(cuid())
+  id                 String              @id @default(cuid())
   name               String
   description        String?
   image              String
   adminUserId        String
-  productId          String      @unique
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
-  adminUser          User     @relation(fields: [adminUserId], references: [id], onDelete: Restrict)
+  productId          String              @unique
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  adminUser          User                @relation(fields: [adminUserId], references: [id], onDelete: Restrict)
   userGroupRelations UserGroupRelation[]
   posts              Post[]
 }
 
 model UserGroupRelation {
-   id        String      @id @default(cuid())
-   userId    String
-   groupId   String
-   createdAt DateTime    @default(now())
-   updatedAt DateTime    @updatedAt
-   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-   group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  groupId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-   @@unique(fields: [userId, groupId], name: "relationId")
+  @@unique(fields: [userId, groupId], name: "relationId")
 }
 
 model Post {
-   id            String      @id @default(cuid())
-   title         String
-   content       String
-   category      PostCategory
-   createdUserId String
-   isPrivate     Boolean
-   groupId       String?
-   bgImage       String?
-   createdAt     DateTime    @default(now())
-   updatedAt     DateTime    @updatedAt
-   createdUser   User     @relation(fields: [createdUserId], references: [id], onDelete: Cascade)
-   group         Group?     @relation(fields: [groupId], references: [id], onDelete: Cascade)
-   favorites     Favorite[]
-   TagPostRelations TagPostRelation[]
+  id               String            @id @default(cuid())
+  title            String
+  content          String
+  category         PostCategory
+  createdUserId    String
+  isPrivate        Boolean
+  groupId          String?
+  bgImage          String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  createdUser      User              @relation(fields: [createdUserId], references: [id], onDelete: Cascade)
+  group            Group?            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  favorites        Favorite[]
+  TagPostRelations TagPostRelation[]
 }
 
 model Favorite {
-   id            String      @id @default(cuid())
-   createdUserId String
-   postId        String
-   createdAt     DateTime    @default(now())
-   updatedAt     DateTime    @updatedAt
-   createdUser   User     @relation(fields: [createdUserId], references: [id], onDelete: Cascade)
-   post   Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  id            String   @id @default(cuid())
+  createdUserId String
+  postId        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdUser   User     @relation(fields: [createdUserId], references: [id], onDelete: Cascade)
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
-   @@unique(fields: [createdUserId, postId], name: "favoriteId")
+  @@unique(fields: [createdUserId, postId], name: "favoriteId")
 }
 
 model Tag {
-   id            String      @id @default(cuid())
-   name          String      @unique
-   createdAt     DateTime    @default(now())
-   updatedAt     DateTime    @updatedAt
-   TagPostRelations TagPostRelation[]
+  id               String            @id @default(cuid())
+  name             String            @unique
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  TagPostRelations TagPostRelation[]
 }
 
 model TagPostRelation {
-   id            String      @id @default(cuid())
-   tagId         String
-   postId        String
-   createdAt     DateTime    @default(now())
-   updatedAt     DateTime    @updatedAt
-   tag           Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)
-   post          Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  tagId     String
+  postId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
-   @@unique(fields: [tagId, postId], name: "tagPostRelationId")
+  @@unique(fields: [tagId, postId], name: "tagPostRelationId")
 }
 
 model VerificationToken {

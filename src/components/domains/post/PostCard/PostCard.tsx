@@ -156,7 +156,7 @@ export const PostCard: VFC<Props> = ({
                     size={isBig ? 'md' : 'sm'}
                   />
                 </Box>
-                <Box>
+                <Box textAlign="left">
                   <Box onClick={handleTransitionUserPage}>
                     <Text fontSize={isBig ? '2xl' : 'md'} isBold>
                       {userData.getUser.name}
