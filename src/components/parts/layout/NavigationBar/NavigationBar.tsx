@@ -33,6 +33,11 @@ export const Component: VFC<Props> = ({
         toggleItem={<UserIcon user={currentUser} size="sm" />}
         menuList={[
           {
+            text: 'プロフィール',
+            icon: <UserIcon user={currentUser} size="xs" />,
+            onClick: () => router.push(`/user/${currentUser.id}`),
+          },
+          {
             text: '投稿を作成',
             icon: <SolidIcon icon="SOLID_PENCIL_ALT" size={20} />,
             onClick: () => router.push('/dashboard/posts/new'),
