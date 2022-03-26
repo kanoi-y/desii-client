@@ -29,6 +29,7 @@ const FavoritesPage: NextPage<Props> = ({ currentUser }) => {
       createdUserId: currentUser.id,
       sort: OrderByType.Desc,
     },
+    fetchPolicy: 'cache-and-network',
   })
   return (
     <Box p={['28px 10px 0', '40px 20px 0']}>
