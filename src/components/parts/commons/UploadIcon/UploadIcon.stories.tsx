@@ -11,18 +11,18 @@ export default {
 
 const Template: ComponentStory<typeof UploadIcon> = ({ ...args }) => (
   <Box p="20px">
-    <Box w="100px">
-      <UploadIcon {...args} />
-    </Box>
+    <UploadIcon {...args} />
   </Box>
 )
 
 export const DefaultUploadIcon = Template.bind({})
 DefaultUploadIcon.args = {
   disabled: false,
+  size: '2xl',
 }
 
 export const UploadIconWithImage = Template.bind({})
 UploadIconWithImage.args = {
   currentImagePath: 'images/Desii_icon.png',
+  size: '2xl',
 }
