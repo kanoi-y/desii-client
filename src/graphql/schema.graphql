@@ -95,9 +95,6 @@ type TagPostRelation {
   updatedAt: DateTime!
 }
 
-"""The `Upload` scalar type represents a file upload."""
-scalar Upload
-
 type User {
   accessToken: String
   createdAt: DateTime!
