@@ -21,3 +21,8 @@ export const DefaultUploadIcon = Template.bind({})
 DefaultUploadIcon.args = {
   disabled: false,
 }
+
+export const UploadIconWithImage = Template.bind({})
+UploadIconWithImage.args = {
+  currentImagePath: 'images/Desii_icon.png',
+}
