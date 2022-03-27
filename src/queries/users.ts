@@ -29,7 +29,7 @@ export const GET_USER_BY_ID = gql`
 `
 
 export const CREATE_USER = gql`
-  mutation CreateUserMutation(
+  mutation CreateUser(
     $name: String!
     $email: String!
     $description: String
@@ -53,7 +53,7 @@ export const CREATE_USER = gql`
 `
 
 export const DELETE_USER = gql`
-  mutation DeleteUserMutation($deleteUserId: String!) {
+  mutation DeleteUser($deleteUserId: String!) {
     deleteUser(id: $deleteUserId) {
       id
       name
@@ -67,7 +67,7 @@ export const DELETE_USER = gql`
 `
 
 export const UPDATE_USER = gql`
-  mutation UpdateUserMutation(
+  mutation UpdateUser(
     $updateUserId: String!
     $name: String
     $email: String
