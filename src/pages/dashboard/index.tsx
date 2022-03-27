@@ -1,10 +1,10 @@
-import { Box } from '@chakra-ui/react'
+import { Box, Input, Textarea } from '@chakra-ui/react'
 import axios from 'axios'
 import cuid from 'cuid'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React, { ChangeEvent, useState } from 'react'
-import { SolidIcon, Text, UploadIcon } from '~/components/parts/commons'
+import { Button, SolidIcon, Text, UploadIcon } from '~/components/parts/commons'
 import { useToast } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER } from '~/queries'
@@ -90,21 +90,61 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
           alignItems="center"
           gap="4px"
           pb="16px"
-          mb="16px"
+          mb="40px"
           borderBottom="2px solid"
           borderColor="secondary.light"
         >
-          <SolidIcon icon="SOLID_STAR" color="orange.main" size={36} />
+          <SolidIcon icon="SOLID_USER" color="primary.main" size={36} />
           <Text fontSize="lg" isBold>
-            プロフィール
+            プロフィール編集
           </Text>
         </Box>
-        <Box mx="auto" mb="40px">
+        <Box
+          mb="40px"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
           <UploadIcon
             onSelectImage={handleChangeFile}
             currentImagePath={newUser.image || ''}
             size="2xl"
           />
+        </Box>
+        <Box mb="32px">
+          <Box mb="4px">
+            <Text fontSize="md" isBold>
+              ユーザー名
+            </Text>
+          </Box>
+          <Input
+            bgColor="white.main"
+            boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+            value={newUser.name}
+            onChange={(e) => updateUserForm({ name: e.target.value })}
+          />
+        </Box>
+        <Box mb="40px">
+          <Box mb="4px">
+            <Text fontSize="md" isBold>
+              自己紹介
+            </Text>
+          </Box>
+          <Textarea
+            bgColor="white.main"
+            boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+            rows={8}
+            value={newUser.description || ''}
+            onChange={(e) => updateUserForm({ description: e.target.value })}
+          />
+        </Box>
+        <Box
+          w="100%"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Button>更新する</Button>
         </Box>
       </Box>
     </Box>
