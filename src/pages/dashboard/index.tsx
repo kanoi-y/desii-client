@@ -12,6 +12,7 @@ import {
   GetCurrentUserQuery,
   GetCurrentUserQueryVariables,
   User,
+  useUpdateUserMutation,
 } from '~/types/generated/graphql'
 
 const client = initializeApollo()
@@ -30,6 +31,14 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
     name: currentUser.name,
     description: currentUser.description,
     image: currentUser.image,
+  })
+
+  const [updateUserMutation] = useUpdateUserMutation({
+    variables: {
+      updateUserId: currentUser.id,
+      ...newUser,
+    },
+    refetchQueries: ['UpdateUser'],
   })
 
   const updateUserForm = (newObject: Partial<User>) => {
@@ -72,6 +81,20 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
           process.env.GCP_BUCKET_ID || 'desii-dev'
         }/${uniqueFileName}`,
       })
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: error.message,
+          status: 'error',
+        })
+      }
+    }
+  }
+
+  const handleUpdateProfile = async () => {
+    try {
+      await updateUserMutation()
+      toast({ title: 'プロフィールを更新しました！', status: 'success' })
     } catch (error) {
       if (error instanceof Error) {
         toast({
@@ -144,7 +167,7 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
           alignItems="center"
           justifyContent="center"
         >
-          <Button>更新する</Button>
+          <Button onClick={handleUpdateProfile}>更新する</Button>
         </Box>
       </Box>
     </Box>
