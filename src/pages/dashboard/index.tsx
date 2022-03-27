@@ -166,6 +166,7 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
           display="flex"
           alignItems="center"
           justifyContent="center"
+          mb="40px"
         >
           <Button onClick={handleUpdateProfile}>更新する</Button>
         </Box>
