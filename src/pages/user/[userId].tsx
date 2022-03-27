@@ -65,8 +65,13 @@ const UserPage: NextPage<Props> = ({ user }) => {
             </Link>
           </Box>
         )}
-        <Box w="160px" mx="auto" mb="16px">
-          <UserIcon user={user} size="full" />
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          mb="16px"
+        >
+          <UserIcon user={user} size="2xl" />
         </Box>
         <Box textAlign="center" mb="24px">
           <Text fontSize="3xl" isBold>

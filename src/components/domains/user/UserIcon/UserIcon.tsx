@@ -3,7 +3,7 @@ import { VFC } from 'react'
 import { Link } from '~/components/parts/commons'
 import { User } from '~/types/generated/graphql'
 
-type sizeType = 'xs' | 'sm' | 'md' | 'lg' | 'full'
+type sizeType = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full'
 
 type Props = {
   user: User
