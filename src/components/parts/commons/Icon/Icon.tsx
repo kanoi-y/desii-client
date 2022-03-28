@@ -89,6 +89,10 @@ const OutlineDocumentText: VFC = () => (
   />
 )
 
+const OutlineChevronDown: VFC = () => (
+  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+)
+
 const SolidHeart: VFC = () => (
   <path
     fillRule="evenodd"
@@ -164,6 +168,14 @@ const SolidDocumentText: VFC = () => (
   />
 )
 
+const SolidChevronDown: VFC = () => (
+  <path
+    fillRule="evenodd"
+    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+    clipRule="evenodd"
+  />
+)
+
 export const OutlineIconMap = {
   OUTLINE_HEART: <OutlineHeart />,
   OUTLINE_BELL: <OutlineBell />,
@@ -175,6 +187,7 @@ export const OutlineIconMap = {
   OUTLINE_X: <OutlineX />,
   OUTLINE_USER: <OutlineUser />,
   OUTLINE_DOCUMENT_TEXT: <OutlineDocumentText />,
+  OUTLINE_CHEVRON_DOWN: <OutlineChevronDown />,
 }
 
 export const SolidIconMap = {
@@ -188,6 +201,7 @@ export const SolidIconMap = {
   SOLID_X: <SolidX />,
   SOLID_USER: <SolidUser />,
   SOLID_DOCUMENT_TEXT: <SolidDocumentText />,
+  SOLID_CHEVRON_DOWN: <SolidChevronDown />,
 }
 
 export const OutlineIcon: VFC<OutlineIconProps> = ({

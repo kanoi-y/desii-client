@@ -93,9 +93,14 @@ export const PostListItem: VFC<Props> = ({
                   </Text>
                 </Box>
                 <Text fontSize="xs">{displayDate}</Text>
-                <Badge variant='solid' colorScheme={post.isPrivate ? undefined : 'green'}>
-                  {post.isPrivate ? '下書き' : '公開中'}
-                </Badge>
+                {editable && (
+                  <Badge
+                    variant="solid"
+                    colorScheme={post.isPrivate ? undefined : 'green'}
+                  >
+                    {post.isPrivate ? '下書き' : '公開中'}
+                  </Badge>
+                )}
               </>
             ) : (
               <>
