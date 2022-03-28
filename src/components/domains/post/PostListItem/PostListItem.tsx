@@ -6,7 +6,9 @@ import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import {
   IconButton,
   Link,
+  Menu,
   OutlineIcon,
+  SolidIcon,
   Tag,
   Text,
 } from '~/components/parts/commons'
@@ -75,7 +77,7 @@ export const PostListItem: VFC<Props> = ({
       <Box
         p="12px"
         display="flex"
-        alignItems="flex-end"
+        alignItems={editable ? 'flex-start' : 'flex-end'}
         justifyContent="space-between"
         borderBottom="2px solid"
         borderColor="secondary.light"
@@ -122,11 +124,33 @@ export const PostListItem: VFC<Props> = ({
             />
           </Box>
         </Box>
-        {!editable && (
+        {!editable ? (
           <PostFavoriteButton
             postId={post.id}
             currentUserId={currentUserId}
             existCount
+          />
+        ) : (
+          <Menu
+            toggleItem={
+              <SolidIcon
+                icon="SOLID_CHEVRON_DOWN"
+                size={28}
+                color="text.light"
+              />
+            }
+            menuList={[
+              {
+                text: '投稿を更新する',
+                onClick: () => router.push(`/dashboard/posts/${post.id}`),
+                icon: <SolidIcon icon="SOLID_REFRESH" size={20} />,
+              },
+              {
+                text: '投稿を削除する',
+                onClick: () => console.log('投稿を削除する'),
+                icon: <SolidIcon icon="SOLID_TRASH" size={20} />,
+              },
+            ]}
           />
         )}
       </Box>
