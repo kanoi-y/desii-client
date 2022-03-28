@@ -1,4 +1,4 @@
-import { Box, Skeleton, SkeletonText } from '@chakra-ui/react'
+import { Badge, Box, Skeleton, SkeletonText } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { useMemo, VFC } from 'react'
 import { PostFavoriteButton } from '~/components/domains/post/PostFavoriteButton'
@@ -16,6 +16,7 @@ import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 type Props = {
   post: Post
   currentUserId?: string
+  editable?: boolean
   isLink?: boolean
 }
 
@@ -56,6 +57,7 @@ export const SkeletonPostListItem: VFC = () => {
 export const PostListItem: VFC<Props> = ({
   post,
   currentUserId,
+  editable = false,
   isLink = false,
 }) => {
   const router = useRouter()
@@ -91,6 +93,9 @@ export const PostListItem: VFC<Props> = ({
                   </Text>
                 </Box>
                 <Text fontSize="xs">{displayDate}</Text>
+                <Badge variant='solid' colorScheme={post.isPrivate ? undefined : 'green'}>
+                  {post.isPrivate ? '下書き' : '公開中'}
+                </Badge>
               </>
             ) : (
               <>
@@ -112,14 +117,16 @@ export const PostListItem: VFC<Props> = ({
             />
           </Box>
         </Box>
-        <PostFavoriteButton
-          postId={post.id}
-          currentUserId={currentUserId}
-          existCount
-        />
+        {!editable && (
+          <PostFavoriteButton
+            postId={post.id}
+            currentUserId={currentUserId}
+            existCount
+          />
+        )}
       </Box>
     )
-  }, [currentUserId, displayDate, post, router, userData])
+  }, [currentUserId, displayDate, post, router, userData, editable])
 
   if (isLink) {
     return <Link href={`/post/${post.id}`}>{PostListItemContent}</Link>

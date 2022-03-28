@@ -60,6 +60,7 @@ const PostsPage: NextPage<Props> = ({ currentUser }) => {
                 key={post.id}
                 currentUserId={currentUser.id}
                 post={post}
+                editable
                 isLink
               />
             ))
