@@ -537,6 +537,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       variables: {
         getPostId: postId,
       },
+      fetchPolicy: "network-only"
     })
 
     if (!getCurrentUser || !getPost) {
