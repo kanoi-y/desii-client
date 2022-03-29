@@ -7,13 +7,18 @@ import {
   useDisclosure,
 } from '@chakra-ui/react'
 import styled from '@emotion/styled'
-import { useEffect } from '@storybook/addons'
 import axios from 'axios'
 import cuid from 'cuid'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, { ChangeEvent, FormEvent, useCallback, useState } from 'react'
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 import {
   Button,
   IconButton,
@@ -34,13 +39,13 @@ import {
   OrderByType,
   Post,
   PostCategory,
-  Tag as TagType,
-  useCreatePostMutation,
   useCreateTagMutation,
   useCreateTagPostRelationMutation,
+  useDeleteTagPostRelationMutation,
   useGetAllTagsQuery,
   useGetTagPostRelationsQuery,
   User,
+  useUpdatePostMutation,
 } from '~/types/generated/graphql'
 
 const client = initializeApollo()
@@ -60,7 +65,6 @@ const UpdatePostPage: NextPage<Props> = ({ currentUser, post }) => {
 
   const [value, setValue] = useState('')
   const [isUploading, setIsUploading] = useState(false)
-  const [postTags, setPostTags] = useState<{ name: string; id: string }[]>([])
 
   const [newPost, setNewPost] = useState<
     Pick<Post, 'title' | 'content' | 'category' | 'isPrivate' | 'bgImage'>
@@ -99,24 +103,37 @@ const UpdatePostPage: NextPage<Props> = ({ currentUser, post }) => {
     variables: {
       postId: post.id,
     },
+    fetchPolicy: 'cache-and-network',
   })
+
+  const postTags = useMemo(() => {
+    return tagPostData ? tagPostData.GetTagPostRelations : []
+  }, [tagPostData])
 
   const [createTagMutation] = useCreateTagMutation({
     refetchQueries: ['GetAllTags'],
   })
 
-  const [createPostMutation] = useCreatePostMutation({
+  const [updatePostMutation] = useUpdatePostMutation({
     variables: {
+      updatePostId: post.id,
       ...newPost,
     },
   })
 
-  const [createTagPostRelationMutation] = useCreateTagPostRelationMutation()
+  const [createTagPostRelationMutation] = useCreateTagPostRelationMutation({
+    refetchQueries: ['GetTagPostRelations'],
+  })
+
+  const [deleteTagPostRelationMutation] = useDeleteTagPostRelationMutation({
+    refetchQueries: ['GetTagPostRelations'],
+  })
 
   const handleAddTag = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault()
       if (value === '') return
+      if (postTags.some((postTag) => postTag.tag.name === value)) return
       if (postTags.length >= MAX_TAGS) {
         toast({ title: 'タグは5つまでしか設定できません', status: 'warning' })
         return
@@ -126,7 +143,12 @@ const UpdatePostPage: NextPage<Props> = ({ currentUser, post }) => {
       const tag = data.getAllTags.find((tag) => tag.name === value)
 
       if (tag) {
-        setPostTags([...postTags, { name: tag.name, id: tag.id }])
+        await createTagPostRelationMutation({
+          variables: {
+            tagId: tag.id,
+            postId: post.id,
+          },
+        })
         setValue('')
         return
       }
@@ -138,39 +160,64 @@ const UpdatePostPage: NextPage<Props> = ({ currentUser, post }) => {
           },
         })
         if (!TagData) return
-        setPostTags([
-          ...postTags,
-          { name: TagData.createTag.name, id: TagData.createTag.id },
-        ])
+        await createTagPostRelationMutation({
+          variables: {
+            tagId: TagData.createTag.id,
+            postId: post.id,
+          },
+        })
         setValue('')
       } catch (err) {
         toast({ title: 'タグの作成に失敗しました', status: 'error' })
       }
     },
-    [data, postTags, toast, value, createTagMutation]
+    [
+      data,
+      postTags,
+      toast,
+      value,
+      createTagMutation,
+      createTagPostRelationMutation,
+      post.id,
+    ]
   )
 
-  const handleDeleteTag = (index: number) => {
-    setPostTags(postTags.filter((tag, i) => i !== index))
+  const handleDeleteTag = async (tagId: string) => {
+    await deleteTagPostRelationMutation({
+      variables: {
+        tagId,
+        postId: post.id,
+      },
+    })
   }
 
-  const handleClickTagField = (tag: TagType) => {
-    const res = postTags.find((t) => t.name === tag.name)
+  const handleClickTagField = async (tagId: string) => {
+    const res = postTags.find((postTag) => postTag.tag.id === tagId)
 
     if (res) {
-      setPostTags(postTags.filter((t) => t.name !== tag.name))
+      await deleteTagPostRelationMutation({
+        variables: {
+          tagId,
+          postId: post.id,
+        },
+      })
       return
     }
     if (postTags.length >= MAX_TAGS) {
       toast({ title: 'タグは5つまでしか設定できません', status: 'warning' })
       return
     }
-    setPostTags([...postTags, { name: tag.name, id: tag.id }])
+    await createTagPostRelationMutation({
+      variables: {
+        tagId,
+        postId: post.id,
+      },
+    })
   }
 
-  const handleCreatePost = useCallback(async () => {
+  const handleUpdatePost = useCallback(async () => {
     try {
-      const { data: postData } = await createPostMutation()
+      const { data: postData } = await updatePostMutation()
 
       if (!postData) return
 
@@ -184,17 +231,17 @@ const UpdatePostPage: NextPage<Props> = ({ currentUser, post }) => {
         })
       })
 
-      toast({ title: '投稿が作成されました！', status: 'success' })
+      toast({ title: '投稿が更新されました！', status: 'success' })
       router.push(`/post/${postData.createPost.id}`)
     } catch (err) {
-      toast({ title: '投稿の作成に失敗しました', status: 'error' })
+      toast({ title: '投稿の更新に失敗しました', status: 'error' })
     }
   }, [
     postTags,
     toast,
-    createPostMutation,
     createTagPostRelationMutation,
     router,
+    updatePostMutation,
   ])
 
   const uploadFIle = useCallback(
@@ -246,19 +293,6 @@ const UpdatePostPage: NextPage<Props> = ({ currentUser, post }) => {
     await uploadFIle(file)
     e.target.value = ''
   }
-
-  useEffect(() => {
-    setPostTags(
-      tagPostData
-        ? tagPostData.GetTagPostRelations.map((tagPost) => {
-            return {
-              name: tagPost.tag.name,
-              id: tagPost.tag.id,
-            }
-          })
-        : []
-    )
-  }, [setPostTags, tagPostData])
 
   return (
     <Box p={['28px 10px 0', '40px 20px 0']}>
@@ -389,12 +423,12 @@ const UpdatePostPage: NextPage<Props> = ({ currentUser, post }) => {
                         _hover={{
                           bgColor: 'secondary.main',
                         }}
-                        onClick={() => handleClickTagField(tag)}
+                        onClick={() => handleClickTagField(tag.id)}
                       >
                         <Box
                           pl="4px"
                           visibility={
-                            postTags.some((pTag) => pTag.name === tag.name)
+                            postTags.some((pTag) => pTag.tag.id === tag.id)
                               ? 'visible'
                               : 'hidden'
                           }
@@ -409,12 +443,12 @@ const UpdatePostPage: NextPage<Props> = ({ currentUser, post }) => {
             }
           />
           <Box mt="12px" display="flex" flexWrap="wrap" gap="8px">
-            {postTags.map((tag, i) => (
+            {postTags.map((postTag, i) => (
               <Tag
-                text={tag.name}
+                text={postTag.tag.name}
                 key={i}
                 canDelete
-                onClose={() => handleDeleteTag(i)}
+                onClose={() => handleDeleteTag(postTag.tag.id)}
               />
             ))}
           </Box>
@@ -467,9 +501,11 @@ const UpdatePostPage: NextPage<Props> = ({ currentUser, post }) => {
           )}
         </Box>
         <Box display="flex" alignItems="center" justifyContent="space-evenly">
-          <Button onClick={() => router.push('/dashboard')}>キャンセル</Button>
+          <Button onClick={() => router.push('/dashboard/posts')}>
+            キャンセル
+          </Button>
           <Button
-            onClick={handleCreatePost}
+            onClick={handleUpdatePost}
             disabled={
               newPost.title.trim().length === 0 ||
               newPost.content.trim().length === 0
