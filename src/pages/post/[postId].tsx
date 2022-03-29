@@ -69,17 +69,33 @@ const PostPage: NextPage<Props> = ({ post }) => {
           isBig={width > BREAKPOINTS.sm}
           currentUserId={currentUser?.id}
         />
-        <Box mt={['20px', '30px']}>
-          <Tag
-            text={post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'}
-            bgColor="orange.main"
-            size="lg"
-          />
-          <Box mt="12px" display="flex" flexWrap="wrap" gap="8px">
-            {data?.GetTagPostRelations.map((tagPostRelation) => (
-              <Tag key={tagPostRelation.id} text={tagPostRelation.tag.name} />
-            ))}
+        <Box
+          mt={['20px', '30px']}
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Box>
+            <Tag
+              text={
+                post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'
+              }
+              bgColor="orange.main"
+              size="lg"
+            />
+            <Box mt="12px" display="flex" flexWrap="wrap" gap="8px">
+              {data?.GetTagPostRelations.map((tagPostRelation) => (
+                <Tag key={tagPostRelation.id} text={tagPostRelation.tag.name} />
+              ))}
+            </Box>
           </Box>
+          {post.createdUserId === currentUser?.id && (
+            <Box>
+              <Link href={`/dashboard/posts/${post.id}`}>
+                <Button>編集</Button>
+              </Link>
+            </Box>
+          )}
         </Box>
         <Box
           m={['32px 0', '40px 0']}
