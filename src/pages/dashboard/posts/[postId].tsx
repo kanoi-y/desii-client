@@ -58,7 +58,7 @@ type Props = {
   post: Post
 }
 
-const UpdatePostPage: NextPage<Props> = ({ currentUser, post }) => {
+const UpdatePostPage: NextPage<Props> = ({ post }) => {
   const router = useRouter()
   const { toast } = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -221,28 +221,12 @@ const UpdatePostPage: NextPage<Props> = ({ currentUser, post }) => {
 
       if (!postData) return
 
-      postTags.forEach((tag) => {
-        // TODO: createManyを実装して置き換える
-        createTagPostRelationMutation({
-          variables: {
-            tagId: tag.id,
-            postId: postData.createPost.id,
-          },
-        })
-      })
-
       toast({ title: '投稿が更新されました！', status: 'success' })
-      router.push(`/post/${postData.createPost.id}`)
+      router.push(`/post/${post.id}`)
     } catch (err) {
       toast({ title: '投稿の更新に失敗しました', status: 'error' })
     }
-  }, [
-    postTags,
-    toast,
-    createTagPostRelationMutation,
-    router,
-    updatePostMutation,
-  ])
+  }, [toast, router, updatePostMutation, post.id])
 
   const uploadFIle = useCallback(
     async (file: File) => {
