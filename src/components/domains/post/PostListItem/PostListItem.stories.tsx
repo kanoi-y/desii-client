@@ -36,6 +36,13 @@ FavoritePostListItem.args = {
   currentUserId: 'userId',
 }
 
+export const EditablePostListItem = Template.bind({})
+EditablePostListItem.args = {
+  post: postFactory({ title: 'プログラミングを教えてほしい！' }),
+  currentUserId: 'userId',
+  editable: true,
+}
+
 const SkeletonTemplate: ComponentStory<typeof SkeletonPostListItem> = ({
   ...args
 }) => {

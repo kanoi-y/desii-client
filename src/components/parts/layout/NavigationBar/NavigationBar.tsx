@@ -43,6 +43,11 @@ export const Component: VFC<Props> = ({
             onClick: () => router.push('/dashboard/posts/new'),
           },
           {
+            text: '投稿の管理',
+            icon: <SolidIcon icon="SOLID_DOCUMENT_TEXT" size={20} />,
+            onClick: () => router.push('/dashboard/posts'),
+          },
+          {
             text: 'いいねした投稿',
             icon: <SolidIcon icon="SOLID_STAR" size={20} />,
             onClick: () => router.push('/dashboard/favorites'),
