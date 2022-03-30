@@ -37,6 +37,7 @@ type Mutation {
   createPost(bgImage: String, category: PostCategory!, content: String!, groupId: String, isPrivate: Boolean!, title: String!): Post!
   createTag(name: String!): Tag!
   createTagPostRelation(postId: String!, tagId: String!): TagPostRelation!
+  createTagPostRelations(tagPostTypes: [TagPostInputType!]!): [TagPostRelation!]!
   createUser(description: String, email: String!, image: String, name: String!): User!
   createUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
   deleteGroup(id: String!): Group!
@@ -83,6 +84,11 @@ type Tag {
   id: String!
   name: String!
   updatedAt: DateTime!
+}
+
+input TagPostInputType {
+  postId: String!
+  tagId: String!
 }
 
 type TagPostRelation {
