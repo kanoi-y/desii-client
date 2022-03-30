@@ -5,7 +5,7 @@ import { useToast } from '~/hooks'
 import { theme } from '~/theme'
 import {
   OrderByType,
-  TagPostRelation,
+  Tag,
   useCreateTagMutation,
   useCreateTagPostRelationMutation,
   useDeleteTagPostRelationMutation,
@@ -17,7 +17,7 @@ const MAX_TAGS = 5
 type Props = {
   isOpen: boolean
   onClose: () => void
-  postTags: TagPostRelation[]
+  postTags: Tag[]
   postId: string
 }
 
@@ -49,7 +49,7 @@ export const TagModal: VFC<Props> = ({ isOpen, onClose, postTags, postId }) => {
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault()
       if (value === '') return
-      if (postTags.some((postTag) => postTag.tag.name === value)) return
+      if (postTags.some((tag) => tag.name === value)) return
       if (postTags.length >= MAX_TAGS) {
         toast({ title: 'タグは5つまでしか設定できません', status: 'warning' })
         return
@@ -99,7 +99,7 @@ export const TagModal: VFC<Props> = ({ isOpen, onClose, postTags, postId }) => {
   )
 
   const handleClickTagField = async (tagId: string) => {
-    const res = postTags.find((postTag) => postTag.tag.id === tagId)
+    const res = postTags.find((tag) => tag.id === tagId)
 
     if (res) {
       await deleteTagPostRelationMutation({
@@ -167,7 +167,7 @@ export const TagModal: VFC<Props> = ({ isOpen, onClose, postTags, postId }) => {
                   <Box
                     pl="4px"
                     visibility={
-                      postTags.some((pTag) => pTag.tag.id === tag.id)
+                      postTags.some((pTag) => pTag.id === tag.id)
                       ? 'visible'
                       : 'hidden'
                     }

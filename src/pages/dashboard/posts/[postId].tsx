@@ -12,17 +12,11 @@ import cuid from 'cuid'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, {
-  ChangeEvent,
-  FormEvent,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react'
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import { TagModal } from '~/components/domains/tag/TagModal'
 import {
   Button,
   IconButton,
-  Modal,
   SolidIcon,
   Tag,
   Text,
@@ -30,19 +24,14 @@ import {
 import { useToast } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER, GET_POST_BY_ID } from '~/queries'
-import { theme } from '~/theme'
 import {
   GetCurrentUserQuery,
   GetCurrentUserQueryVariables,
   GetPostQuery,
   GetPostQueryVariables,
-  OrderByType,
   Post,
   PostCategory,
-  useCreateTagMutation,
-  useCreateTagPostRelationMutation,
   useDeleteTagPostRelationMutation,
-  useGetAllTagsQuery,
   useGetTagPostRelationsQuery,
   User,
   useUpdatePostMutation,
@@ -50,7 +39,6 @@ import {
 
 const client = initializeApollo()
 
-const MAX_TAGS = 5
 const ONE_MB = 10000000
 
 type Props = {
@@ -63,7 +51,6 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
   const { toast } = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const [value, setValue] = useState('')
   const [isUploading, setIsUploading] = useState(false)
 
   const [newPost, setNewPost] = useState<
@@ -91,14 +78,6 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
     })
   }
 
-  const { data } = useGetAllTagsQuery({
-    variables: {
-      sort: OrderByType.Desc,
-      searchText: value,
-    },
-    fetchPolicy: 'cache-and-network',
-  })
-
   const { data: tagPostData } = useGetTagPostRelationsQuery({
     variables: {
       postId: post.id,
@@ -107,12 +86,8 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
   })
 
   const postTags = useMemo(() => {
-    return tagPostData ? tagPostData.GetTagPostRelations : []
+    return tagPostData ? tagPostData.GetTagPostRelations.map((tagPostRelation) => tagPostRelation.tag) : []
   }, [tagPostData])
-
-  const [createTagMutation] = useCreateTagMutation({
-    refetchQueries: ['GetAllTags'],
-  })
 
   const [updatePostMutation] = useUpdatePostMutation({
     variables: {
@@ -121,93 +96,12 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
     },
   })
 
-  const [createTagPostRelationMutation] = useCreateTagPostRelationMutation({
-    refetchQueries: ['GetTagPostRelations'],
-  })
-
   const [deleteTagPostRelationMutation] = useDeleteTagPostRelationMutation({
     refetchQueries: ['GetTagPostRelations'],
   })
 
-  const handleAddTag = useCallback(
-    async (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
-      if (value === '') return
-      if (postTags.some((postTag) => postTag.tag.name === value)) return
-      if (postTags.length >= MAX_TAGS) {
-        toast({ title: 'タグは5つまでしか設定できません', status: 'warning' })
-        return
-      }
-      if (!data) return
-
-      const tag = data.getAllTags.find((tag) => tag.name === value)
-
-      if (tag) {
-        await createTagPostRelationMutation({
-          variables: {
-            tagId: tag.id,
-            postId: post.id,
-          },
-        })
-        setValue('')
-        return
-      }
-
-      try {
-        const { data: TagData } = await createTagMutation({
-          variables: {
-            name: value,
-          },
-        })
-        if (!TagData) return
-        await createTagPostRelationMutation({
-          variables: {
-            tagId: TagData.createTag.id,
-            postId: post.id,
-          },
-        })
-        setValue('')
-      } catch (err) {
-        toast({ title: 'タグの作成に失敗しました', status: 'error' })
-      }
-    },
-    [
-      data,
-      postTags,
-      toast,
-      value,
-      createTagMutation,
-      createTagPostRelationMutation,
-      post.id,
-    ]
-  )
-
   const handleDeleteTag = async (tagId: string) => {
     await deleteTagPostRelationMutation({
-      variables: {
-        tagId,
-        postId: post.id,
-      },
-    })
-  }
-
-  const handleClickTagField = async (tagId: string) => {
-    const res = postTags.find((postTag) => postTag.tag.id === tagId)
-
-    if (res) {
-      await deleteTagPostRelationMutation({
-        variables: {
-          tagId,
-          postId: post.id,
-        },
-      })
-      return
-    }
-    if (postTags.length >= MAX_TAGS) {
-      toast({ title: 'タグは5つまでしか設定できません', status: 'warning' })
-      return
-    }
-    await createTagPostRelationMutation({
       variables: {
         tagId,
         postId: post.id,
@@ -368,71 +262,19 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
               タグを検索、または作成する
             </Text>
           </Button>
-          <Modal
-            title="タグを追加する"
+          <TagModal
             isOpen={isOpen}
             onClose={onClose}
-            body={
-              <Box
-                borderTop={`1px solid ${theme.colors.secondary.main}`}
-                pt="12px"
-                mt="-8px"
-              >
-                <Box mb="4px" pl="8px">
-                  <Text fontSize="sm" isBold>
-                    タグは、５つまで選択可能
-                  </Text>
-                </Box>
-                <form onSubmit={(e) => handleAddTag(e)}>
-                  <Input
-                    bgColor="secondary.light"
-                    boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    placeholder="タグを検索、または作成する"
-                  />
-                </form>
-                <Box mt="16px">
-                  {data?.getAllTags &&
-                    data.getAllTags.map((tag) => (
-                      <Box
-                        key={tag.id}
-                        borderTop={`1px solid ${theme.colors.secondary.main}`}
-                        borderRadius="4px"
-                        p="8px 0"
-                        cursor="pointer"
-                        display="flex"
-                        alignItems="center"
-                        gap="4px"
-                        _hover={{
-                          bgColor: 'secondary.main',
-                        }}
-                        onClick={() => handleClickTagField(tag.id)}
-                      >
-                        <Box
-                          pl="4px"
-                          visibility={
-                            postTags.some((pTag) => pTag.tag.id === tag.id)
-                              ? 'visible'
-                              : 'hidden'
-                          }
-                        >
-                          <SolidIcon icon="SOLID_CHECK" />
-                        </Box>
-                        {tag.name}
-                      </Box>
-                    ))}
-                </Box>
-              </Box>
-            }
+            postId={post.id}
+            postTags={postTags}
           />
           <Box mt="12px" display="flex" flexWrap="wrap" gap="8px">
-            {postTags.map((postTag, i) => (
+            {postTags.map((tag, i) => (
               <Tag
-                text={postTag.tag.name}
+                text={tag.name}
                 key={i}
                 canDelete
-                onClose={() => handleDeleteTag(postTag.tag.id)}
+                onClose={() => handleDeleteTag(tag.id)}
               />
             ))}
           </Box>
@@ -537,7 +379,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       variables: {
         getPostId: postId,
       },
-      fetchPolicy: "network-only"
+      fetchPolicy: 'network-only',
     })
 
     if (!getCurrentUser || !getPost) {
