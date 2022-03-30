@@ -34,6 +34,7 @@ import {
   Tag as TagType,
   useCreateTagPostRelationsMutation,
   useDeleteTagPostRelationsMutation,
+  useGetPostQuery,
   useGetTagPostRelationsQuery,
   User,
   useUpdatePostMutation,
@@ -45,11 +46,12 @@ const ONE_MB = 10000000
 
 type Props = {
   currentUser: User
-  post: Post
 }
 
-const UpdatePostPage: NextPage<Props> = ({ post }) => {
+const UpdatePostPage: NextPage<Props> = () => {
   const router = useRouter()
+  const postId = router.query.postId as string
+
   const { toast } = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -63,11 +65,11 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
   const [newPost, setNewPost] = useState<
     Pick<Post, 'title' | 'content' | 'category' | 'isPrivate' | 'bgImage'>
   >({
-    title: post.title,
-    content: post.content,
-    category: post.category,
-    isPrivate: post.isPrivate,
-    bgImage: post.bgImage,
+    title: '',
+    content: '',
+    category: PostCategory.GiveYou,
+    isPrivate: false,
+    bgImage: undefined,
   })
 
   const postCategoryList: { name: string; value: keyof typeof PostCategory }[] =
@@ -87,7 +89,7 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
 
   const { data: tagPostData } = useGetTagPostRelationsQuery({
     variables: {
-      postId: post.id,
+      postId: postId,
     },
     fetchPolicy: 'cache-and-network',
   })
@@ -102,9 +104,27 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
     )
   }, [tagPostData])
 
+  const { data: postData } = useGetPostQuery({
+    variables: {
+      getPostId: postId,
+    },
+    fetchPolicy: 'cache-and-network',
+  })
+
+  useEffect(() => {
+    if (!postData?.getPost) return
+    setNewPost({
+      title: postData.getPost.title,
+      content: postData.getPost.content,
+      category: postData.getPost.category,
+      isPrivate: postData.getPost.isPrivate,
+      bgImage: postData.getPost.bgImage,
+    })
+  }, [postData])
+
   const [updatePostMutation] = useUpdatePostMutation({
     variables: {
-      updatePostId: post.id,
+      updatePostId: postId,
       ...newPost,
     },
     refetchQueries: ['GetPost'],
@@ -147,7 +167,7 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
             ...postTags.map((postTag) => {
               return {
                 tagId: postTag.id,
-                postId: post.id,
+                postId: postId,
               }
             }),
           ],
@@ -155,7 +175,7 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
       })
 
       toast({ title: '投稿が更新されました！', status: 'success' })
-      router.push(`/post/${post.id}`)
+      router.push(`/post/${postId}`)
     } catch (err) {
       toast({ title: '投稿の更新に失敗しました', status: 'error' })
     }
@@ -166,7 +186,7 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
     createTagPostRelationsMutation,
     deleteTagPostRelationsMutation,
     tagPostData,
-    post.id,
+    postId,
     postTags,
   ])
 
@@ -442,7 +462,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return {
       props: {
         currentUser: getCurrentUser,
-        post: getPost,
       },
     }
   } catch (error) {
