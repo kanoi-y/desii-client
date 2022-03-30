@@ -12,7 +12,7 @@ import cuid from 'cuid'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { TagModal } from '~/components/domains/tag/TagModal'
 import {
   Button,
@@ -31,7 +31,9 @@ import {
   GetPostQueryVariables,
   Post,
   PostCategory,
-  useDeleteTagPostRelationMutation,
+  Tag as TagType,
+  useCreateTagPostRelationsMutation,
+  useDeleteTagPostRelationsMutation,
   useGetTagPostRelationsQuery,
   User,
   useUpdatePostMutation,
@@ -52,6 +54,11 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const [isUploading, setIsUploading] = useState(false)
+  const [postTags, setPostTags] = useState<TagType[]>([])
+
+  const handlePostTags = (tags: TagType[]) => {
+    setPostTags(tags)
+  }
 
   const [newPost, setNewPost] = useState<
     Pick<Post, 'title' | 'content' | 'category' | 'isPrivate' | 'bgImage'>
@@ -85,8 +92,14 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
     fetchPolicy: 'cache-and-network',
   })
 
-  const postTags = useMemo(() => {
-    return tagPostData ? tagPostData.GetTagPostRelations.map((tagPostRelation) => tagPostRelation.tag) : []
+  useEffect(() => {
+    setPostTags(
+      tagPostData
+        ? tagPostData.GetTagPostRelations.map(
+            (tagPostRelation) => tagPostRelation.tag
+          )
+        : []
+    )
   }, [tagPostData])
 
   const [updatePostMutation] = useUpdatePostMutation({
@@ -94,19 +107,19 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
       updatePostId: post.id,
       ...newPost,
     },
+    refetchQueries: ['GetPost'],
   })
 
-  const [deleteTagPostRelationMutation] = useDeleteTagPostRelationMutation({
+  const [deleteTagPostRelationsMutation] = useDeleteTagPostRelationsMutation({
+    refetchQueries: ['GetTagPostRelations'],
+  })
+
+  const [createTagPostRelationsMutation] = useCreateTagPostRelationsMutation({
     refetchQueries: ['GetTagPostRelations'],
   })
 
   const handleDeleteTag = async (tagId: string) => {
-    await deleteTagPostRelationMutation({
-      variables: {
-        tagId,
-        postId: post.id,
-      },
-    })
+    setPostTags(postTags.filter((tag) => tag.id !== tagId))
   }
 
   const handleUpdatePost = useCallback(async () => {
@@ -115,12 +128,47 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
 
       if (!postData) return
 
+      // 紐づいているTagPostRelationを一旦全て削除してから、新しいTagPostRelationを作成する
+      await deleteTagPostRelationsMutation({
+        variables: {
+          tagPostTypes: tagPostData
+            ? tagPostData.GetTagPostRelations.map((tagPostRelation) => {
+                return {
+                  tagId: tagPostRelation.tag.id,
+                  postId: tagPostRelation.post.id,
+                }
+              })
+            : [],
+        },
+      })
+      await createTagPostRelationsMutation({
+        variables: {
+          tagPostTypes: [
+            ...postTags.map((postTag) => {
+              return {
+                tagId: postTag.id,
+                postId: post.id,
+              }
+            }),
+          ],
+        },
+      })
+
       toast({ title: '投稿が更新されました！', status: 'success' })
       router.push(`/post/${post.id}`)
     } catch (err) {
       toast({ title: '投稿の更新に失敗しました', status: 'error' })
     }
-  }, [toast, router, updatePostMutation, post.id])
+  }, [
+    toast,
+    router,
+    updatePostMutation,
+    createTagPostRelationsMutation,
+    deleteTagPostRelationsMutation,
+    tagPostData,
+    post.id,
+    postTags,
+  ])
 
   const uploadFIle = useCallback(
     async (file: File) => {
@@ -265,8 +313,8 @@ const UpdatePostPage: NextPage<Props> = ({ post }) => {
           <TagModal
             isOpen={isOpen}
             onClose={onClose}
-            postId={post.id}
             postTags={postTags}
+            setPostTags={handlePostTags}
           />
           <Box mt="12px" display="flex" flexWrap="wrap" gap="8px">
             {postTags.map((tag, i) => (

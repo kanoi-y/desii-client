@@ -161,6 +161,7 @@ export const getStaticProps = async (
       variables: {
         getPostId: postId,
       },
+      fetchPolicy: 'network-only',
     })
 
     if (!getPost) {
