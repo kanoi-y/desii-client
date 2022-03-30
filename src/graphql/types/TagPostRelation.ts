@@ -209,3 +209,47 @@ export const DeleteTagPostRelationMutation = extendType({
     })
   },
 })
+
+export const DeleteTagPostRelationsMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.nonNull.list.nonNull.field('DeleteTagPostRelations', {
+      type: 'TagPostRelation',
+      args: {
+        tagPostTypes: nonNull(list(nonNull('TagPostInputType'))),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const tagPostRelations = await ctx.prisma.tagPostRelation.findMany({
+          where: {
+            OR: [...args.tagPostTypes],
+          },
+          include: {
+            tag: true,
+            post: true,
+          },
+        })
+
+        if (
+          tagPostRelations.some(
+            (tagPostRelation) =>
+              ctx.user?.id !== tagPostRelation.post.createdUserId
+          )
+        ) {
+          throw new Error('作成者しかタグを削除できません')
+        }
+
+        await ctx.prisma.tagPostRelation.deleteMany({
+          where: {
+            OR: [...args.tagPostTypes],
+          },
+        })
+
+        return tagPostRelations
+      },
+    })
+  },
+})

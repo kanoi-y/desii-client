@@ -31,6 +31,7 @@ type Group {
 type Mutation {
   DeleteFavorite(postId: String!): Favorite!
   DeleteTagPostRelation(postId: String!, tagId: String!): TagPostRelation!
+  DeleteTagPostRelations(tagPostTypes: [TagPostInputType!]!): [TagPostRelation!]!
   DeleteUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
   createFavorite(postId: String!): Favorite!
   createGroup(description: String, image: String!, name: String!, productId: String!): Group!

@@ -44,6 +44,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   DeleteFavorite: Favorite;
   DeleteTagPostRelation: TagPostRelation;
+  DeleteTagPostRelations: Array<TagPostRelation>;
   DeleteUserGroupRelation: UserGroupRelation;
   createFavorite: Favorite;
   createGroup: Group;
@@ -70,6 +71,11 @@ export type MutationDeleteFavoriteArgs = {
 export type MutationDeleteTagPostRelationArgs = {
   postId: Scalars['String'];
   tagId: Scalars['String'];
+};
+
+
+export type MutationDeleteTagPostRelationsArgs = {
+  tagPostTypes: Array<TagPostInputType>;
 };
 
 
@@ -476,6 +482,13 @@ export type DeleteTagPostRelationMutationVariables = Exact<{
 
 
 export type DeleteTagPostRelationMutation = { __typename?: 'Mutation', DeleteTagPostRelation: { __typename?: 'TagPostRelation', id: string, tagId: string, postId: string, createdAt: Date, updatedAt: Date, tag: { __typename?: 'Tag', id: string, name: string, createdAt: Date, updatedAt: Date }, post: { __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date } } };
+
+export type DeleteTagPostRelationsMutationVariables = Exact<{
+  tagPostTypes: Array<TagPostInputType> | TagPostInputType;
+}>;
+
+
+export type DeleteTagPostRelationsMutation = { __typename?: 'Mutation', DeleteTagPostRelations: Array<{ __typename?: 'TagPostRelation', id: string, tagId: string, postId: string, createdAt: Date, updatedAt: Date, tag: { __typename?: 'Tag', id: string, name: string, createdAt: Date, updatedAt: Date }, post: { __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date } }> };
 
 export type GetUserGroupRelationsQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['String']>;
@@ -1484,6 +1497,61 @@ export function useDeleteTagPostRelationMutation(baseOptions?: Apollo.MutationHo
 export type DeleteTagPostRelationMutationHookResult = ReturnType<typeof useDeleteTagPostRelationMutation>;
 export type DeleteTagPostRelationMutationResult = Apollo.MutationResult<DeleteTagPostRelationMutation>;
 export type DeleteTagPostRelationMutationOptions = Apollo.BaseMutationOptions<DeleteTagPostRelationMutation, DeleteTagPostRelationMutationVariables>;
+export const DeleteTagPostRelationsDocument = gql`
+    mutation DeleteTagPostRelations($tagPostTypes: [TagPostInputType!]!) {
+  DeleteTagPostRelations(tagPostTypes: $tagPostTypes) {
+    id
+    tagId
+    postId
+    createdAt
+    updatedAt
+    tag {
+      id
+      name
+      createdAt
+      updatedAt
+    }
+    post {
+      id
+      title
+      content
+      category
+      createdUserId
+      isPrivate
+      groupId
+      bgImage
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+export type DeleteTagPostRelationsMutationFn = Apollo.MutationFunction<DeleteTagPostRelationsMutation, DeleteTagPostRelationsMutationVariables>;
+
+/**
+ * __useDeleteTagPostRelationsMutation__
+ *
+ * To run a mutation, you first call `useDeleteTagPostRelationsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTagPostRelationsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTagPostRelationsMutation, { data, loading, error }] = useDeleteTagPostRelationsMutation({
+ *   variables: {
+ *      tagPostTypes: // value for 'tagPostTypes'
+ *   },
+ * });
+ */
+export function useDeleteTagPostRelationsMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTagPostRelationsMutation, DeleteTagPostRelationsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTagPostRelationsMutation, DeleteTagPostRelationsMutationVariables>(DeleteTagPostRelationsDocument, options);
+      }
+export type DeleteTagPostRelationsMutationHookResult = ReturnType<typeof useDeleteTagPostRelationsMutation>;
+export type DeleteTagPostRelationsMutationResult = Apollo.MutationResult<DeleteTagPostRelationsMutation>;
+export type DeleteTagPostRelationsMutationOptions = Apollo.BaseMutationOptions<DeleteTagPostRelationsMutation, DeleteTagPostRelationsMutationVariables>;
 export const GetUserGroupRelationsDocument = gql`
     query GetUserGroupRelations($userId: String, $groupId: String) {
   GetUserGroupRelations(userId: $userId, groupId: $groupId) {

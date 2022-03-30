@@ -119,3 +119,33 @@ export const DELETE_TAG_POST_RELATION = gql`
     }
   }
 `
+
+export const DELETE_TAG_POST_RELATIONS = gql`
+  mutation DeleteTagPostRelations($tagPostTypes: [TagPostInputType!]!) {
+    DeleteTagPostRelations(tagPostTypes: $tagPostTypes) {
+      id
+      tagId
+      postId
+      createdAt
+      updatedAt
+      tag {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+      post {
+        id
+        title
+        content
+        category
+        createdUserId
+        isPrivate
+        groupId
+        bgImage
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`
