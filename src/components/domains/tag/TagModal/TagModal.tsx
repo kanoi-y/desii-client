@@ -7,8 +7,6 @@ import {
   OrderByType,
   Tag,
   useCreateTagMutation,
-  useCreateTagPostRelationMutation,
-  useDeleteTagPostRelationMutation,
   useGetAllTagsQuery,
 } from '~/types/generated/graphql'
 
@@ -18,20 +16,17 @@ type Props = {
   isOpen: boolean
   onClose: () => void
   postTags: Tag[]
-  postId: string
+  setPostTags: (tags: Tag[]) => void
 }
 
-export const TagModal: VFC<Props> = ({ isOpen, onClose, postTags, postId }) => {
+export const TagModal: VFC<Props> = ({
+  isOpen,
+  onClose,
+  postTags,
+  setPostTags,
+}) => {
   const [value, setValue] = useState('')
   const { toast } = useToast()
-
-  const [createTagPostRelationMutation] = useCreateTagPostRelationMutation({
-    refetchQueries: ['GetTagPostRelations'],
-  })
-
-  const [deleteTagPostRelationMutation] = useDeleteTagPostRelationMutation({
-    refetchQueries: ['GetTagPostRelations'],
-  })
 
   const [createTagMutation] = useCreateTagMutation({
     refetchQueries: ['GetAllTags'],
@@ -59,12 +54,7 @@ export const TagModal: VFC<Props> = ({ isOpen, onClose, postTags, postId }) => {
       const tag = data.getAllTags.find((tag) => tag.name === value)
 
       if (tag) {
-        await createTagPostRelationMutation({
-          variables: {
-            tagId: tag.id,
-            postId,
-          },
-        })
+        setPostTags([...postTags, tag])
         setValue('')
         return
       }
@@ -76,50 +66,28 @@ export const TagModal: VFC<Props> = ({ isOpen, onClose, postTags, postId }) => {
           },
         })
         if (!TagData) return
-        await createTagPostRelationMutation({
-          variables: {
-            tagId: TagData.createTag.id,
-            postId,
-          },
-        })
+
+        setPostTags([...postTags, TagData.createTag])
         setValue('')
       } catch (err) {
         toast({ title: 'タグの作成に失敗しました', status: 'error' })
       }
     },
-    [
-      data,
-      postTags,
-      toast,
-      value,
-      createTagMutation,
-      createTagPostRelationMutation,
-      postId,
-    ]
+    [data, postTags, toast, value, createTagMutation, setPostTags]
   )
 
-  const handleClickTagField = async (tagId: string) => {
-    const res = postTags.find((tag) => tag.id === tagId)
+  const handleClickTagField = async (tag: Tag) => {
+    const res = postTags.find((t) => t.id === tag.id)
 
     if (res) {
-      await deleteTagPostRelationMutation({
-        variables: {
-          tagId,
-          postId,
-        },
-      })
+      setPostTags(postTags.filter((t) => t.id !== tag.id))
       return
     }
     if (postTags.length >= MAX_TAGS) {
       toast({ title: 'タグは5つまでしか設定できません', status: 'warning' })
       return
     }
-    await createTagPostRelationMutation({
-      variables: {
-        tagId,
-        postId,
-      },
-    })
+    setPostTags([...postTags, tag])
   }
 
   return (
@@ -162,14 +130,14 @@ export const TagModal: VFC<Props> = ({ isOpen, onClose, postTags, postId }) => {
                   _hover={{
                     bgColor: 'secondary.main',
                   }}
-                  onClick={() => handleClickTagField(tag.id)}
+                  onClick={() => handleClickTagField(tag)}
                 >
                   <Box
                     pl="4px"
                     visibility={
                       postTags.some((pTag) => pTag.id === tag.id)
-                      ? 'visible'
-                      : 'hidden'
+                        ? 'visible'
+                        : 'hidden'
                     }
                   >
                     <SolidIcon icon="SOLID_CHECK" />
