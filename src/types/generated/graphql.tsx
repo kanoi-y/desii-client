@@ -50,6 +50,7 @@ export type Mutation = {
   createPost: Post;
   createTag: Tag;
   createTagPostRelation: TagPostRelation;
+  createTagPostRelations: Array<TagPostRelation>;
   createUser: User;
   createUserGroupRelation: UserGroupRelation;
   deleteGroup: Group;
@@ -109,6 +110,11 @@ export type MutationCreateTagArgs = {
 export type MutationCreateTagPostRelationArgs = {
   postId: Scalars['String'];
   tagId: Scalars['String'];
+};
+
+
+export type MutationCreateTagPostRelationsArgs = {
+  tagPostTypes: Array<TagPostInputType>;
 };
 
 
@@ -265,6 +271,11 @@ export type Tag = {
   id: Scalars['String'];
   name: Scalars['String'];
   updatedAt: Scalars['DateTime'];
+};
+
+export type TagPostInputType = {
+  postId: Scalars['String'];
+  tagId: Scalars['String'];
 };
 
 export type TagPostRelation = {
@@ -450,6 +461,13 @@ export type CreateTagPostRelationMutationVariables = Exact<{
 
 
 export type CreateTagPostRelationMutation = { __typename?: 'Mutation', createTagPostRelation: { __typename?: 'TagPostRelation', id: string, tagId: string, postId: string, createdAt: Date, updatedAt: Date, tag: { __typename?: 'Tag', id: string, name: string, createdAt: Date, updatedAt: Date }, post: { __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date } } };
+
+export type CreateTagPostRelationsMutationVariables = Exact<{
+  tagPostTypes: Array<TagPostInputType> | TagPostInputType;
+}>;
+
+
+export type CreateTagPostRelationsMutation = { __typename?: 'Mutation', createTagPostRelations: Array<{ __typename?: 'TagPostRelation', id: string, tagId: string, postId: string, createdAt: Date, updatedAt: Date, tag: { __typename?: 'Tag', id: string, name: string, createdAt: Date, updatedAt: Date }, post: { __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date } }> };
 
 export type DeleteTagPostRelationMutationVariables = Exact<{
   tagId: Scalars['String'];
@@ -1355,6 +1373,61 @@ export function useCreateTagPostRelationMutation(baseOptions?: Apollo.MutationHo
 export type CreateTagPostRelationMutationHookResult = ReturnType<typeof useCreateTagPostRelationMutation>;
 export type CreateTagPostRelationMutationResult = Apollo.MutationResult<CreateTagPostRelationMutation>;
 export type CreateTagPostRelationMutationOptions = Apollo.BaseMutationOptions<CreateTagPostRelationMutation, CreateTagPostRelationMutationVariables>;
+export const CreateTagPostRelationsDocument = gql`
+    mutation CreateTagPostRelations($tagPostTypes: [TagPostInputType!]!) {
+  createTagPostRelations(tagPostTypes: $tagPostTypes) {
+    id
+    tagId
+    postId
+    createdAt
+    updatedAt
+    tag {
+      id
+      name
+      createdAt
+      updatedAt
+    }
+    post {
+      id
+      title
+      content
+      category
+      createdUserId
+      isPrivate
+      groupId
+      bgImage
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+export type CreateTagPostRelationsMutationFn = Apollo.MutationFunction<CreateTagPostRelationsMutation, CreateTagPostRelationsMutationVariables>;
+
+/**
+ * __useCreateTagPostRelationsMutation__
+ *
+ * To run a mutation, you first call `useCreateTagPostRelationsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTagPostRelationsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTagPostRelationsMutation, { data, loading, error }] = useCreateTagPostRelationsMutation({
+ *   variables: {
+ *      tagPostTypes: // value for 'tagPostTypes'
+ *   },
+ * });
+ */
+export function useCreateTagPostRelationsMutation(baseOptions?: Apollo.MutationHookOptions<CreateTagPostRelationsMutation, CreateTagPostRelationsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTagPostRelationsMutation, CreateTagPostRelationsMutationVariables>(CreateTagPostRelationsDocument, options);
+      }
+export type CreateTagPostRelationsMutationHookResult = ReturnType<typeof useCreateTagPostRelationsMutation>;
+export type CreateTagPostRelationsMutationResult = Apollo.MutationResult<CreateTagPostRelationsMutation>;
+export type CreateTagPostRelationsMutationOptions = Apollo.BaseMutationOptions<CreateTagPostRelationsMutation, CreateTagPostRelationsMutationVariables>;
 export const DeleteTagPostRelationDocument = gql`
     mutation DeleteTagPostRelation($tagId: String!, $postId: String!) {
   DeleteTagPostRelation(tagId: $tagId, postId: $postId) {
