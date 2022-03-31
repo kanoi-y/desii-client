@@ -128,7 +128,7 @@ export const CreateTagPostRelationsMutation = extendType({
         const posts = await ctx.prisma.post.findMany({
           where: {
             OR: [
-              ...args.tagPostTypes.map((tagPostType) => {
+              ...args.tagPostTypes.map((tagPostType: { tagId: string; postId: string}) => {
                 return {
                   id: tagPostType.postId,
                 }
