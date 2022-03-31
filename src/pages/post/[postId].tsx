@@ -14,16 +14,17 @@ import {
   GetPostQuery,
   GetPostQueryVariables,
   Post,
+  useGetPostQuery,
   useGetTagPostRelationsQuery,
 } from '~/types/generated/graphql'
 
 const client = initializeApollo()
 
 type Props = {
-  post?: Post
+  postId?: string
 }
 
-const PostPage: NextPage<Props> = ({ post }) => {
+const PostPage: NextPage<Props> = ({ postId }) => {
   const router = useRouter()
   const { currentUser } = useContext(CurrentUserContext)
 
@@ -31,16 +32,23 @@ const PostPage: NextPage<Props> = ({ post }) => {
 
   const { data } = useGetTagPostRelationsQuery({
     variables: {
-      postId: post ? post.id : '',
+      postId: postId ? postId : '',
     },
+  })
+
+  const { data: postData } = useGetPostQuery({
+    variables: {
+      getPostId: postId ? postId : '',
+    },
+    fetchPolicy: 'cache-and-network',
   })
 
   const twitterUrl = useMemo(
     () =>
       `https://twitter.com/intent/tweet?url=${
-        process.env.NEXT_PUBLIC_ROOT_URL + '/post/' + post?.id
+        process.env.NEXT_PUBLIC_ROOT_URL + '/post/' + postId
       }&hashtags=Desii`,
-    [post]
+    [postId]
   )
 
   const handleClickApplyButton = () => {
@@ -48,7 +56,7 @@ const PostPage: NextPage<Props> = ({ post }) => {
     console.log('応募する')
   }
 
-  if (router.isFallback || !post) {
+  if (router.isFallback || !postId || !postData?.getPost) {
     return (
       <Box
         w="100%"
@@ -65,7 +73,7 @@ const PostPage: NextPage<Props> = ({ post }) => {
     <Box p={['28px 10px 0', '40px 20px 0']}>
       <Box mx="auto" maxW="700px">
         <PostCard
-          post={post}
+          post={postData.getPost}
           isBig={width > BREAKPOINTS.sm}
           currentUserId={currentUser?.id}
         />
@@ -78,7 +86,7 @@ const PostPage: NextPage<Props> = ({ post }) => {
           <Box>
             <Tag
               text={
-                post.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'
+                postData.getPost.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'
               }
               bgColor="orange.main"
               size="lg"
@@ -89,9 +97,9 @@ const PostPage: NextPage<Props> = ({ post }) => {
               ))}
             </Box>
           </Box>
-          {post.createdUserId === currentUser?.id && (
+          {postData.getPost.createdUserId === currentUser?.id && (
             <Box>
-              <Link href={`/dashboard/posts/${post.id}`}>
+              <Link href={`/dashboard/posts/${postId}`}>
                 <Button>編集</Button>
               </Link>
             </Box>
@@ -104,7 +112,7 @@ const PostPage: NextPage<Props> = ({ post }) => {
           borderRadius="md"
         >
           <Box fontWeight="bold" fontSize="16px" color="text.main">
-            {post.content}
+            {postData.getPost.content}
           </Box>
         </Box>
         <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -122,7 +130,7 @@ const PostPage: NextPage<Props> = ({ post }) => {
               </svg>
             </Link>
             <PostFavoriteButton
-              postId={post.id}
+              postId={postId}
               currentUserId={currentUser?.id}
             />
           </Box>
@@ -161,6 +169,7 @@ export const getStaticProps = async (
       variables: {
         getPostId: postId,
       },
+      fetchPolicy: 'network-only',
     })
 
     if (!getPost) {
@@ -174,7 +183,7 @@ export const getStaticProps = async (
 
     return addApolloState(client, {
       props: {
-        post: getPost,
+        postId: getPost.id,
       },
       revalidate: 30,
     })

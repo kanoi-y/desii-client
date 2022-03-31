@@ -86,14 +86,15 @@ export const PostCard: VFC<Props> = ({
         overflow="hidden"
         boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
         maxW="700px"
+        position="relative"
       >
         <Box
-          backgroundImage={
+          backgroundImage={`url(${
             post.bgImage ||
             `${
               process.env.NEXT_PUBLIC_ROOT_URL || 'http://localhost:3000'
             }/images/Desii_bgImage.png`
-          }
+          })`}
           backgroundSize="cover"
           backgroundPosition="center"
           w="100%"

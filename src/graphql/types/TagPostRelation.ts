@@ -1,5 +1,24 @@
-import { TagPostRelation as TagPostRelationType } from '@prisma/client'
-import { extendType, nonNull, objectType, stringArg } from 'nexus'
+import {
+  Post,
+  Tag,
+  TagPostRelation as TagPostRelationType,
+} from '@prisma/client'
+import {
+  extendType,
+  inputObjectType,
+  list,
+  nonNull,
+  objectType,
+  stringArg,
+} from 'nexus'
+
+export const TagPostInputType = inputObjectType({
+  name: 'TagPostInputType',
+  definition(t) {
+    t.nonNull.string('tagId')
+    t.nonNull.string('postId')
+  },
+})
 
 export const TagPostRelation = objectType({
   name: 'TagPostRelation',
@@ -97,6 +116,55 @@ export const CreateTagPostRelationMutation = extendType({
   },
 })
 
+export const CreateTagPostRelationsMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.nonNull.list.nonNull.field('createTagPostRelations', {
+      type: 'TagPostRelation',
+      args: {
+        tagPostTypes: nonNull(list(nonNull('TagPostInputType'))),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const posts = await ctx.prisma.post.findMany({
+          where: {
+            OR: [
+              ...args.tagPostTypes.map(
+                (tagPostType: { tagId: string; postId: string }) => {
+                  return {
+                    id: tagPostType.postId,
+                  }
+                }
+              ),
+            ],
+          },
+        })
+
+        if (posts.some((post: Post) => ctx.user?.id !== post.createdUserId)) {
+          throw new Error('投稿の作成者しかタグを追加できません')
+        }
+
+        await ctx.prisma.tagPostRelation.createMany({
+          data: [...args.tagPostTypes],
+        })
+
+        return ctx.prisma.tagPostRelation.findMany({
+          where: {
+            OR: [...args.tagPostTypes],
+          },
+          include: {
+            tag: true,
+            post: true,
+          },
+        })
+      },
+    })
+  },
+})
+
 export const DeleteTagPostRelationMutation = extendType({
   type: 'Mutation',
   definition(t) {
@@ -143,6 +211,54 @@ export const DeleteTagPostRelationMutation = extendType({
             post: true,
           },
         })
+      },
+    })
+  },
+})
+
+export const DeleteTagPostRelationsMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.nonNull.list.nonNull.field('DeleteTagPostRelations', {
+      type: 'TagPostRelation',
+      args: {
+        tagPostTypes: nonNull(list(nonNull('TagPostInputType'))),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const tagPostRelations = await ctx.prisma.tagPostRelation.findMany({
+          where: {
+            OR: [...args.tagPostTypes],
+          },
+          include: {
+            tag: true,
+            post: true,
+          },
+        })
+
+        if (
+          tagPostRelations.some(
+            (
+              tagPostRelation: TagPostRelationType & {
+                post: Post
+                tag: Tag
+              }
+            ) => ctx.user?.id !== tagPostRelation.post.createdUserId
+          )
+        ) {
+          throw new Error('作成者しかタグを削除できません')
+        }
+
+        await ctx.prisma.tagPostRelation.deleteMany({
+          where: {
+            OR: [...args.tagPostTypes],
+          },
+        })
+
+        return tagPostRelations
       },
     })
   },
