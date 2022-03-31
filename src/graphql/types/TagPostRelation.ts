@@ -1,4 +1,8 @@
-import { TagPostRelation as TagPostRelationType } from '@prisma/client'
+import {
+  Post,
+  Tag,
+  TagPostRelation as TagPostRelationType,
+} from '@prisma/client'
 import {
   extendType,
   inputObjectType,
@@ -128,16 +132,18 @@ export const CreateTagPostRelationsMutation = extendType({
         const posts = await ctx.prisma.post.findMany({
           where: {
             OR: [
-              ...args.tagPostTypes.map((tagPostType: { tagId: string; postId: string}) => {
-                return {
-                  id: tagPostType.postId,
+              ...args.tagPostTypes.map(
+                (tagPostType: { tagId: string; postId: string }) => {
+                  return {
+                    id: tagPostType.postId,
+                  }
                 }
-              }),
+              ),
             ],
           },
         })
 
-        if (posts.some((post) => ctx.user?.id !== post.createdUserId)) {
+        if (posts.some((post: Post) => ctx.user?.id !== post.createdUserId)) {
           throw new Error('投稿の作成者しかタグを追加できません')
         }
 
@@ -235,8 +241,12 @@ export const DeleteTagPostRelationsMutation = extendType({
 
         if (
           tagPostRelations.some(
-            (tagPostRelation) =>
-              ctx.user?.id !== tagPostRelation.post.createdUserId
+            (
+              tagPostRelation: TagPostRelationType & {
+                post: Post
+                tag: Tag
+              }
+            ) => ctx.user?.id !== tagPostRelation.post.createdUserId
           )
         ) {
           throw new Error('作成者しかタグを削除できません')
