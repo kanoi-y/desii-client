@@ -9,3 +9,5 @@ export type ColorVariables =
   | 'white.main'
   | 'orange.main'
   | 'orange.light'
+  | 'red.main'
+  | 'red.light'

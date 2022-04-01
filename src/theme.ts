@@ -15,7 +15,7 @@ export const theme = extendTheme({
     },
     text: {
       main: '#505050',
-      light: '#a0aec0'
+      light: '#a0aec0',
     },
     white: {
       main: baseTheme.colors.white,
@@ -23,6 +23,10 @@ export const theme = extendTheme({
     orange: {
       main: baseTheme.colors.orange[200],
       light: baseTheme.colors.orange[50],
+    },
+    red: {
+      main: baseTheme.colors.red[200],
+      light: baseTheme.colors.red[50],
     },
   },
   styles: {
