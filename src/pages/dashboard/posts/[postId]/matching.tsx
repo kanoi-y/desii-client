@@ -57,14 +57,21 @@ const MatchingPage: NextPage<Props> = ({ currentUser, post }) => {
         </Box>
         <Box>
           {data ? (
-            data.GetMatchingPosts.map((matchingPost) => (
-              <PostListItem
-                key={matchingPost.post.id}
-                currentUserId={currentUser.id}
-                post={matchingPost.post}
-                isLink
-              />
-            ))
+            data.GetMatchingPosts.length !== 0 ? (
+              data.GetMatchingPosts.map((matchingPost) => (
+                <PostListItem
+                  key={matchingPost.post.id}
+                  currentUserId={currentUser.id}
+                  post={matchingPost.post}
+                  count={matchingPost.count}
+                  isLink
+                />
+              ))
+            ) : (
+              <Box p="40px 0" textAlign="center">
+                <Text fontSize="lg">まだ、マッチした投稿はありません！</Text>
+              </Box>
+            )
           ) : (
             <SkeletonPostListItem />
           )}
