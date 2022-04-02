@@ -2,10 +2,11 @@ import { Box } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React from 'react'
-import { PostCard } from '~/components/domains/post/PostCard'
-import { SolidIcon, Text } from '~/components/parts/commons'
-import { BREAKPOINTS } from '~/constants'
-import { useWindowDimensions } from '~/hooks'
+import {
+  PostListItem,
+  SkeletonPostListItem,
+} from '~/components/domains/post/PostListItem'
+import { Link, SolidIcon, Text } from '~/components/parts/commons'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER, GET_POST_BY_ID } from '~/queries'
 import {
@@ -14,6 +15,7 @@ import {
   GetPostQuery,
   GetPostQueryVariables,
   Post,
+  useGetMatchingPostsQuery,
   User,
 } from '~/types/generated/graphql'
 
@@ -25,17 +27,15 @@ type Props = {
 }
 
 const MatchingPage: NextPage<Props> = ({ currentUser, post }) => {
-  const { width } = useWindowDimensions()
+  const { data } = useGetMatchingPostsQuery({
+    variables: {
+      postId: post.id,
+    },
+  })
 
   return (
     <Box p={['28px 10px 0', '40px 20px 0']}>
       <Box mx="auto" maxW="700px">
-        <PostCard
-          post={post}
-          isBig={width > BREAKPOINTS.sm}
-          currentUserId={currentUser.id}
-          isLink
-        />
         <Box
           display="flex"
           alignItems="center"
@@ -46,11 +46,29 @@ const MatchingPage: NextPage<Props> = ({ currentUser, post }) => {
           borderColor="secondary.light"
         >
           <SolidIcon icon="SOLID_HEART" color="red.main" size={36} />
-          <Text fontSize="lg" isBold>
-            この投稿にマッチした投稿
+          <Link href={`/post/${post.id}`}>
+            <Text isBold color="primary.main" fontSize="xl">
+              {post.title}
+            </Text>
+          </Link>
+          <Text fontSize="md" isBold>
+            にマッチした投稿
           </Text>
         </Box>
-        <Box></Box>
+        <Box>
+          {data ? (
+            data.GetMatchingPosts.map((matchingPost) => (
+              <PostListItem
+                key={matchingPost.post.id}
+                currentUserId={currentUser.id}
+                post={matchingPost.post}
+                isLink
+              />
+            ))
+          ) : (
+            <SkeletonPostListItem />
+          )}
+        </Box>
       </Box>
     </Box>
   )
