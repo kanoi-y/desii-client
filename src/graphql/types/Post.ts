@@ -114,10 +114,6 @@ export const GetMatchingPostsQuery = extendType({
       type: 'MatchingPostInfoType',
       args: {
         postId: nonNull(stringArg()),
-        sort: arg({
-          type: OrderByType,
-          default: 'asc',
-        }),
       },
       async resolve(_parent, args, ctx) {
         if (!ctx.user) {
@@ -133,6 +129,8 @@ export const GetMatchingPostsQuery = extendType({
           },
         })
 
+        const matchingPostsInfo: { count: number; post: PostType }[] = []
+
         const res = (
           await Promise.all(
             tagPostRelations.map(
@@ -144,6 +142,9 @@ export const GetMatchingPostsQuery = extendType({
                 return ctx.prisma.tagPostRelation.findMany({
                   where: {
                     tagId: tagPostRelation.tag.id,
+                    NOT: {
+                      postId: args.postId,
+                    },
                   },
                   include: {
                     post: true,
@@ -154,32 +155,22 @@ export const GetMatchingPostsQuery = extendType({
           )
         ).flat()
 
-        const countByPostId: { [key: string]: number } = res.reduce(
-          (acc: { [key: string]: number }, tagPostRelation) => {
-            const postId = tagPostRelation.postId
-            if (acc[postId]) {
-              acc[postId]++
-              return acc
-            }
-            acc = { ...acc, postId: 1 }
-            return acc
-          },
-          {} as { [key: string]: number }
-        )
+        //FIXME: 処理が重くなってきたら修正する
+        res.forEach((tagPostRelation) => {
+          const index = matchingPostsInfo.findIndex(
+            (matchingPostInfo: { count: number; post: PostType }) =>
+              matchingPostInfo.post.id === tagPostRelation.postId
+          )
 
-        const matchingPostsInfo = await Promise.all(
-          Object.entries(countByPostId).map(async ([postId, count]) => {
-            const post = (await ctx.prisma.post.findUnique({
-              where: {
-                id: postId,
-              },
-            })) as PostType
+          if (index > -1) {
+            matchingPostsInfo[index].count++
+            return
+          }
 
-            return { count, post }
-          })
-        )
+          matchingPostsInfo.push({ count: 1, post: tagPostRelation.post })
+        })
 
-        return matchingPostsInfo
+        return matchingPostsInfo.sort((a, b) => b.count - a.count)
       },
     })
   },
