@@ -1,4 +1,9 @@
-import { Post as PostType, UserGroupRelation } from '@prisma/client'
+import {
+  Post as PostType,
+  Tag,
+  TagPostRelation as TagPostRelationType,
+  UserGroupRelation,
+} from '@prisma/client'
 import {
   arg,
   booleanArg,
@@ -17,6 +22,16 @@ export const PostCategory = enumType({
 export const OrderByType = enumType({
   name: 'orderByType',
   members: ['asc', 'desc'],
+})
+
+export const MatchingPostInfoType = objectType({
+  name: 'MatchingPostInfoType',
+  definition(t) {
+    t.nonNull.int('count')
+    t.nonNull.field('post', {
+      type: 'Post',
+    })
+  },
 })
 
 export const Post = objectType({
@@ -87,6 +102,84 @@ export const GetPostsQuery = extendType({
             createdAt: args.sort || 'asc',
           },
         })
+      },
+    })
+  },
+})
+
+export const GetMatchingPostsQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.nonNull.list.nonNull.field('GetMatchingPosts', {
+      type: 'MatchingPostInfoType',
+      args: {
+        postId: nonNull(stringArg()),
+        sort: arg({
+          type: OrderByType,
+          default: 'asc',
+        }),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const tagPostRelations = await ctx.prisma.tagPostRelation.findMany({
+          where: {
+            postId: args.postId,
+          },
+          include: {
+            tag: true,
+          },
+        })
+
+        const res = (
+          await Promise.all(
+            tagPostRelations.map(
+              (
+                tagPostRelation: TagPostRelationType & {
+                  tag: Tag
+                }
+              ) => {
+                return ctx.prisma.tagPostRelation.findMany({
+                  where: {
+                    tagId: tagPostRelation.tag.id,
+                  },
+                  include: {
+                    post: true,
+                  },
+                })
+              }
+            )
+          )
+        ).flat()
+
+        const countByPostId: { [key: string]: number } = res.reduce(
+          (acc: { [key: string]: number }, tagPostRelation) => {
+            const postId = tagPostRelation.postId
+            if (acc[postId]) {
+              acc[postId]++
+              return acc
+            }
+            acc = { ...acc, postId: 1 }
+            return acc
+          },
+          {} as { [key: string]: number }
+        )
+
+        const matchingPostsInfo = await Promise.all(
+          Object.entries(countByPostId).map(async ([postId, count]) => {
+            const post = (await ctx.prisma.post.findUnique({
+              where: {
+                id: postId,
+              },
+            })) as PostType
+
+            return { count, post }
+          })
+        )
+
+        return matchingPostsInfo
       },
     })
   },

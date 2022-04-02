@@ -28,6 +28,11 @@ type Group {
   updatedAt: DateTime!
 }
 
+type MatchingPostInfoType {
+  count: Int!
+  post: Post!
+}
+
 type Mutation {
   DeleteFavorite(postId: String!): Favorite!
   DeleteTagPostRelation(postId: String!, tagId: String!): TagPostRelation!
@@ -69,6 +74,7 @@ enum PostCategory {
 
 type Query {
   GetFavorites(createdUserId: String, postId: String, sort: orderByType = asc): [Favorite!]!
+  GetMatchingPosts(postId: String!, sort: orderByType = asc): [MatchingPostInfoType!]!
   GetPosts(groupId: String, isPrivate: Boolean, sort: orderByType = asc, userId: String): [Post!]!
   GetTagByName(name: String!): Tag
   GetTagPostRelations(postId: String, tagId: String): [TagPostRelation!]!
