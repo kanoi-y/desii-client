@@ -23,6 +23,7 @@ type Props = {
   post: Post
   currentUserId?: string
   editable?: boolean
+  count?: number
   isLink?: boolean
 }
 
@@ -64,6 +65,7 @@ export const PostListItem: VFC<Props> = ({
   post,
   currentUserId,
   editable = false,
+  count,
   isLink = false,
 }) => {
   const router = useRouter()
@@ -91,6 +93,21 @@ export const PostListItem: VFC<Props> = ({
       borderColor="secondary.light"
     >
       <Box>
+        {count && (
+          <Box display="flex" alignItems="center" mb="8px">
+            <Text fontSize="sm" isBold>
+              マッチ度：
+            </Text>
+            {[...Array(count)].map((c) => (
+              <SolidIcon
+                key={c}
+                icon="SOLID_HEART"
+                color="red.main"
+                size={20}
+              />
+            ))}
+          </Box>
+        )}
         <Box display="flex" alignItems="center" gap="8px" mb="4px">
           {userData?.getUser ? (
             <>
