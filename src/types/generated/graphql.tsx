@@ -40,6 +40,12 @@ export type Group = {
   updatedAt: Scalars['DateTime'];
 };
 
+export type MatchingPostInfoType = {
+  __typename?: 'MatchingPostInfoType';
+  count: Scalars['Int'];
+  post: Post;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   DeleteFavorite: Favorite;
@@ -202,6 +208,7 @@ export enum PostCategory {
 export type Query = {
   __typename?: 'Query';
   GetFavorites: Array<Favorite>;
+  GetMatchingPosts: Array<MatchingPostInfoType>;
   GetPosts: Array<Post>;
   GetTagByName?: Maybe<Tag>;
   GetTagPostRelations: Array<TagPostRelation>;
@@ -218,6 +225,11 @@ export type QueryGetFavoritesArgs = {
   createdUserId?: InputMaybe<Scalars['String']>;
   postId?: InputMaybe<Scalars['String']>;
   sort?: InputMaybe<OrderByType>;
+};
+
+
+export type QueryGetMatchingPostsArgs = {
+  postId: Scalars['String'];
 };
 
 
@@ -398,6 +410,13 @@ export type GetPostsQueryVariables = Exact<{
 
 
 export type GetPostsQuery = { __typename?: 'Query', GetPosts: Array<{ __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date }> };
+
+export type GetMatchingPostsQueryVariables = Exact<{
+  postId: Scalars['String'];
+}>;
+
+
+export type GetMatchingPostsQuery = { __typename?: 'Query', GetMatchingPosts: Array<{ __typename?: 'MatchingPostInfoType', count: number, post: { __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date } }> };
 
 export type CreatePostMutationVariables = Exact<{
   title: Scalars['String'];
@@ -1009,6 +1028,53 @@ export function useGetPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetPostsQueryHookResult = ReturnType<typeof useGetPostsQuery>;
 export type GetPostsLazyQueryHookResult = ReturnType<typeof useGetPostsLazyQuery>;
 export type GetPostsQueryResult = Apollo.QueryResult<GetPostsQuery, GetPostsQueryVariables>;
+export const GetMatchingPostsDocument = gql`
+    query GetMatchingPosts($postId: String!) {
+  GetMatchingPosts(postId: $postId) {
+    count
+    post {
+      id
+      title
+      content
+      category
+      createdUserId
+      isPrivate
+      groupId
+      bgImage
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetMatchingPostsQuery__
+ *
+ * To run a query within a React component, call `useGetMatchingPostsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMatchingPostsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMatchingPostsQuery({
+ *   variables: {
+ *      postId: // value for 'postId'
+ *   },
+ * });
+ */
+export function useGetMatchingPostsQuery(baseOptions: Apollo.QueryHookOptions<GetMatchingPostsQuery, GetMatchingPostsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMatchingPostsQuery, GetMatchingPostsQueryVariables>(GetMatchingPostsDocument, options);
+      }
+export function useGetMatchingPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMatchingPostsQuery, GetMatchingPostsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMatchingPostsQuery, GetMatchingPostsQueryVariables>(GetMatchingPostsDocument, options);
+        }
+export type GetMatchingPostsQueryHookResult = ReturnType<typeof useGetMatchingPostsQuery>;
+export type GetMatchingPostsLazyQueryHookResult = ReturnType<typeof useGetMatchingPostsLazyQuery>;
+export type GetMatchingPostsQueryResult = Apollo.QueryResult<GetMatchingPostsQuery, GetMatchingPostsQueryVariables>;
 export const CreatePostDocument = gql`
     mutation CreatePost($title: String!, $content: String!, $category: PostCategory!, $isPrivate: Boolean!, $groupId: String, $bgImage: String) {
   createPost(
