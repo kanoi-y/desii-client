@@ -1,4 +1,4 @@
-import { Badge, Box, Skeleton, SkeletonText } from '@chakra-ui/react'
+import { Badge, Box, Skeleton, SkeletonText, Tooltip } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { VFC } from 'react'
 import { PostFavoriteButton } from '~/components/domains/post/PostFavoriteButton'
@@ -164,16 +164,18 @@ export const PostListItem: VFC<Props> = ({
       ) : (
         <Box display="flex" alignItems="center" gap="4px">
           <Link href={`/dashboard/posts/${post.id}/matching`}>
-            <Box
-              bgColor="primary.light"
-              borderRadius="50%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              p="4px"
-            >
-              <SolidIcon icon="SOLID_HEART" color="red.main" />
-            </Box>
+            <Tooltip label="マッチした投稿を確認">
+              <Box
+                bgColor="primary.light"
+                borderRadius="50%"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                p="4px"
+              >
+                <SolidIcon icon="SOLID_HEART" color="red.main" />
+              </Box>
+            </Tooltip>
           </Link>
           <Menu
             toggleItem={
