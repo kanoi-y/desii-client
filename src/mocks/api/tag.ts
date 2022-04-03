@@ -18,3 +18,14 @@ export const getAllTags = (req: any, res: any, ctx: any) => {
     })
   )
 }
+
+export const createTag = (req: any, res: any, ctx: any) => {
+  const { name } = req.variables
+  return res(
+    ctx.data({
+      createTag: {
+        ...tagFactory({ name }),
+      },
+    })
+  )
+}
