@@ -1,67 +1,20 @@
 import { graphql } from 'msw'
-import { UserGroupRelation } from '~/types/generated/graphql'
 import {
-  favoriteFactory,
-  userFactory,
-  userGroupRelationFactory,
-} from './factories'
+  createFavorite,
+  createTag,
+  deleteFavorite,
+  getAllTags,
+  getFavorites,
+  getUser,
+  getUserGroupRelations,
+} from './api'
 
 export const handlers = [
-  graphql.query('GetUserGroupRelations', (req, res, ctx) => {
-    const { userId, groupId } = req.variables
-    const query: Partial<UserGroupRelation> = {}
-    if (userId) query.userId = userId
-    if (groupId) query.groupId = groupId
-    return res(
-      ctx.data({
-        GetUserGroupRelations: [
-          {
-            ...userGroupRelationFactory(query),
-          },
-        ],
-      })
-    )
-  }),
-  graphql.query('GetUser', (req, res, ctx) => {
-    const { getUserId } = req.variables
-    return res(
-      ctx.data({
-        getUser: {
-          ...userFactory({ id: getUserId, image: 'images/Desii_icon.png' }),
-        },
-      })
-    )
-  }),
-  graphql.query('GetFavorites', (req, res, ctx) => {
-    const { postId } = req.variables
-    return res(
-      ctx.data({
-        GetFavorites: [
-          {
-            ...favoriteFactory({ postId }),
-          },
-        ],
-      })
-    )
-  }),
-  graphql.mutation('CreateFavorite', (req, res, ctx) => {
-    const { postId } = req.variables
-    return res(
-      ctx.data({
-        createFavorite: {
-          ...favoriteFactory({ postId }),
-        },
-      })
-    )
-  }),
-  graphql.mutation('DeleteFavorite', (req, res, ctx) => {
-    const { postId } = req.variables
-    return res(
-      ctx.data({
-        DeleteFavorite: {
-          ...favoriteFactory({ postId }),
-        },
-      })
-    )
-  }),
+  graphql.query('GetUserGroupRelations', getUserGroupRelations),
+  graphql.query('GetUser', getUser),
+  graphql.query('GetFavorites', getFavorites),
+  graphql.query('GetAllTags', getAllTags),
+  graphql.mutation('CreateFavorite', createFavorite),
+  graphql.mutation('CreateTag', createTag),
+  graphql.mutation('DeleteFavorite', deleteFavorite),
 ]

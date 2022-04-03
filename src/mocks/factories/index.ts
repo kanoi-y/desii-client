@@ -1,5 +1,7 @@
 export { favoriteFactory } from './favoriteFactory'
 export { groupFactory } from './groupFactory'
 export { postFactory } from './postFactory'
+export { tagFactory } from './tagFactory'
+export { tagPostRelationFactory } from './tagPostRelationFactory'
 export { userFactory } from './userFactory'
 export { userGroupRelationFactory } from './userGroupRelationFactory'
