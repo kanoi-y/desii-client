@@ -31,6 +31,7 @@ const MatchingPage: NextPage<Props> = ({ currentUser, post }) => {
     variables: {
       postId: post.id,
     },
+    fetchPolicy: 'cache-and-network',
   })
 
   return (
