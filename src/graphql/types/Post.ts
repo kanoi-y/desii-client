@@ -1,4 +1,9 @@
-import { Post as PostType, UserGroupRelation } from '@prisma/client'
+import {
+  Post as PostType,
+  Tag,
+  TagPostRelation as TagPostRelationType,
+  UserGroupRelation,
+} from '@prisma/client'
 import {
   arg,
   booleanArg,
@@ -17,6 +22,16 @@ export const PostCategory = enumType({
 export const OrderByType = enumType({
   name: 'orderByType',
   members: ['asc', 'desc'],
+})
+
+export const MatchingPostInfoType = objectType({
+  name: 'MatchingPostInfoType',
+  definition(t) {
+    t.nonNull.int('count')
+    t.nonNull.field('post', {
+      type: 'Post',
+    })
+  },
 })
 
 export const Post = objectType({
@@ -87,6 +102,75 @@ export const GetPostsQuery = extendType({
             createdAt: args.sort || 'asc',
           },
         })
+      },
+    })
+  },
+})
+
+export const GetMatchingPostsQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.nonNull.list.nonNull.field('GetMatchingPosts', {
+      type: 'MatchingPostInfoType',
+      args: {
+        postId: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const tagPostRelations = await ctx.prisma.tagPostRelation.findMany({
+          where: {
+            postId: args.postId,
+          },
+          include: {
+            tag: true,
+          },
+        })
+
+        const matchingPostsInfo: { count: number; post: PostType }[] = []
+
+        const res = (
+          await Promise.all(
+            tagPostRelations.map(
+              (
+                tagPostRelation: TagPostRelationType & {
+                  tag: Tag
+                }
+              ) => {
+                return ctx.prisma.tagPostRelation.findMany({
+                  where: {
+                    tagId: tagPostRelation.tag.id,
+                    NOT: {
+                      postId: args.postId,
+                    },
+                  },
+                  include: {
+                    post: true,
+                  },
+                })
+              }
+            )
+          )
+        ).flat()
+
+        //FIXME: 処理が重くなってきたら修正する
+        res.forEach((tagPostRelation) => {
+          const index = matchingPostsInfo.findIndex(
+            (matchingPostInfo: { count: number; post: PostType }) =>
+              matchingPostInfo.post.id === tagPostRelation.postId
+          )
+
+          if (index > -1) {
+            matchingPostsInfo[index].count++
+            return
+          }
+
+          matchingPostsInfo.push({ count: 1, post: tagPostRelation.post })
+        })
+
+        return matchingPostsInfo.sort((a, b) => b.count - a.count)
       },
     })
   },

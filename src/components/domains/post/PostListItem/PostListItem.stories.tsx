@@ -15,7 +15,7 @@ const Template: ComponentStory<typeof PostListItem> = ({ ...args }) => {
   const client = initializeApollo()
   return (
     <ApolloProvider client={client}>
-      <Box p="20px">
+      <Box>
         <PostListItem {...args} />
         <PostListItem {...args} />
         <PostListItem {...args} />
@@ -41,6 +41,13 @@ EditablePostListItem.args = {
   post: postFactory({ title: 'プログラミングを教えてほしい！' }),
   currentUserId: 'userId',
   editable: true,
+}
+
+export const ExistCountPostListItem = Template.bind({})
+ExistCountPostListItem.args = {
+  post: postFactory({ title: 'プログラミングを教えてほしい！' }),
+  currentUserId: 'userId',
+  count: 3,
 }
 
 const SkeletonTemplate: ComponentStory<typeof SkeletonPostListItem> = ({

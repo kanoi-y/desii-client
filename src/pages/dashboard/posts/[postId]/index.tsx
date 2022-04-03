@@ -422,21 +422,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getSession(ctx)
     const postId = ctx.params?.postId as string | undefined
 
-    if (!session || !postId) {
-      return {
-        redirect: {
-          permanent: false,
-          destination: '/',
-        },
-      }
-    }
-
     const {
       data: { getCurrentUser },
     } = await client.query<GetCurrentUserQuery, GetCurrentUserQueryVariables>({
       query: GET_CURRENT_USER,
       variables: {
-        accessToken: session.accessToken || '',
+        accessToken: session?.accessToken || '',
       },
     })
 
@@ -445,12 +436,21 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     } = await client.query<GetPostQuery, GetPostQueryVariables>({
       query: GET_POST_BY_ID,
       variables: {
-        getPostId: postId,
+        getPostId: postId || '',
       },
       fetchPolicy: 'network-only',
     })
 
     if (!getCurrentUser || !getPost) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/',
+        },
+      }
+    }
+
+    if (getCurrentUser.id !== getPost.createdUserId) {
       return {
         redirect: {
           permanent: false,

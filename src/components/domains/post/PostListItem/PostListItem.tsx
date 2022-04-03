@@ -23,6 +23,7 @@ type Props = {
   post: Post
   currentUserId?: string
   editable?: boolean
+  count?: number
   isLink?: boolean
 }
 
@@ -64,6 +65,7 @@ export const PostListItem: VFC<Props> = ({
   post,
   currentUserId,
   editable = false,
+  count,
   isLink = false,
 }) => {
   const router = useRouter()
@@ -91,6 +93,21 @@ export const PostListItem: VFC<Props> = ({
       borderColor="secondary.light"
     >
       <Box>
+        {count && (
+          <Box display="flex" alignItems="center" mb="8px">
+            <Text fontSize="sm" isBold>
+              マッチ度：
+            </Text>
+            {[...Array(count)].map((c) => (
+              <SolidIcon
+                key={c}
+                icon="SOLID_HEART"
+                color="red.main"
+                size={20}
+              />
+            ))}
+          </Box>
+        )}
         <Box display="flex" alignItems="center" gap="8px" mb="4px">
           {userData?.getUser ? (
             <>
@@ -145,23 +162,41 @@ export const PostListItem: VFC<Props> = ({
           existCount
         />
       ) : (
-        <Menu
-          toggleItem={
-            <SolidIcon icon="SOLID_CHEVRON_DOWN" size={28} color="text.light" />
-          }
-          menuList={[
-            {
-              text: '投稿を更新する',
-              onClick: () => router.push(`/dashboard/posts/${post.id}`),
-              icon: <SolidIcon icon="SOLID_REFRESH" size={20} />,
-            },
-            {
-              text: '投稿を削除する',
-              onClick: () => deletePostMutation(),
-              icon: <SolidIcon icon="SOLID_TRASH" size={20} />,
-            },
-          ]}
-        />
+        <Box display="flex" alignItems="center" gap="4px">
+          <Link href={`/dashboard/posts/${post.id}/matching`}>
+            <Box
+              bgColor="primary.light"
+              borderRadius="50%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              p="4px"
+            >
+              <SolidIcon icon="SOLID_HEART" color="red.main" />
+            </Box>
+          </Link>
+          <Menu
+            toggleItem={
+              <SolidIcon
+                icon="SOLID_CHEVRON_DOWN"
+                size={28}
+                color="text.light"
+              />
+            }
+            menuList={[
+              {
+                text: '投稿を更新する',
+                onClick: () => router.push(`/dashboard/posts/${post.id}`),
+                icon: <SolidIcon icon="SOLID_REFRESH" size={20} />,
+              },
+              {
+                text: '投稿を削除する',
+                onClick: () => deletePostMutation(),
+                icon: <SolidIcon icon="SOLID_TRASH" size={20} />,
+              },
+            ]}
+          />
+        </Box>
       )}
     </Box>
   )

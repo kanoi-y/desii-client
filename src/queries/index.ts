@@ -10,6 +10,7 @@ export {
   DELETE_POST,
   GET_POSTS,
   GET_POST_BY_ID,
+  GET_MATCHING_POSTS,
   UPDATE_POST,
 } from './post'
 export { CREATE_TAG, GET_TAG_BY_NAME } from './tag'

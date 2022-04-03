@@ -44,6 +44,26 @@ export const GET_POSTS = gql`
   }
 `
 
+export const GET_MATCHING_POSTS = gql`
+  query GetMatchingPosts($postId: String!) {
+    GetMatchingPosts(postId: $postId) {
+      count
+      post {
+        id
+        title
+        content
+        category
+        createdUserId
+        isPrivate
+        groupId
+        bgImage
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`
+
 export const CREATE_POST = gql`
   mutation CreatePost(
     $title: String!
