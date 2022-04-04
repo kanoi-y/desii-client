@@ -54,6 +54,23 @@ type Mutation {
   updateUser(description: String, email: String, id: String!, image: String, name: String): User!
 }
 
+type Notification {
+  createdAt: DateTime!
+  createdUserId: String
+  id: String!
+  isChecked: Boolean!
+  message: String!
+  targetUserId: String!
+  type: NotificationType!
+  updatedAt: DateTime!
+  url: String!
+}
+
+enum NotificationType {
+  FETCH_REACTION
+  MATCH_POST
+}
+
 type Post {
   bgImage: String
   category: PostCategory!

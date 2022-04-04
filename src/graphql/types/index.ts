@@ -1,6 +1,7 @@
 export * from './DateTime'
 export * from './Favorite'
 export * from './Group'
+export * from './Notification'
 export * from './Post'
 export * from './Tag'
 export * from './TagPostRelation'
