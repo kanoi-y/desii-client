@@ -52,6 +52,8 @@ model User {
   userGroupRelations UserGroupRelation[]
   posts              Post[]
   favorites          Favorite[]
+  createdUserNotifications      Notification[]  @relation(name: "createdUser")
+  targetUserNotifications       Notification[]  @relation(name: "targetUser")
 }
 
 model Group {
@@ -129,6 +131,21 @@ model TagPostRelation {
   @@unique(fields: [tagId, postId], name: "tagPostRelationId")
 }
 
+model Notification {
+  id               String            @id @default(cuid())
+  type             NotificationType
+  createdUserId    String?
+  targetUserId     String
+  message          String
+  url              String
+  isChecked        Boolean
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  createdUser      User?     @relation(name: "createdUser", fields: [createdUserId], references: [id], onDelete: Cascade)
+  targetUser       User     @relation(name: "targetUser", fields: [targetUserId], references: [id], onDelete: Cascade)
+}
+
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -140,4 +157,9 @@ model VerificationToken {
 enum PostCategory {
   GIVE_ME
   GIVE_YOU
+}
+
+enum NotificationType {
+  FETCH_REACTION
+  MATCH_POST
 }
