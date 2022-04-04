@@ -5,6 +5,7 @@ export {
   GET_GROUP_BY_ID,
   UPDATE_GROUP,
 } from './group'
+export { GET_NOTIFICATIONS, UPDATE_NOTIFICATION } from './notification'
 export {
   CREATE_POST,
   DELETE_POST,

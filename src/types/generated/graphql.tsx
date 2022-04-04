@@ -52,6 +52,7 @@ export type Mutation = {
   DeleteTagPostRelation: TagPostRelation;
   DeleteTagPostRelations: Array<TagPostRelation>;
   DeleteUserGroupRelation: UserGroupRelation;
+  UpdateNotification: Notification;
   createFavorite: Favorite;
   createGroup: Group;
   createPost: Post;
@@ -88,6 +89,12 @@ export type MutationDeleteTagPostRelationsArgs = {
 export type MutationDeleteUserGroupRelationArgs = {
   groupId: Scalars['String'];
   userId: Scalars['String'];
+};
+
+
+export type MutationUpdateNotificationArgs = {
+  id: Scalars['String'];
+  isChecked: Scalars['Boolean'];
 };
 
 
@@ -186,6 +193,24 @@ export type MutationUpdateUserArgs = {
   name?: InputMaybe<Scalars['String']>;
 };
 
+export type Notification = {
+  __typename?: 'Notification';
+  createdAt: Scalars['DateTime'];
+  createdUserId?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  isChecked: Scalars['Boolean'];
+  message: Scalars['String'];
+  targetUserId: Scalars['String'];
+  type: NotificationType;
+  updatedAt: Scalars['DateTime'];
+  url: Scalars['String'];
+};
+
+export enum NotificationType {
+  FetchReaction = 'FETCH_REACTION',
+  MatchPost = 'MATCH_POST'
+}
+
 export type Post = {
   __typename?: 'Post';
   bgImage?: Maybe<Scalars['String']>;
@@ -209,6 +234,7 @@ export type Query = {
   __typename?: 'Query';
   GetFavorites: Array<Favorite>;
   GetMatchingPosts: Array<MatchingPostInfoType>;
+  GetNotifications: Array<Notification>;
   GetPosts: Array<Post>;
   GetTagByName?: Maybe<Tag>;
   GetTagPostRelations: Array<TagPostRelation>;
@@ -230,6 +256,11 @@ export type QueryGetFavoritesArgs = {
 
 export type QueryGetMatchingPostsArgs = {
   postId: Scalars['String'];
+};
+
+
+export type QueryGetNotificationsArgs = {
+  targetUserId: Scalars['String'];
 };
 
 
@@ -393,6 +424,21 @@ export type UpdateGroupMutationVariables = Exact<{
 
 
 export type UpdateGroupMutation = { __typename?: 'Mutation', updateGroup: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } };
+
+export type GetNotificationsQueryVariables = Exact<{
+  targetUserId: Scalars['String'];
+}>;
+
+
+export type GetNotificationsQuery = { __typename?: 'Query', GetNotifications: Array<{ __typename?: 'Notification', id: string, type: NotificationType, createdUserId?: string | null, targetUserId: string, message: string, url: string, isChecked: boolean, createdAt: Date, updatedAt: Date }> };
+
+export type UpdateNotificationMutationVariables = Exact<{
+  updateNotificationId: Scalars['String'];
+  isChecked: Scalars['Boolean'];
+}>;
+
+
+export type UpdateNotificationMutation = { __typename?: 'Mutation', UpdateNotification: { __typename?: 'Notification', id: string, type: NotificationType, createdUserId?: string | null, targetUserId: string, message: string, url: string, isChecked: boolean, createdAt: Date, updatedAt: Date } };
 
 export type GetPostQueryVariables = Exact<{
   getPostId: Scalars['String'];
@@ -937,6 +983,91 @@ export function useUpdateGroupMutation(baseOptions?: Apollo.MutationHookOptions<
 export type UpdateGroupMutationHookResult = ReturnType<typeof useUpdateGroupMutation>;
 export type UpdateGroupMutationResult = Apollo.MutationResult<UpdateGroupMutation>;
 export type UpdateGroupMutationOptions = Apollo.BaseMutationOptions<UpdateGroupMutation, UpdateGroupMutationVariables>;
+export const GetNotificationsDocument = gql`
+    query GetNotifications($targetUserId: String!) {
+  GetNotifications(targetUserId: $targetUserId) {
+    id
+    type
+    createdUserId
+    targetUserId
+    message
+    url
+    isChecked
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetNotificationsQuery__
+ *
+ * To run a query within a React component, call `useGetNotificationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetNotificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetNotificationsQuery({
+ *   variables: {
+ *      targetUserId: // value for 'targetUserId'
+ *   },
+ * });
+ */
+export function useGetNotificationsQuery(baseOptions: Apollo.QueryHookOptions<GetNotificationsQuery, GetNotificationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetNotificationsQuery, GetNotificationsQueryVariables>(GetNotificationsDocument, options);
+      }
+export function useGetNotificationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetNotificationsQuery, GetNotificationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetNotificationsQuery, GetNotificationsQueryVariables>(GetNotificationsDocument, options);
+        }
+export type GetNotificationsQueryHookResult = ReturnType<typeof useGetNotificationsQuery>;
+export type GetNotificationsLazyQueryHookResult = ReturnType<typeof useGetNotificationsLazyQuery>;
+export type GetNotificationsQueryResult = Apollo.QueryResult<GetNotificationsQuery, GetNotificationsQueryVariables>;
+export const UpdateNotificationDocument = gql`
+    mutation UpdateNotification($updateNotificationId: String!, $isChecked: Boolean!) {
+  UpdateNotification(id: $updateNotificationId, isChecked: $isChecked) {
+    id
+    type
+    createdUserId
+    targetUserId
+    message
+    url
+    isChecked
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdateNotificationMutationFn = Apollo.MutationFunction<UpdateNotificationMutation, UpdateNotificationMutationVariables>;
+
+/**
+ * __useUpdateNotificationMutation__
+ *
+ * To run a mutation, you first call `useUpdateNotificationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateNotificationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateNotificationMutation, { data, loading, error }] = useUpdateNotificationMutation({
+ *   variables: {
+ *      updateNotificationId: // value for 'updateNotificationId'
+ *      isChecked: // value for 'isChecked'
+ *   },
+ * });
+ */
+export function useUpdateNotificationMutation(baseOptions?: Apollo.MutationHookOptions<UpdateNotificationMutation, UpdateNotificationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateNotificationMutation, UpdateNotificationMutationVariables>(UpdateNotificationDocument, options);
+      }
+export type UpdateNotificationMutationHookResult = ReturnType<typeof useUpdateNotificationMutation>;
+export type UpdateNotificationMutationResult = Apollo.MutationResult<UpdateNotificationMutation>;
+export type UpdateNotificationMutationOptions = Apollo.BaseMutationOptions<UpdateNotificationMutation, UpdateNotificationMutationVariables>;
 export const GetPostDocument = gql`
     query GetPost($getPostId: String!) {
   getPost(id: $getPostId) {
