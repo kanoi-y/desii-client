@@ -94,7 +94,9 @@ export const CreateFavoriteMutation = extendType({
         }
 
         // バックグラウンドで通知を作成
-        createNotification(ctx, post)
+        if (ctx.user.id !== post.createdUserId) {
+          createNotification(ctx, post)
+        }
 
         return ctx.prisma.favorite.create({
           data: {
