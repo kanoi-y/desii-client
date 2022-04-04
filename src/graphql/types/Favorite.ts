@@ -1,5 +1,6 @@
-import { Favorite as FavoriteType } from '@prisma/client'
+import { Favorite as FavoriteType, Post } from '@prisma/client'
 import { arg, extendType, nonNull, objectType, stringArg } from 'nexus'
+import { Context } from '../context'
 import { OrderByType } from './Post'
 
 export const Favorite = objectType({
@@ -56,6 +57,19 @@ export const GetFavoritesQuery = extendType({
   },
 })
 
+const createNotification = async (ctx: Context, post: Post) => {
+  await ctx.prisma.notification.create({
+    data: {
+      type: 'FETCH_REACTION',
+      createdUserId: ctx.user?.id,
+      targetUserId: post.createdUserId,
+      message: `${ctx.user?.name}さんが「${post.title}」にいいねしました`,
+      url: `/post/${post.id}`,
+      isChecked: false,
+    },
+  })
+}
+
 export const CreateFavoriteMutation = extendType({
   type: 'Mutation',
   definition(t) {
@@ -78,6 +92,9 @@ export const CreateFavoriteMutation = extendType({
         if (!post) {
           throw new Error('投稿が存在しません')
         }
+
+        // バックグラウンドで通知を作成
+        createNotification(ctx, post)
 
         return ctx.prisma.favorite.create({
           data: {
