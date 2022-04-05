@@ -190,38 +190,42 @@ export const CreateTagPostRelationsMutation = extendType({
     t.nonNull.list.nonNull.field('createTagPostRelations', {
       type: 'TagPostRelation',
       args: {
-        tagPostTypes: nonNull(list(nonNull('TagPostInputType'))),
+        tagIds: nonNull(list(nonNull(stringArg()))),
+        postId: nonNull(stringArg()),
       },
       async resolve(_parent, args, ctx) {
         if (!ctx.user) {
           throw new Error('ログインユーザーが存在しません')
         }
 
-        const posts = await ctx.prisma.post.findMany({
+        const post = await ctx.prisma.post.findUnique({
           where: {
-            OR: [
-              ...args.tagPostTypes.map(
-                (tagPostType: { tagId: string; postId: string }) => {
-                  return {
-                    id: tagPostType.postId,
-                  }
-                }
-              ),
-            ],
+            id: args.postId,
           },
         })
 
-        if (posts.some((post: Post) => ctx.user?.id !== post.createdUserId)) {
+        if (!post) {
+          throw new Error('投稿が存在しません')
+        }
+
+        if (ctx.user.id !== post.createdUserId) {
           throw new Error('投稿の作成者しかタグを追加できません')
         }
 
+        const tagPostTypes = args.tagIds.map((tagId: string) => {
+          return {
+            tagId,
+            postId: args.postId,
+          }
+        })
+
         await ctx.prisma.tagPostRelation.createMany({
-          data: [...args.tagPostTypes],
+          data: tagPostTypes,
         })
 
         const tagPostRelations = await ctx.prisma.tagPostRelation.findMany({
           where: {
-            OR: [...args.tagPostTypes],
+            OR: tagPostTypes,
           },
           include: {
             tag: true,
@@ -229,8 +233,8 @@ export const CreateTagPostRelationsMutation = extendType({
           },
         })
 
-        // 通知を作成
-        createNotification(ctx, tagPostRelations, posts[0])
+        // 非同期に処理
+        createNotification(ctx, tagPostRelations, post)
 
         return tagPostRelations
       },
