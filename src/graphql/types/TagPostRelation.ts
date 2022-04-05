@@ -141,7 +141,6 @@ const createNotification = async (
             where: {
               tagId: tagPostRelation.tag.id,
               NOT: {
-                // tagPostTypesのpostIdが全て一緒である前提
                 postId: post.id,
               },
             },
@@ -166,7 +165,9 @@ const createNotification = async (
       return
     }
 
-    matchingPostsInfo.push({ count: 1, post: tagPostRelation.post })
+    if (ctx.user?.id !== tagPostRelation.post.createdUserId) {
+      matchingPostsInfo.push({ count: 1, post: tagPostRelation.post })
+    }
   })
 
   await ctx.prisma.notification.createMany({
