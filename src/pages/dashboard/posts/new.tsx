@@ -80,9 +80,7 @@ const NewPostPage: NextPage = () => {
     },
   })
 
-  const [createTagPostRelationsMutation] = useCreateTagPostRelationsMutation({
-    refetchQueries: ['GetTagPostRelations'],
-  })
+  const [createTagPostRelationsMutation] = useCreateTagPostRelationsMutation()
 
   const handleDeleteTag = async (tagId: string) => {
     setPostTags(postTags.filter((tag) => tag.id !== tagId))

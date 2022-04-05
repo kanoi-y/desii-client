@@ -176,7 +176,7 @@ const createNotification = async (
         return {
           type: 'MATCH_POST' as NotificationType,
           targetUserId: matchingPostInfo.post.createdUserId,
-          message: `「${matchingPostInfo.post.title}」が「${post.title}」とマッチしました！！`,
+          message: `「${matchingPostInfo.post.title}」が「${post.title}」とマッチしました`,
           url: `/post/${post.id}`,
           isChecked: false,
         }
