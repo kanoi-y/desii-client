@@ -167,7 +167,9 @@ export const GetMatchingPostsQuery = extendType({
             return
           }
 
-          matchingPostsInfo.push({ count: 1, post: tagPostRelation.post })
+          if (ctx.user?.id !== tagPostRelation.post.createdUserId) {
+            matchingPostsInfo.push({ count: 1, post: tagPostRelation.post })
+          }
         })
 
         return matchingPostsInfo.sort((a, b) => b.count - a.count)
