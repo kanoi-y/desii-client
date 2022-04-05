@@ -133,7 +133,8 @@ export type MutationCreateTagPostRelationArgs = {
 
 
 export type MutationCreateTagPostRelationsArgs = {
-  tagPostTypes: Array<TagPostInputType>;
+  postId: Scalars['String'];
+  tagIds: Array<Scalars['String']>;
 };
 
 
@@ -534,7 +535,8 @@ export type CreateTagPostRelationMutationVariables = Exact<{
 export type CreateTagPostRelationMutation = { __typename?: 'Mutation', createTagPostRelation: { __typename?: 'TagPostRelation', id: string, tagId: string, postId: string, createdAt: Date, updatedAt: Date, tag: { __typename?: 'Tag', id: string, name: string, createdAt: Date, updatedAt: Date }, post: { __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date } } };
 
 export type CreateTagPostRelationsMutationVariables = Exact<{
-  tagPostTypes: Array<TagPostInputType> | TagPostInputType;
+  tagIds: Array<Scalars['String']> | Scalars['String'];
+  postId: Scalars['String'];
 }>;
 
 
@@ -1584,8 +1586,8 @@ export type CreateTagPostRelationMutationHookResult = ReturnType<typeof useCreat
 export type CreateTagPostRelationMutationResult = Apollo.MutationResult<CreateTagPostRelationMutation>;
 export type CreateTagPostRelationMutationOptions = Apollo.BaseMutationOptions<CreateTagPostRelationMutation, CreateTagPostRelationMutationVariables>;
 export const CreateTagPostRelationsDocument = gql`
-    mutation CreateTagPostRelations($tagPostTypes: [TagPostInputType!]!) {
-  createTagPostRelations(tagPostTypes: $tagPostTypes) {
+    mutation CreateTagPostRelations($tagIds: [String!]!, $postId: String!) {
+  createTagPostRelations(tagIds: $tagIds, postId: $postId) {
     id
     tagId
     postId
@@ -1627,7 +1629,8 @@ export type CreateTagPostRelationsMutationFn = Apollo.MutationFunction<CreateTag
  * @example
  * const [createTagPostRelationsMutation, { data, loading, error }] = useCreateTagPostRelationsMutation({
  *   variables: {
- *      tagPostTypes: // value for 'tagPostTypes'
+ *      tagIds: // value for 'tagIds'
+ *      postId: // value for 'postId'
  *   },
  * });
  */

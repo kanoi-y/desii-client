@@ -61,8 +61,8 @@ export const CREATE_TAG_POST_RELATION = gql`
 `
 
 export const CREATE_TAG_POST_RELATIONS = gql`
-  mutation CreateTagPostRelations($tagPostTypes: [TagPostInputType!]!) {
-    createTagPostRelations(tagPostTypes: $tagPostTypes) {
+  mutation CreateTagPostRelations($tagIds: [String!]!, $postId: String!) {
+    createTagPostRelations(tagIds: $tagIds, postId: $postId) {
       id
       tagId
       postId
