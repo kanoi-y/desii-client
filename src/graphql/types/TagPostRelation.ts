@@ -1,4 +1,5 @@
 import {
+  NotificationType,
   Post,
   Tag,
   TagPostRelation as TagPostRelationType,
@@ -11,6 +12,7 @@ import {
   objectType,
   stringArg,
 } from 'nexus'
+import { Context } from '../context'
 
 export const TagPostInputType = inputObjectType({
   name: 'TagPostInputType',
@@ -116,50 +118,126 @@ export const CreateTagPostRelationMutation = extendType({
   },
 })
 
+// TODO: マッチングの部分の処理を切り分ける
+const createNotification = async (
+  ctx: Context,
+  tagPostRelations: (TagPostRelationType & {
+    post: Post
+    tag: Tag
+  })[],
+  post: Post
+) => {
+  const matchingPostsInfo: { count: number; post: Post }[] = []
+
+  const res = (
+    await Promise.all(
+      tagPostRelations.map(
+        (
+          tagPostRelation: TagPostRelationType & {
+            tag: Tag
+          }
+        ) => {
+          return ctx.prisma.tagPostRelation.findMany({
+            where: {
+              tagId: tagPostRelation.tag.id,
+              NOT: {
+                postId: post.id,
+              },
+            },
+            include: {
+              post: true,
+            },
+          })
+        }
+      )
+    )
+  ).flat()
+
+  //FIXME: 処理が重くなってきたら修正する
+  res.forEach((tagPostRelation) => {
+    const index = matchingPostsInfo.findIndex(
+      (matchingPostInfo: { count: number; post: Post }) =>
+        matchingPostInfo.post.id === tagPostRelation.postId
+    )
+
+    if (index > -1) {
+      matchingPostsInfo[index].count++
+      return
+    }
+
+    if (ctx.user?.id !== tagPostRelation.post.createdUserId) {
+      matchingPostsInfo.push({ count: 1, post: tagPostRelation.post })
+    }
+  })
+
+  await ctx.prisma.notification.createMany({
+    data: [
+      ...matchingPostsInfo.map((matchingPostInfo) => {
+        return {
+          type: 'MATCH_POST' as NotificationType,
+          targetUserId: matchingPostInfo.post.createdUserId,
+          message: `「${matchingPostInfo.post.title}」が「${post.title}」とマッチしました`,
+          url: `/post/${post.id}`,
+          isChecked: false,
+        }
+      }),
+    ],
+  })
+}
+
 export const CreateTagPostRelationsMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.nonNull.list.nonNull.field('createTagPostRelations', {
       type: 'TagPostRelation',
       args: {
-        tagPostTypes: nonNull(list(nonNull('TagPostInputType'))),
+        tagIds: nonNull(list(nonNull(stringArg()))),
+        postId: nonNull(stringArg()),
       },
       async resolve(_parent, args, ctx) {
         if (!ctx.user) {
           throw new Error('ログインユーザーが存在しません')
         }
 
-        const posts = await ctx.prisma.post.findMany({
+        const post = await ctx.prisma.post.findUnique({
           where: {
-            OR: [
-              ...args.tagPostTypes.map(
-                (tagPostType: { tagId: string; postId: string }) => {
-                  return {
-                    id: tagPostType.postId,
-                  }
-                }
-              ),
-            ],
+            id: args.postId,
           },
         })
 
-        if (posts.some((post: Post) => ctx.user?.id !== post.createdUserId)) {
+        if (!post) {
+          throw new Error('投稿が存在しません')
+        }
+
+        if (ctx.user.id !== post.createdUserId) {
           throw new Error('投稿の作成者しかタグを追加できません')
         }
 
-        await ctx.prisma.tagPostRelation.createMany({
-          data: [...args.tagPostTypes],
+        const tagPostTypes = args.tagIds.map((tagId: string) => {
+          return {
+            tagId,
+            postId: args.postId,
+          }
         })
 
-        return ctx.prisma.tagPostRelation.findMany({
+        await ctx.prisma.tagPostRelation.createMany({
+          data: tagPostTypes,
+        })
+
+        const tagPostRelations = await ctx.prisma.tagPostRelation.findMany({
           where: {
-            OR: [...args.tagPostTypes],
+            OR: tagPostTypes,
           },
           include: {
             tag: true,
             post: true,
           },
         })
+
+        // 非同期に処理
+        createNotification(ctx, tagPostRelations, post)
+
+        return tagPostRelations
       },
     })
   },

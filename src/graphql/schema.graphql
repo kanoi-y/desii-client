@@ -38,12 +38,13 @@ type Mutation {
   DeleteTagPostRelation(postId: String!, tagId: String!): TagPostRelation!
   DeleteTagPostRelations(tagPostTypes: [TagPostInputType!]!): [TagPostRelation!]!
   DeleteUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
+  UpdateNotification(id: String!, isChecked: Boolean!): Notification!
   createFavorite(postId: String!): Favorite!
   createGroup(description: String, image: String!, name: String!, productId: String!): Group!
   createPost(bgImage: String, category: PostCategory!, content: String!, groupId: String, isPrivate: Boolean!, title: String!): Post!
   createTag(name: String!): Tag!
   createTagPostRelation(postId: String!, tagId: String!): TagPostRelation!
-  createTagPostRelations(tagPostTypes: [TagPostInputType!]!): [TagPostRelation!]!
+  createTagPostRelations(postId: String!, tagIds: [String!]!): [TagPostRelation!]!
   createUser(description: String, email: String!, image: String, name: String!): User!
   createUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
   deleteGroup(id: String!): Group!
@@ -52,6 +53,23 @@ type Mutation {
   updateGroup(adminUserId: String, description: String, id: String!, image: String, name: String): Group!
   updatePost(bgImage: String, category: PostCategory, content: String, id: String!, isPrivate: Boolean, title: String): Post!
   updateUser(description: String, email: String, id: String!, image: String, name: String): User!
+}
+
+type Notification {
+  createdAt: DateTime!
+  createdUserId: String
+  id: String!
+  isChecked: Boolean!
+  message: String!
+  targetUserId: String!
+  type: NotificationType!
+  updatedAt: DateTime!
+  url: String!
+}
+
+enum NotificationType {
+  FETCH_REACTION
+  MATCH_POST
 }
 
 type Post {
@@ -75,6 +93,7 @@ enum PostCategory {
 type Query {
   GetFavorites(createdUserId: String, postId: String, sort: orderByType = asc): [Favorite!]!
   GetMatchingPosts(postId: String!): [MatchingPostInfoType!]!
+  GetNotifications(targetUserId: String!): [Notification!]!
   GetPosts(groupId: String, isPrivate: Boolean, sort: orderByType = asc, userId: String): [Post!]!
   GetTagByName(name: String!): Tag
   GetTagPostRelations(postId: String, tagId: String): [TagPostRelation!]!

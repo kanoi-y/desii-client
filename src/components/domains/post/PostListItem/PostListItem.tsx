@@ -98,9 +98,9 @@ export const PostListItem: VFC<Props> = ({
             <Text fontSize="sm" isBold>
               マッチ度：
             </Text>
-            {[...Array(count)].map((c) => (
+            {[...Array(count)].map((c, i) => (
               <SolidIcon
-                key={c}
+                key={i}
                 icon="SOLID_HEART"
                 color="red.main"
                 size={20}

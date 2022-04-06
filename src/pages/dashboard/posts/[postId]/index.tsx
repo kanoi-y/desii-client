@@ -163,14 +163,8 @@ const UpdatePostPage: NextPage<Props> = () => {
       })
       await createTagPostRelationsMutation({
         variables: {
-          tagPostTypes: [
-            ...postTags.map((postTag) => {
-              return {
-                tagId: postTag.id,
-                postId: postId,
-              }
-            }),
-          ],
+          postId,
+          tagIds: postTags.map((postTag) => postTag.id),
         },
       })
 
