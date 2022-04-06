@@ -1,0 +1,61 @@
+import { Box } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
+import { VFC } from 'react'
+import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
+import { Link, SolidIcon, Text } from '~/components/parts/commons'
+import {
+  Notification,
+  NotificationType,
+  useGetUserQuery,
+} from '~/types/generated/graphql'
+import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
+
+type Props = {
+  notification: Notification
+}
+
+export const NotificationListItem: VFC<Props> = ({ notification }) => {
+  const router = useRouter()
+  const displayDate = formatDistanceToNow(new Date(notification.createdAt))
+
+  const { data } = useGetUserQuery({
+    variables: {
+      getUserId: notification.createdUserId || '',
+    },
+  })
+
+  if (notification.type === NotificationType.MatchPost) {
+    return (
+      <Link
+        href={
+          process.env.NEXT_PUBLIC_ROOT_URL ||
+          'http://localhost:3000' + notification.url
+        }
+      >
+        <Box display="flex" alignItems="center">
+          <SolidIcon icon="SOLID_HEART" color="red.main" size={36} />
+          <Text fontSize="sm">{notification.message}</Text>
+        </Box>
+        <Text fontSize="xs">{displayDate}</Text>
+      </Link>
+    )
+  }
+  return (
+    <Link
+      href={
+        process.env.NEXT_PUBLIC_ROOT_URL ||
+        'http://localhost:3000' + notification.url
+      }
+    >
+      <Box display="flex" alignItems="center">
+        {data?.getUser ? (
+          <UserIcon user={data.getUser} />
+        ) : (
+          <GuestUserIcon size="sm" />
+        )}
+        <Text fontSize="sm">{notification.message}</Text>
+      </Box>
+      <Text fontSize="xs">{displayDate}</Text>
+    </Link>
+  )
+}
