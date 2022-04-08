@@ -16,7 +16,7 @@ const Template: ComponentStory<typeof NotificationListItem> = ({ ...args }) => {
   const client = initializeApollo()
   return (
     <ApolloProvider client={client}>
-      <Box>
+      <Box bgColor="white">
         <NotificationListItem {...args} />
         <NotificationListItem {...args} />
         <NotificationListItem {...args} />
@@ -26,6 +26,9 @@ const Template: ComponentStory<typeof NotificationListItem> = ({ ...args }) => {
 }
 
 const mockNotification = notificationFactory()
+const CheckedMockNotification = notificationFactory({
+  isChecked: true,
+})
 const matchPostMockNotification = notificationFactory({
   type: NotificationType.MatchPost,
   message: '「mock matching post」が「mock post」とマッチしました',
@@ -34,6 +37,11 @@ const matchPostMockNotification = notificationFactory({
 export const FetchReactionNotificationListItem = Template.bind({})
 FetchReactionNotificationListItem.args = {
   notification: mockNotification,
+}
+
+export const CheckedNotificationListItem = Template.bind({})
+CheckedNotificationListItem.args = {
+  notification: CheckedMockNotification,
 }
 
 export const MatchPostNotificationListItem = Template.bind({})

@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react'
-import { VFC } from 'react'
+import { useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Link, SolidIcon, Text } from '~/components/parts/commons'
 import {
@@ -22,42 +22,35 @@ export const NotificationListItem: VFC<Props> = ({ notification }) => {
     },
   })
 
-  if (notification.type === NotificationType.MatchPost) {
-    return (
-      <Link
-        href={
-          process.env.NEXT_PUBLIC_ROOT_URL ||
-          'http://localhost:3000' + notification.url
-        }
-      >
-        <Box padding="8px 16px" _hover={{ bgColor: 'primary.light' }}>
-          <Box display="flex" alignItems="flex-start" gap="8px">
-            <Box
-              bgColor="primary.light"
-              borderRadius="50%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              p="4px"
-            >
-              <SolidIcon icon="SOLID_HEART" color="red.main" size={40} />
-            </Box>
-            <Box>
-              <Text fontSize="sm" isBold>
-                {notification.message}
-              </Text>
-              <Text fontSize="xs">{displayDate}</Text>
-            </Box>
-          </Box>
+  const IconContent = useMemo(() => {
+    if (notification.type === NotificationType.MatchPost) {
+      return (
+        <Box
+          bgColor="primary.light"
+          borderRadius="50%"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          p="4px"
+        >
+          <SolidIcon icon="SOLID_HEART" color="red.main" size={40} />
         </Box>
-      </Link>
-    )
-  }
+      )
+    }
+
+    if (data?.getUser) {
+      return <UserIcon user={data.getUser} isLink />
+    }
+
+    return <GuestUserIcon />
+  }, [notification.type, data])
+
   return (
     <Box
       position="relative"
       padding="8px 16px"
-      _hover={{ bgColor: 'primary.light' }}
+      bgColor={notification.isChecked ? 'secondary.light' : 'unset'}
+      _hover={{ bgColor: 'secondary.light' }}
     >
       <Box
         position="absolute"
@@ -77,11 +70,7 @@ export const NotificationListItem: VFC<Props> = ({ notification }) => {
         </Link>
       </Box>
       <Box display="flex" alignItems="flex-start" gap="8px">
-        {data?.getUser ? (
-          <UserIcon user={data.getUser} isLink />
-        ) : (
-          <GuestUserIcon size="sm" />
-        )}
+        {IconContent}
         <Box>
           <Text fontSize="sm" isBold>
             {notification.message}
