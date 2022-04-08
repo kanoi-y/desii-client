@@ -30,18 +30,35 @@ export const NotificationListItem: VFC<Props> = ({ notification }) => {
           'http://localhost:3000' + notification.url
         }
       >
-        <Box padding="8px 16px">
-          <Box display="flex" alignItems="center">
-            <SolidIcon icon="SOLID_HEART" color="red.main" size={36} />
-            <Text fontSize="sm">{notification.message}</Text>
+        <Box padding="8px 16px" _hover={{ bgColor: 'primary.light' }}>
+          <Box display="flex" alignItems="flex-start" gap="8px">
+            <Box
+              bgColor="primary.light"
+              borderRadius="50%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              p="4px"
+            >
+              <SolidIcon icon="SOLID_HEART" color="red.main" size={40} />
+            </Box>
+            <Box>
+              <Text fontSize="sm" isBold>
+                {notification.message}
+              </Text>
+              <Text fontSize="xs">{displayDate}</Text>
+            </Box>
           </Box>
-          <Text fontSize="xs">{displayDate}</Text>
         </Box>
       </Link>
     )
   }
   return (
-    <Box position="relative" padding="8px 16px">
+    <Box
+      position="relative"
+      padding="8px 16px"
+      _hover={{ bgColor: 'primary.light' }}
+    >
       <Box
         position="absolute"
         display="block"
@@ -52,20 +69,26 @@ export const NotificationListItem: VFC<Props> = ({ notification }) => {
       >
         <Link
           href={
-            process.env.NEXT_PUBLIC_ROOT_URL ||
-            'http://localhost:3000' + notification.url
+            (process.env.NEXT_PUBLIC_ROOT_URL || 'http://localhost:3000') +
+            notification.url
           }
-        ></Link>
+        >
+          <Box w="100%" h="100%"></Box>
+        </Link>
       </Box>
-      <Box display="flex" alignItems="center">
+      <Box display="flex" alignItems="flex-start" gap="8px">
         {data?.getUser ? (
           <UserIcon user={data.getUser} isLink />
         ) : (
           <GuestUserIcon size="sm" />
         )}
-        <Text fontSize="sm">{notification.message}</Text>
+        <Box>
+          <Text fontSize="sm" isBold>
+            {notification.message}
+          </Text>
+          <Text fontSize="xs">{displayDate}</Text>
+        </Box>
       </Box>
-      <Text fontSize="xs">{displayDate}</Text>
     </Box>
   )
 }
