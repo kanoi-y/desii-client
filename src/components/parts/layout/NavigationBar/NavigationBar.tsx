@@ -29,36 +29,59 @@ export const Component: VFC<Props> = ({
     if (!currentUser) return <GuestUserIcon size="sm" />
 
     return (
-      <Menu
-        toggleItem={<UserIcon user={currentUser} size="sm" />}
-        menuList={[
-          {
-            text: 'プロフィール',
-            icon: <UserIcon user={currentUser} size="xs" />,
-            onClick: () => router.push(`/user/${currentUser.id}`),
-          },
-          {
-            text: '投稿を作成',
-            icon: <SolidIcon icon="SOLID_PENCIL_ALT" size={20} />,
-            onClick: () => router.push('/dashboard/posts/new'),
-          },
-          {
-            text: '投稿の管理',
-            icon: <SolidIcon icon="SOLID_DOCUMENT_TEXT" size={20} />,
-            onClick: () => router.push('/dashboard/posts'),
-          },
-          {
-            text: 'いいねした投稿',
-            icon: <SolidIcon icon="SOLID_STAR" size={20} />,
-            onClick: () => router.push('/dashboard/favorites'),
-          },
-          {
-            text: 'ログアウト',
-            icon: <SolidIcon icon="SOLID_LOGOUT" size={20} />,
-            onClick: () => signOut(),
-          },
-        ]}
-      />
+      <Box display="flex" alignItems="center" gap="20px">
+        <Box cursor="pointer" position="relative" _hover={{ opacity: 0.7 }}>
+          <SolidIcon icon="SOLID_BELL" size={30} />
+          <Box
+            position="absolute"
+            top="-6px"
+            right="-6px"
+            bgColor="error.main"
+            color="white.main"
+            borderRadius="50%"
+            fontSize="xs"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            height="20px"
+            minWidth="20px"
+            fontWeight="bold"
+            padding="4px"
+          >
+            99
+          </Box>
+        </Box>
+        <Menu
+          toggleItem={<UserIcon user={currentUser} size="sm" />}
+          menuList={[
+            {
+              text: 'プロフィール',
+              icon: <UserIcon user={currentUser} size="xs" />,
+              onClick: () => router.push(`/user/${currentUser.id}`),
+            },
+            {
+              text: '投稿を作成',
+              icon: <SolidIcon icon="SOLID_PENCIL_ALT" size={20} />,
+              onClick: () => router.push('/dashboard/posts/new'),
+            },
+            {
+              text: '投稿の管理',
+              icon: <SolidIcon icon="SOLID_DOCUMENT_TEXT" size={20} />,
+              onClick: () => router.push('/dashboard/posts'),
+            },
+            {
+              text: 'いいねした投稿',
+              icon: <SolidIcon icon="SOLID_STAR" size={20} />,
+              onClick: () => router.push('/dashboard/favorites'),
+            },
+            {
+              text: 'ログアウト',
+              icon: <SolidIcon icon="SOLID_LOGOUT" size={20} />,
+              onClick: () => signOut(),
+            },
+          ]}
+        />
+      </Box>
     )
   }, [router, currentUser, isLoading, onClickButton])
 
