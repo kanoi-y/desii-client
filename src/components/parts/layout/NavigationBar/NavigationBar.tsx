@@ -32,7 +32,12 @@ export const Component: VFC<Props> = ({
 
     return (
       <Box display="flex" alignItems="center" gap="20px">
-        <Box cursor="pointer" position="relative" _hover={{ opacity: 0.7 }}>
+        <Box
+          cursor="pointer"
+          position="relative"
+          _hover={{ opacity: 0.7 }}
+          onClick={() => router.push('/dashboard/notifications')}
+        >
           <SolidIcon icon="SOLID_BELL" size={30} />
           {uncheckCount > 0 && (
             <Box
@@ -123,7 +128,8 @@ export const NavigationBar: VFC = () => {
     },
   })
 
-  const uncheckCount = data?.GetNotifications.filter((v) => !v.isChecked).length || 0
+  const uncheckCount =
+    data?.GetNotifications.filter((v) => !v.isChecked).length || 0
 
   return (
     <Component
