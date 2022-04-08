@@ -1,4 +1,5 @@
 export { createFavorite, deleteFavorite, getFavorites } from './favorite'
-export { getAllTags, createTag } from './tag'
+export { getNotifications } from './notification'
+export { createTag, getAllTags } from './tag'
 export { getUser } from './user'
 export { getUserGroupRelations } from './userGroupRelation'
