@@ -3,7 +3,7 @@ import NextLink, { LinkProps as NextLinkProps } from 'next/link'
 import { ReactNode, VFC } from 'react'
 
 type Props = {
-  children: ReactNode
+  children?: ReactNode
   href: NextLinkProps['href']
   target?: string
 }
