@@ -5,7 +5,10 @@ import React from 'react'
 import { initializeApollo } from '~/lib/apolloClient'
 import { notificationFactory } from '~/mocks/factories'
 import { NotificationType } from '~/types/generated/graphql'
-import { NotificationListItem } from './NotificationListItem'
+import {
+  NotificationListItem,
+  SkeletonNotificationListItem,
+} from './NotificationListItem'
 
 export default {
   title: 'domains/notification/NotificationListItem',
@@ -48,3 +51,20 @@ export const MatchPostNotificationListItem = Template.bind({})
 MatchPostNotificationListItem.args = {
   notification: matchPostMockNotification,
 }
+
+const SkeletonTemplate: ComponentStory<typeof SkeletonNotificationListItem> = ({
+  ...args
+}) => {
+  const client = initializeApollo()
+  return (
+    <ApolloProvider client={client}>
+      <Box bgColor="white">
+        <SkeletonNotificationListItem {...args} />
+        <SkeletonNotificationListItem {...args} />
+        <SkeletonNotificationListItem {...args} />
+      </Box>
+    </ApolloProvider>
+  )
+}
+
+export const Skeleton = SkeletonTemplate.bind({})

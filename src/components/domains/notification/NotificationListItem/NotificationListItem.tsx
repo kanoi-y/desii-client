@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react'
+import { Box, SkeletonText } from '@chakra-ui/react'
 import { useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Link, SolidIcon, Text } from '~/components/parts/commons'
@@ -11,6 +11,23 @@ import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 
 type Props = {
   notification: Notification
+}
+
+export const SkeletonNotificationListItem: VFC = () => {
+  return (
+    <Box
+      position="relative"
+      padding="8px 16px"
+      _hover={{ bgColor: 'secondary.light' }}
+    >
+      <Box display="flex" alignItems="flex-start" gap="8px">
+        <GuestUserIcon />
+        <Box pt="4px">
+          <SkeletonText w="100px" noOfLines={2} />
+        </Box>
+      </Box>
+    </Box>
+  )
 }
 
 export const NotificationListItem: VFC<Props> = ({ notification }) => {
