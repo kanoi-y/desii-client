@@ -126,6 +126,7 @@ export const NavigationBar: VFC = () => {
     variables: {
       targetUserId: currentUser?.id || '',
     },
+    fetchPolicy: 'cache-and-network',
   })
 
   const uncheckCount =
