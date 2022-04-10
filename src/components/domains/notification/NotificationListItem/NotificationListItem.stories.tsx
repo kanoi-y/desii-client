@@ -19,7 +19,7 @@ const Template: ComponentStory<typeof NotificationListItem> = ({ ...args }) => {
   const client = initializeApollo()
   return (
     <ApolloProvider client={client}>
-      <Box bgColor="white">
+      <Box>
         <NotificationListItem {...args} />
         <NotificationListItem {...args} />
         <NotificationListItem {...args} />
@@ -58,7 +58,7 @@ const SkeletonTemplate: ComponentStory<typeof SkeletonNotificationListItem> = ({
   const client = initializeApollo()
   return (
     <ApolloProvider client={client}>
-      <Box bgColor="white">
+      <Box>
         <SkeletonNotificationListItem {...args} />
         <SkeletonNotificationListItem {...args} />
         <SkeletonNotificationListItem {...args} />

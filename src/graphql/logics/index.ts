@@ -1,0 +1,1 @@
+export { matchPosts } from './matchPosts'
