@@ -120,6 +120,16 @@ export const GetMatchingPostsQuery = extendType({
           throw new Error('ログインユーザーが存在しません')
         }
 
+        const targetPost = await ctx.prisma.post.findUnique({
+          where: {
+            id: args.postId,
+          },
+        })
+
+        if (!targetPost) {
+          throw new Error('対象の投稿が存在しません')
+        }
+
         const tagPostRelations = await ctx.prisma.tagPostRelation.findMany({
           where: {
             postId: args.postId,
@@ -167,7 +177,10 @@ export const GetMatchingPostsQuery = extendType({
             return
           }
 
-          if (ctx.user?.id !== tagPostRelation.post.createdUserId) {
+          if (
+            ctx.user?.id !== tagPostRelation.post.createdUserId &&
+            targetPost.category !== tagPostRelation.post.category
+          ) {
             matchingPostsInfo.push({ count: 1, post: tagPostRelation.post })
           }
         })

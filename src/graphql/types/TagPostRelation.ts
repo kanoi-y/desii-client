@@ -165,7 +165,10 @@ const createNotification = async (
       return
     }
 
-    if (ctx.user?.id !== tagPostRelation.post.createdUserId) {
+    if (
+      ctx.user?.id !== tagPostRelation.post.createdUserId &&
+      post.category !== tagPostRelation.post.category
+    ) {
       matchingPostsInfo.push({ count: 1, post: tagPostRelation.post })
     }
   })
