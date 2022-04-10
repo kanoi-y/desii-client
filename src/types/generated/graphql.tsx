@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
+import { gql } from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -261,6 +261,7 @@ export type QueryGetMatchingPostsArgs = {
 
 
 export type QueryGetNotificationsArgs = {
+  sort?: InputMaybe<OrderByType>;
   targetUserId: Scalars['String'];
 };
 
@@ -428,6 +429,7 @@ export type UpdateGroupMutation = { __typename?: 'Mutation', updateGroup: { __ty
 
 export type GetNotificationsQueryVariables = Exact<{
   targetUserId: Scalars['String'];
+  sort?: InputMaybe<OrderByType>;
 }>;
 
 
@@ -986,8 +988,8 @@ export type UpdateGroupMutationHookResult = ReturnType<typeof useUpdateGroupMuta
 export type UpdateGroupMutationResult = Apollo.MutationResult<UpdateGroupMutation>;
 export type UpdateGroupMutationOptions = Apollo.BaseMutationOptions<UpdateGroupMutation, UpdateGroupMutationVariables>;
 export const GetNotificationsDocument = gql`
-    query GetNotifications($targetUserId: String!) {
-  GetNotifications(targetUserId: $targetUserId) {
+    query GetNotifications($targetUserId: String!, $sort: orderByType) {
+  GetNotifications(targetUserId: $targetUserId, sort: $sort) {
     id
     type
     createdUserId
@@ -1014,6 +1016,7 @@ export const GetNotificationsDocument = gql`
  * const { data, loading, error } = useGetNotificationsQuery({
  *   variables: {
  *      targetUserId: // value for 'targetUserId'
+ *      sort: // value for 'sort'
  *   },
  * });
  */

@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
 export const GET_NOTIFICATIONS = gql`
-  query GetNotifications($targetUserId: String!) {
-    GetNotifications(targetUserId: $targetUserId) {
+  query GetNotifications($targetUserId: String!, $sort: orderByType) {
+    GetNotifications(targetUserId: $targetUserId, sort: $sort) {
       id
       type
       createdUserId

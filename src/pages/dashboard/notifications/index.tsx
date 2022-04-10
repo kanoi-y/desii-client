@@ -12,6 +12,7 @@ import { GET_CURRENT_USER } from '~/queries'
 import {
   GetCurrentUserQuery,
   GetCurrentUserQueryVariables,
+  OrderByType,
   useGetNotificationsQuery,
   User,
 } from '~/types/generated/graphql'
@@ -26,6 +27,7 @@ const NotificationsPage: NextPage<Props> = ({ currentUser }) => {
   const { data } = useGetNotificationsQuery({
     variables: {
       targetUserId: currentUser.id,
+      sort: OrderByType.Desc,
     },
     fetchPolicy: 'cache-and-network',
   })

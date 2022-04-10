@@ -1,4 +1,5 @@
 import {
+  arg,
   booleanArg,
   enumType,
   extendType,
@@ -6,6 +7,7 @@ import {
   objectType,
   stringArg,
 } from 'nexus'
+import { OrderByType } from './Post'
 
 export const NotificationType = enumType({
   name: 'NotificationType',
@@ -40,6 +42,10 @@ export const GetNotificationsQuery = extendType({
       type: 'Notification',
       args: {
         targetUserId: nonNull(stringArg()),
+        sort: arg({
+          type: OrderByType,
+          default: 'asc',
+        }),
       },
       resolve(_parent, args, ctx) {
         if (!ctx.user) {
@@ -49,6 +55,9 @@ export const GetNotificationsQuery = extendType({
         return ctx.prisma.notification.findMany({
           where: {
             targetUserId: args.targetUserId,
+          },
+          orderBy: {
+            createdAt: args.sort || 'asc',
           },
         })
       },
