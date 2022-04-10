@@ -1,11 +1,13 @@
 import { Box, SkeletonText } from '@chakra-ui/react'
-import { useMemo, VFC } from 'react'
+import { useRouter } from 'next/router'
+import { MouseEvent, useCallback, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
-import { Link, SolidIcon, Text } from '~/components/parts/commons'
+import { SolidIcon, Text } from '~/components/parts/commons'
 import {
   Notification,
   NotificationType,
   useGetUserQuery,
+  useUpdateNotificationMutation,
 } from '~/types/generated/graphql'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 
@@ -31,6 +33,8 @@ export const SkeletonNotificationListItem: VFC = () => {
 }
 
 export const NotificationListItem: VFC<Props> = ({ notification }) => {
+  const router = useRouter()
+
   const displayDate = formatDistanceToNow(new Date(notification.createdAt))
 
   const { data } = useGetUserQuery({
@@ -38,6 +42,23 @@ export const NotificationListItem: VFC<Props> = ({ notification }) => {
       getUserId: notification.createdUserId || '',
     },
   })
+
+  const [updateNotificationMutation] = useUpdateNotificationMutation({
+    variables: {
+      updateNotificationId: notification.id,
+      isChecked: true,
+    },
+  })
+
+  const handleClickUserIcon = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      router.push(`/user/${data?.getUser?.id}`)
+    },
+    [router, data]
+  )
 
   const IconContent = useMemo(() => {
     if (notification.type === NotificationType.MatchPost) {
@@ -56,11 +77,27 @@ export const NotificationListItem: VFC<Props> = ({ notification }) => {
     }
 
     if (data?.getUser) {
-      return <UserIcon user={data.getUser} isLink />
+      return (
+        <Box onClick={handleClickUserIcon}>
+          <UserIcon user={data.getUser} />
+        </Box>
+      )
     }
 
     return <GuestUserIcon />
-  }, [notification.type, data])
+  }, [notification.type, data, handleClickUserIcon])
+
+  const handleClickItem = useCallback(() => {
+    if (!notification.isChecked) {
+      updateNotificationMutation()
+    }
+    router.push(
+      `${
+        (process.env.NEXT_PUBLIC_ROOT_URL || 'http://localhost:3000') +
+        notification.url
+      }`
+    )
+  }, [notification, router, updateNotificationMutation])
 
   return (
     <Box
@@ -68,24 +105,9 @@ export const NotificationListItem: VFC<Props> = ({ notification }) => {
       padding="8px 16px"
       bgColor={notification.isChecked ? 'secondary.light' : 'unset'}
       _hover={{ bgColor: 'secondary.light' }}
+      onClick={handleClickItem}
+      cursor="pointer"
     >
-      <Box
-        position="absolute"
-        display="block"
-        top="0px"
-        left="0px"
-        width="100%"
-        height="100%"
-      >
-        <Link
-          href={
-            (process.env.NEXT_PUBLIC_ROOT_URL || 'http://localhost:3000') +
-            notification.url
-          }
-        >
-          <Box w="100%" h="100%"></Box>
-        </Link>
-      </Box>
       <Box display="flex" alignItems="flex-start" gap="8px">
         {IconContent}
         <Box>
