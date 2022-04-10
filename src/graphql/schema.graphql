@@ -93,7 +93,7 @@ enum PostCategory {
 type Query {
   GetFavorites(createdUserId: String, postId: String, sort: orderByType = asc): [Favorite!]!
   GetMatchingPosts(postId: String!): [MatchingPostInfoType!]!
-  GetNotifications(targetUserId: String!): [Notification!]!
+  GetNotifications(sort: orderByType = asc, targetUserId: String!): [Notification!]!
   GetPosts(groupId: String, isPrivate: Boolean, sort: orderByType = asc, userId: String): [Post!]!
   GetTagByName(name: String!): Tag
   GetTagPostRelations(postId: String, tagId: String): [TagPostRelation!]!

@@ -73,6 +73,7 @@ export const PostCard: VFC<Props> = ({
   const handleTransitionUserPage = useCallback(
     (e: MouseEvent<HTMLElement>) => {
       e.preventDefault()
+      e.stopPropagation()
 
       router.push(`/user/${post.createdUserId}`)
     },

@@ -7,18 +7,20 @@ import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Link, Menu, SolidIcon } from '~/components/parts/commons'
 import { LoginModalSetIsOpenContext } from '~/hooks'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
-import { User } from '~/types/generated/graphql'
+import { useGetNotificationsQuery, User } from '~/types/generated/graphql'
 
 type Props = {
   currentUser?: User | null
   isLoading: boolean
   onClickButton: () => void
+  uncheckCount: number
 }
 
 export const Component: VFC<Props> = ({
   currentUser,
   isLoading,
   onClickButton,
+  uncheckCount,
 }) => {
   const router = useRouter()
 
@@ -29,38 +31,68 @@ export const Component: VFC<Props> = ({
     if (!currentUser) return <GuestUserIcon size="sm" />
 
     return (
-      <Menu
-        toggleItem={<UserIcon user={currentUser} size="sm" />}
-        menuList={[
-          {
-            text: 'プロフィール',
-            icon: <UserIcon user={currentUser} size="xs" />,
-            onClick: () => router.push(`/user/${currentUser.id}`),
-          },
-          {
-            text: '投稿を作成',
-            icon: <SolidIcon icon="SOLID_PENCIL_ALT" size={20} />,
-            onClick: () => router.push('/dashboard/posts/new'),
-          },
-          {
-            text: '投稿の管理',
-            icon: <SolidIcon icon="SOLID_DOCUMENT_TEXT" size={20} />,
-            onClick: () => router.push('/dashboard/posts'),
-          },
-          {
-            text: 'いいねした投稿',
-            icon: <SolidIcon icon="SOLID_STAR" size={20} />,
-            onClick: () => router.push('/dashboard/favorites'),
-          },
-          {
-            text: 'ログアウト',
-            icon: <SolidIcon icon="SOLID_LOGOUT" size={20} />,
-            onClick: () => signOut(),
-          },
-        ]}
-      />
+      <Box display="flex" alignItems="center" gap="20px">
+        <Box
+          cursor="pointer"
+          position="relative"
+          _hover={{ opacity: 0.7 }}
+          onClick={() => router.push('/dashboard/notifications')}
+        >
+          <SolidIcon icon="SOLID_BELL" size={30} />
+          {uncheckCount > 0 && (
+            <Box
+              position="absolute"
+              top="-6px"
+              right={uncheckCount > 99 ? '-12px' : '-6px'}
+              bgColor="error.main"
+              color="white.main"
+              borderRadius={uncheckCount > 99 ? '100px' : '50%'}
+              fontSize="xs"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              height="20px"
+              minWidth="20px"
+              fontWeight="bold"
+              padding="4px"
+            >
+              {uncheckCount > 99 ? '99+' : uncheckCount}
+            </Box>
+          )}
+        </Box>
+        <Menu
+          toggleItem={<UserIcon user={currentUser} size="sm" />}
+          menuList={[
+            {
+              text: 'プロフィール',
+              icon: <UserIcon user={currentUser} size="xs" />,
+              onClick: () => router.push(`/user/${currentUser.id}`),
+            },
+            {
+              text: '投稿を作成',
+              icon: <SolidIcon icon="SOLID_PENCIL_ALT" size={20} />,
+              onClick: () => router.push('/dashboard/posts/new'),
+            },
+            {
+              text: '投稿の管理',
+              icon: <SolidIcon icon="SOLID_DOCUMENT_TEXT" size={20} />,
+              onClick: () => router.push('/dashboard/posts'),
+            },
+            {
+              text: 'いいねした投稿',
+              icon: <SolidIcon icon="SOLID_STAR" size={20} />,
+              onClick: () => router.push('/dashboard/favorites'),
+            },
+            {
+              text: 'ログアウト',
+              icon: <SolidIcon icon="SOLID_LOGOUT" size={20} />,
+              onClick: () => signOut(),
+            },
+          ]}
+        />
+      </Box>
     )
-  }, [router, currentUser, isLoading, onClickButton])
+  }, [router, currentUser, isLoading, onClickButton, uncheckCount])
 
   return (
     <Box
@@ -90,11 +122,22 @@ export const NavigationBar: VFC = () => {
   const { currentUser, isLoading } = useContext(CurrentUserContext)
   const setIsOpen = useContext(LoginModalSetIsOpenContext)
 
+  const { data } = useGetNotificationsQuery({
+    variables: {
+      targetUserId: currentUser?.id || '',
+    },
+    fetchPolicy: 'cache-and-network',
+  })
+
+  const uncheckCount =
+    data?.GetNotifications.filter((v) => !v.isChecked).length || 0
+
   return (
     <Component
       currentUser={currentUser}
       isLoading={isLoading}
       onClickButton={() => setIsOpen(true)}
+      uncheckCount={uncheckCount}
     />
   )
 }

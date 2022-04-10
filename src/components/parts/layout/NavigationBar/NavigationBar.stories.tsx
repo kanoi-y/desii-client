@@ -23,15 +23,18 @@ const mockUser = userFactory({ image: 'images/Desii_icon.png' })
 export const DefaultNavigationBar = Template.bind({})
 DefaultNavigationBar.args = {
   isLoading: false,
+  uncheckCount: 0,
 }
 
 export const GuestNavigationBar = Template.bind({})
 GuestNavigationBar.args = {
   isLoading: true,
+  uncheckCount: 0,
 }
 
 export const UserIconNavigationBar = Template.bind({})
 UserIconNavigationBar.args = {
   isLoading: false,
   currentUser: mockUser,
+  uncheckCount: 10,
 }
