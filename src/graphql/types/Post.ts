@@ -1,9 +1,4 @@
-import {
-  Post as PostType,
-  Tag,
-  TagPostRelation as TagPostRelationType,
-  UserGroupRelation,
-} from '@prisma/client'
+import { Post as PostType, UserGroupRelation } from '@prisma/client'
 import {
   arg,
   booleanArg,
@@ -13,6 +8,7 @@ import {
   objectType,
   stringArg,
 } from 'nexus'
+import { matchPosts } from '~/graphql/logics'
 
 export const PostCategory = enumType({
   name: 'PostCategory',
@@ -136,54 +132,15 @@ export const GetMatchingPostsQuery = extendType({
           },
           include: {
             tag: true,
+            post: true,
           },
         })
 
-        const matchingPostsInfo: { count: number; post: PostType }[] = []
-
-        const res = (
-          await Promise.all(
-            tagPostRelations.map(
-              (
-                tagPostRelation: TagPostRelationType & {
-                  tag: Tag
-                }
-              ) => {
-                return ctx.prisma.tagPostRelation.findMany({
-                  where: {
-                    tagId: tagPostRelation.tag.id,
-                    NOT: {
-                      postId: args.postId,
-                    },
-                  },
-                  include: {
-                    post: true,
-                  },
-                })
-              }
-            )
-          )
-        ).flat()
-
-        //FIXME: 処理が重くなってきたら修正する
-        res.forEach((tagPostRelation) => {
-          const index = matchingPostsInfo.findIndex(
-            (matchingPostInfo: { count: number; post: PostType }) =>
-              matchingPostInfo.post.id === tagPostRelation.postId
-          )
-
-          if (index > -1) {
-            matchingPostsInfo[index].count++
-            return
-          }
-
-          if (
-            ctx.user?.id !== tagPostRelation.post.createdUserId &&
-            targetPost.category !== tagPostRelation.post.category
-          ) {
-            matchingPostsInfo.push({ count: 1, post: tagPostRelation.post })
-          }
-        })
+        const matchingPostsInfo = await matchPosts(
+          ctx,
+          tagPostRelations,
+          targetPost
+        )
 
         return matchingPostsInfo.sort((a, b) => b.count - a.count)
       },

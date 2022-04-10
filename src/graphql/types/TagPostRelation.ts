@@ -13,6 +13,7 @@ import {
   stringArg,
 } from 'nexus'
 import { Context } from '../context'
+import { matchPosts } from '../logics'
 
 export const TagPostInputType = inputObjectType({
   name: 'TagPostInputType',
@@ -118,7 +119,6 @@ export const CreateTagPostRelationMutation = extendType({
   },
 })
 
-// TODO: マッチングの部分の処理を切り分ける
 const createNotification = async (
   ctx: Context,
   tagPostRelations: (TagPostRelationType & {
@@ -127,51 +127,7 @@ const createNotification = async (
   })[],
   post: Post
 ) => {
-  const matchingPostsInfo: { count: number; post: Post }[] = []
-
-  const res = (
-    await Promise.all(
-      tagPostRelations.map(
-        (
-          tagPostRelation: TagPostRelationType & {
-            tag: Tag
-          }
-        ) => {
-          return ctx.prisma.tagPostRelation.findMany({
-            where: {
-              tagId: tagPostRelation.tag.id,
-              NOT: {
-                postId: post.id,
-              },
-            },
-            include: {
-              post: true,
-            },
-          })
-        }
-      )
-    )
-  ).flat()
-
-  //FIXME: 処理が重くなってきたら修正する
-  res.forEach((tagPostRelation) => {
-    const index = matchingPostsInfo.findIndex(
-      (matchingPostInfo: { count: number; post: Post }) =>
-        matchingPostInfo.post.id === tagPostRelation.postId
-    )
-
-    if (index > -1) {
-      matchingPostsInfo[index].count++
-      return
-    }
-
-    if (
-      ctx.user?.id !== tagPostRelation.post.createdUserId &&
-      post.category !== tagPostRelation.post.category
-    ) {
-      matchingPostsInfo.push({ count: 1, post: tagPostRelation.post })
-    }
-  })
+  const matchingPostsInfo = await matchPosts(ctx, tagPostRelations, post)
 
   await ctx.prisma.notification.createMany({
     data: [
