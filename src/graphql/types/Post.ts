@@ -4,6 +4,7 @@ import {
   booleanArg,
   enumType,
   extendType,
+  intArg,
   nonNull,
   objectType,
   stringArg,
@@ -84,6 +85,8 @@ export const GetPostsQuery = extendType({
           type: OrderByType,
           default: 'asc',
         }),
+        limit: intArg(),
+        page: intArg(),
       },
       resolve(_parent, args, ctx) {
         const query: Partial<PostType> = {}
@@ -94,6 +97,8 @@ export const GetPostsQuery = extendType({
 
         return ctx.prisma.post.findMany({
           where: query,
+          skip: args.page || undefined,
+          take: args.limit || undefined,
           orderBy: {
             createdAt: args.sort || 'asc',
           },

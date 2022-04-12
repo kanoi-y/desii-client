@@ -94,7 +94,7 @@ type Query {
   GetFavorites(createdUserId: String, postId: String, sort: orderByType = asc): [Favorite!]!
   GetMatchingPosts(postId: String!): [MatchingPostInfoType!]!
   GetNotifications(sort: orderByType = asc, targetUserId: String!): [Notification!]!
-  GetPosts(groupId: String, isPrivate: Boolean, sort: orderByType = asc, userId: String): [Post!]!
+  GetPosts(groupId: String, isPrivate: Boolean, limit: Int, page: Int, sort: orderByType = asc, userId: String): [Post!]!
   GetTagByName(name: String!): Tag
   GetTagPostRelations(postId: String, tagId: String): [TagPostRelation!]!
   GetUserGroupRelations(groupId: String, userId: String): [UserGroupRelation!]!

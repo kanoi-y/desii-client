@@ -16,6 +16,8 @@ export default function Home() {
     variables: {
       isPrivate: false,
       sort: OrderByType.Desc,
+      limit: 10,
+      page: 0,
     },
     fetchPolicy: 'cache-and-network',
   })

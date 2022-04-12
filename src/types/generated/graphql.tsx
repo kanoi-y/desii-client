@@ -1,5 +1,5 @@
-import * as Apollo from '@apollo/client';
 import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -269,6 +269,8 @@ export type QueryGetNotificationsArgs = {
 export type QueryGetPostsArgs = {
   groupId?: InputMaybe<Scalars['String']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
+  limit?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
   sort?: InputMaybe<OrderByType>;
   userId?: InputMaybe<Scalars['String']>;
 };
@@ -455,6 +457,8 @@ export type GetPostsQueryVariables = Exact<{
   groupId?: InputMaybe<Scalars['String']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   sort?: InputMaybe<OrderByType>;
+  limit?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
 }>;
 
 
@@ -1118,8 +1122,15 @@ export type GetPostQueryHookResult = ReturnType<typeof useGetPostQuery>;
 export type GetPostLazyQueryHookResult = ReturnType<typeof useGetPostLazyQuery>;
 export type GetPostQueryResult = Apollo.QueryResult<GetPostQuery, GetPostQueryVariables>;
 export const GetPostsDocument = gql`
-    query GetPosts($userId: String, $groupId: String, $isPrivate: Boolean, $sort: orderByType) {
-  GetPosts(userId: $userId, groupId: $groupId, isPrivate: $isPrivate, sort: $sort) {
+    query GetPosts($userId: String, $groupId: String, $isPrivate: Boolean, $sort: orderByType, $limit: Int, $page: Int) {
+  GetPosts(
+    userId: $userId
+    groupId: $groupId
+    isPrivate: $isPrivate
+    sort: $sort
+    limit: $limit
+    page: $page
+  ) {
     id
     title
     content
@@ -1150,6 +1161,8 @@ export const GetPostsDocument = gql`
  *      groupId: // value for 'groupId'
  *      isPrivate: // value for 'isPrivate'
  *      sort: // value for 'sort'
+ *      limit: // value for 'limit'
+ *      page: // value for 'page'
  *   },
  * });
  */
