@@ -23,12 +23,16 @@ export const GET_POSTS = gql`
     $groupId: String
     $isPrivate: Boolean
     $sort: orderByType
+    $limit: Int
+    $page: Int
   ) {
     GetPosts(
       userId: $userId
       groupId: $groupId
       isPrivate: $isPrivate
       sort: $sort
+      limit: $limit
+      page: $page
     ) {
       id
       title
