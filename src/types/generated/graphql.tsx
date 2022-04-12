@@ -271,7 +271,7 @@ export type QueryGetPostsArgs = {
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   limit?: InputMaybe<Scalars['Int']>;
   page?: InputMaybe<Scalars['Int']>;
-  sort?: InputMaybe<OrderByType>;
+  sort?: InputMaybe<PostOrderByType>;
   userId?: InputMaybe<Scalars['String']>;
 };
 
@@ -371,6 +371,12 @@ export enum OrderByType {
   Desc = 'desc'
 }
 
+export enum PostOrderByType {
+  Asc = 'asc',
+  Desc = 'desc',
+  Favorite = 'favorite'
+}
+
 export type GetFavoritesQueryVariables = Exact<{
   createdUserId?: InputMaybe<Scalars['String']>;
   postId?: InputMaybe<Scalars['String']>;
@@ -456,7 +462,7 @@ export type GetPostsQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['String']>;
   groupId?: InputMaybe<Scalars['String']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
-  sort?: InputMaybe<OrderByType>;
+  sort?: InputMaybe<PostOrderByType>;
   limit?: InputMaybe<Scalars['Int']>;
   page?: InputMaybe<Scalars['Int']>;
 }>;
@@ -1122,7 +1128,7 @@ export type GetPostQueryHookResult = ReturnType<typeof useGetPostQuery>;
 export type GetPostLazyQueryHookResult = ReturnType<typeof useGetPostLazyQuery>;
 export type GetPostQueryResult = Apollo.QueryResult<GetPostQuery, GetPostQueryVariables>;
 export const GetPostsDocument = gql`
-    query GetPosts($userId: String, $groupId: String, $isPrivate: Boolean, $sort: orderByType, $limit: Int, $page: Int) {
+    query GetPosts($userId: String, $groupId: String, $isPrivate: Boolean, $sort: postOrderByType, $limit: Int, $page: Int) {
   GetPosts(
     userId: $userId
     groupId: $groupId

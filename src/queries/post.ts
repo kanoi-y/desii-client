@@ -22,7 +22,7 @@ export const GET_POSTS = gql`
     $userId: String
     $groupId: String
     $isPrivate: Boolean
-    $sort: orderByType
+    $sort: postOrderByType
     $limit: Int
     $page: Int
   ) {
