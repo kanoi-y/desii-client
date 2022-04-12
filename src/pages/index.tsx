@@ -1,4 +1,5 @@
 import { Box, Spinner } from '@chakra-ui/react'
+import styled from '@emotion/styled'
 import React, { useContext } from 'react'
 import { Pagination } from 'swiper'
 import 'swiper/css'
@@ -37,64 +38,55 @@ export default function Home() {
   }
 
   return (
-    <Box maxW="1200px" mx="auto">
-      <Box my="24px">
-        <Text fontSize="lg" isHead>
-          新着
+    <Box maxW="1200px" mx="auto" padding="32px 16px 24px">
+      <Box mb="12px">
+        <Text fontSize="xl" isHead isBold>
+          最新の投稿
         </Text>
       </Box>
-      <Box>
-        <Swiper
-          modules={[Pagination]}
-          slidesPerView={1}
-          pagination={{
-            clickable: true,
-          }}
-          breakpoints={{
-            600: {
-              slidesPerView: 2,
-              spaceBetween: 15,
-            },
-            960: {
-              slidesPerView: 3,
-              spaceBetween: 30,
-            },
-          }}
-        >
-          {data ? (
-            data.GetPosts.map((post) => (
-              <SwiperSlide key={post.id}>
-                <Box w="100%" maxW="360px" mx="auto" p="0 16px">
-                  <PostCard
-                    currentUserId={currentUser?.id}
-                    post={post}
-                    isLink
-                  />
-                </Box>
-              </SwiperSlide>
-            ))
-          ) : (
-            <SwiperSlide>
-              <SkeletonPostCard />
-            </SwiperSlide>
-          )}
-        </Swiper>
-      </Box>
-
-      <Box w="360px" display="flex" flexDirection="column" gap="16px">
+      <StyledSwiper
+        modules={[Pagination]}
+        slidesPerView={1}
+        spaceBetween={32}
+        pagination={{
+          clickable: true,
+        }}
+        breakpoints={{
+          600: {
+            slidesPerView: 2,
+            spaceBetween: 32,
+          },
+          960: {
+            slidesPerView: 3,
+            spaceBetween: 32,
+          },
+        }}
+        loop={true}
+      >
         {data ? (
           data.GetPosts.map((post) => (
-            <PostCard
-              key={post.id}
-              currentUserId={currentUser?.id}
-              post={post}
-              isLink
-            />
+            <SwiperSlide key={post.id}>
+              <Box w="100%" maxW="360px">
+                <PostCard currentUserId={currentUser?.id} post={post} isLink />
+              </Box>
+            </SwiperSlide>
           ))
         ) : (
-          <SkeletonPostCard />
+          <SwiperSlide>
+            <SkeletonPostCard />
+          </SwiperSlide>
         )}
-      </Box>
+      </StyledSwiper>
     </Box>
   )
 }
+
+const StyledSwiper = styled(Swiper)`
+  &.swiper {
+    padding-bottom: 48px;
+  }
+  .swiper-pagination-bullet-active {
+    background-color: #9ae6b4;
+    transform: scale(1.4);
+  }
+`
