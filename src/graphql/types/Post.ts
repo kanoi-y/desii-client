@@ -123,7 +123,7 @@ export const GetPostsQuery = extendType({
 
         return (
           await Promise.all(
-            posts.map(async (post) => {
+            posts.map(async (post: PostType) => {
               const favorites = await ctx.prisma.favorite.findMany({
                 where: {
                   postId: post.id,
