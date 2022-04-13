@@ -12,7 +12,7 @@ import { GET_CURRENT_USER } from '~/queries'
 import {
   GetCurrentUserQuery,
   GetCurrentUserQueryVariables,
-  OrderByType,
+  PostOrderByType,
   useGetPostsQuery,
   User,
 } from '~/types/generated/graphql'
@@ -27,7 +27,7 @@ const PostsPage: NextPage<Props> = ({ currentUser }) => {
   const { data } = useGetPostsQuery({
     variables: {
       userId: currentUser.id,
-      sort: OrderByType.Desc,
+      sort: PostOrderByType.Desc,
     },
     fetchPolicy: 'cache-and-network',
   })

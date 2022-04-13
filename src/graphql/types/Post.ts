@@ -21,6 +21,11 @@ export const OrderByType = enumType({
   members: ['asc', 'desc'],
 })
 
+export const PostOrderByType = enumType({
+  name: 'postOrderByType',
+  members: ['asc', 'desc', 'favorite'],
+})
+
 export const MatchingPostInfoType = objectType({
   name: 'MatchingPostInfoType',
   definition(t) {
@@ -82,27 +87,58 @@ export const GetPostsQuery = extendType({
         groupId: stringArg(),
         isPrivate: booleanArg(),
         sort: arg({
-          type: OrderByType,
+          type: PostOrderByType,
           default: 'asc',
         }),
         limit: intArg(),
         page: intArg(),
       },
-      resolve(_parent, args, ctx) {
+      async resolve(_parent, args, ctx) {
         const query: Partial<PostType> = {}
         if (args.userId) query.createdUserId = args.userId
         if (args.groupId) query.groupId = args.groupId
-        if (typeof args.isPrivate === 'boolean')
+        if (typeof args.isPrivate === 'boolean') {
           query.isPrivate = args.isPrivate
+        }
 
-        return ctx.prisma.post.findMany({
+        if (args.sort !== 'favorite') {
+          return ctx.prisma.post.findMany({
+            where: query,
+            skip: args.page || undefined,
+            take: args.limit || undefined,
+            orderBy: {
+              createdAt: args.sort || 'asc',
+            },
+          })
+        }
+
+        const posts = await ctx.prisma.post.findMany({
           where: query,
           skip: args.page || undefined,
           take: args.limit || undefined,
           orderBy: {
-            createdAt: args.sort || 'asc',
+            createdAt: 'desc',
           },
         })
+
+        return (
+          await Promise.all(
+            posts.map(async (post: PostType) => {
+              const favorites = await ctx.prisma.favorite.findMany({
+                where: {
+                  postId: post.id,
+                },
+              })
+
+              return { ...post, count: favorites.length }
+            })
+          )
+        )
+          .sort((a, b) => b.count - a.count)
+          .map((postWithCount) => {
+            const { count, ...post } = postWithCount
+            return post
+          })
       },
     })
   },

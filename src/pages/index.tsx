@@ -8,7 +8,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { PostCard, SkeletonPostCard } from '~/components/domains/post/PostCard'
 import { Text } from '~/components/parts/commons'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
-import { OrderByType, useGetPostsQuery } from '~/types/generated/graphql'
+import { PostOrderByType, useGetPostsQuery } from '~/types/generated/graphql'
 
 export default function Home() {
   const { currentUser, isLoading } = useContext(CurrentUserContext)
@@ -16,7 +16,17 @@ export default function Home() {
   const { data } = useGetPostsQuery({
     variables: {
       isPrivate: false,
-      sort: OrderByType.Desc,
+      sort: PostOrderByType.Desc,
+      limit: 10,
+      page: 0,
+    },
+    fetchPolicy: 'cache-and-network',
+  })
+
+  const { data: favoritesData } = useGetPostsQuery({
+    variables: {
+      isPrivate: false,
+      sort: PostOrderByType.Favorite,
       limit: 10,
       page: 0,
     },
@@ -44,6 +54,50 @@ export default function Home() {
           最新の投稿
         </Text>
       </Box>
+      <Box mb="40px">
+        <StyledSwiper
+          modules={[Pagination]}
+          slidesPerView={1}
+          spaceBetween={32}
+          pagination={{
+            clickable: true,
+          }}
+          breakpoints={{
+            600: {
+              slidesPerView: 2,
+              spaceBetween: 32,
+            },
+            960: {
+              slidesPerView: 3,
+              spaceBetween: 32,
+            },
+          }}
+          loop={true}
+        >
+          {data ? (
+            data.GetPosts.map((post) => (
+              <SwiperSlide key={post.id}>
+                <Box w="100%" maxW="360px">
+                  <PostCard
+                    currentUserId={currentUser?.id}
+                    post={post}
+                    isLink
+                  />
+                </Box>
+              </SwiperSlide>
+            ))
+          ) : (
+            <SwiperSlide>
+              <SkeletonPostCard />
+            </SwiperSlide>
+          )}
+        </StyledSwiper>
+      </Box>
+      <Box mb="12px">
+        <Text fontSize="xl" isHead isBold>
+          人気の投稿
+        </Text>
+      </Box>
       <StyledSwiper
         modules={[Pagination]}
         slidesPerView={1}
@@ -63,8 +117,8 @@ export default function Home() {
         }}
         loop={true}
       >
-        {data ? (
-          data.GetPosts.map((post) => (
+        {favoritesData ? (
+          favoritesData.GetPosts.map((post) => (
             <SwiperSlide key={post.id}>
               <Box w="100%" maxW="360px">
                 <PostCard currentUserId={currentUser?.id} post={post} isLink />
