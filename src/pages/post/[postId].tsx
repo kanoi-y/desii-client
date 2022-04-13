@@ -1,19 +1,19 @@
-import { Box, Spinner } from '@chakra-ui/react'
+import { Box, Spinner, useDisclosure } from '@chakra-ui/react'
 import { GetStaticPropsContext, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useContext, useMemo } from 'react'
 import { PostCard } from '~/components/domains/post/PostCard'
 import { PostFavoriteButton } from '~/components/domains/post/PostFavoriteButton'
-import { Button, Link, Tag } from '~/components/parts/commons'
+import { Button, Link, Modal, Tag } from '~/components/parts/commons'
 import { BREAKPOINTS } from '~/constants'
 import { useWindowDimensions } from '~/hooks'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 import { addApolloState, initializeApollo } from '~/lib/apolloClient'
 import { GET_POST_BY_ID } from '~/queries'
+import { theme } from '~/theme'
 import {
   GetPostQuery,
   GetPostQueryVariables,
-  Post,
   useGetPostQuery,
   useGetTagPostRelationsQuery,
 } from '~/types/generated/graphql'
@@ -26,6 +26,7 @@ type Props = {
 
 const PostPage: NextPage<Props> = ({ postId }) => {
   const router = useRouter()
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const { currentUser } = useContext(CurrentUserContext)
 
   const { width } = useWindowDimensions()
@@ -50,11 +51,6 @@ const PostPage: NextPage<Props> = ({ postId }) => {
       }&hashtags=Desii`,
     [postId]
   )
-
-  const handleClickApplyButton = () => {
-    // TODO: 応募した後の処理を実装する
-    console.log('応募する')
-  }
 
   if (router.isFallback || !postId || !postData?.getPost) {
     return (
@@ -86,7 +82,9 @@ const PostPage: NextPage<Props> = ({ postId }) => {
           <Box>
             <Tag
               text={
-                postData.getPost.category === 'GIVE_ME' ? 'してほしいこと' : '出来ること'
+                postData.getPost.category === 'GIVE_ME'
+                  ? 'してほしいこと'
+                  : '出来ること'
               }
               bgColor="orange.main"
               size="lg"
@@ -115,9 +113,11 @@ const PostPage: NextPage<Props> = ({ postId }) => {
             {postData.getPost.content}
           </Box>
         </Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Button onClick={handleClickApplyButton}>応募する</Button>
-          <Box display="flex" alignItems="center" gap="12px">
+        <Box display="flex" alignItems="center">
+          {postData.getPost.createdUserId !== currentUser?.id && (
+            <Button onClick={onOpen}>応募する</Button>
+          )}
+          <Box display="flex" alignItems="center" gap="12px" marginLeft="auto">
             <Link href={twitterUrl} target="_blank">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -135,6 +135,23 @@ const PostPage: NextPage<Props> = ({ postId }) => {
             />
           </Box>
         </Box>
+        <Modal
+          title="この投稿に応募する"
+          isOpen={isOpen}
+          onClose={onClose}
+          body={
+            <Box
+              borderTop={`1px solid ${theme.colors.secondary.main}`}
+              pt="12px"
+              mt="-8px"
+            >
+              <Box>
+                <Button onClick={onClose}>キャンセル</Button>
+                <Button>応募する</Button>
+              </Box>
+            </Box>
+          }
+        />
       </Box>
     </Box>
   )
