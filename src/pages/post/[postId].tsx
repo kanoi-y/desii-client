@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import React, { useContext, useMemo } from 'react'
 import { PostCard } from '~/components/domains/post/PostCard'
 import { PostFavoriteButton } from '~/components/domains/post/PostFavoriteButton'
-import { Button, Link, Modal, Tag } from '~/components/parts/commons'
+import { Button, Link, Modal, Tag, Text } from '~/components/parts/commons'
 import { BREAKPOINTS } from '~/constants'
 import { useWindowDimensions } from '~/hooks'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
@@ -51,6 +51,11 @@ const PostPage: NextPage<Props> = ({ postId }) => {
       }&hashtags=Desii`,
     [postId]
   )
+
+  const handleApplyButton = () => {
+    console.log('応募する')
+    // TODO: 投稿者とログインユーザーの間にroomを作成し、rooms/[roomId]に遷移するように実装
+  }
 
   if (router.isFallback || !postId || !postData?.getPost) {
     return (
@@ -136,7 +141,7 @@ const PostPage: NextPage<Props> = ({ postId }) => {
           </Box>
         </Box>
         <Modal
-          title="この投稿に応募する"
+          title="この投稿に応募しますか？"
           isOpen={isOpen}
           onClose={onClose}
           body={
@@ -145,9 +150,19 @@ const PostPage: NextPage<Props> = ({ postId }) => {
               pt="12px"
               mt="-8px"
             >
-              <Box>
+              <Box mb="20px">
+                <Text fontSize="md">
+                  {/* FIXME: もっと適切な文言があれば修正する */}
+                  投稿に応募すると、投稿者とのメッセージ交換が出来るようになります。
+                </Text>
+              </Box>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-around"
+              >
                 <Button onClick={onClose}>キャンセル</Button>
-                <Button>応募する</Button>
+                <Button onClick={handleApplyButton}>応募する</Button>
               </Box>
             </Box>
           }
