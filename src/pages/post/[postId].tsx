@@ -52,7 +52,7 @@ const PostPage: NextPage<Props> = ({ postId }) => {
     [postId]
   )
 
-  const handleApplyButton = () => {
+  const handleClickApplyButton = () => {
     console.log('応募する')
     // TODO: 投稿者とログインユーザーの間にroomを作成し、rooms/[roomId]に遷移するように実装
   }
@@ -162,7 +162,7 @@ const PostPage: NextPage<Props> = ({ postId }) => {
                 justifyContent="space-around"
               >
                 <Button onClick={onClose}>キャンセル</Button>
-                <Button onClick={handleApplyButton}>応募する</Button>
+                <Button onClick={handleClickApplyButton}>応募する</Button>
               </Box>
             </Box>
           }
