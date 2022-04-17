@@ -146,9 +146,10 @@ model Notification {
   targetUser       User     @relation(name: "targetUser", fields: [targetUserId], references: [id], onDelete: Cascade)
 }
 
-model Room {
+model ApplicationRoom {
   id               String            @id @default(cuid())
-  name             String?            @unique
+  members          String[]
+  latestMessage    String
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 }
