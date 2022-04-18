@@ -72,6 +72,15 @@ enum NotificationType {
   MATCH_POST
 }
 
+type OneOnOneRoom {
+  createdAt: DateTime!
+  id: String!
+  latestMessage: String!
+  memberId1: String!
+  memberId2: String!
+  updatedAt: DateTime!
+}
+
 type Post {
   bgImage: String
   category: PostCategory!
