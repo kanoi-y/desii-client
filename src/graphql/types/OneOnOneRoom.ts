@@ -112,3 +112,42 @@ export const CreateOneOnOneRoomMutation = extendType({
     })
   },
 })
+
+export const DeleteOneOnOneRoomMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.nonNull.field('DeleteOneOnOneRoom', {
+      type: 'OneOnOneRoom',
+      args: {
+        id: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const oneOnOneRoom = await ctx.prisma.oneOnOneRoom.findUnique({
+          where: {
+            id: args.id,
+          },
+        })
+
+        if (!oneOnOneRoom) {
+          throw new Error('ルームが存在しません')
+        }
+
+        if (
+          ctx.user.id !== oneOnOneRoom.memberId1 &&
+          ctx.user.id !== oneOnOneRoom.memberId2
+        ) {
+          throw new Error('メンバーしかルームを削除することは出来ません')
+        }
+        return ctx.prisma.oneOnOneRoom.delete({
+          where: {
+            id: args.id,
+          },
+        })
+      },
+    })
+  },
+})
