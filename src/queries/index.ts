@@ -7,11 +7,16 @@ export {
 } from './group'
 export { GET_NOTIFICATIONS, UPDATE_NOTIFICATION } from './notification'
 export {
+  CREATE_ONE_ON_ONE_ROOM,
+  DELETE_ONE_ON_ONE_ROOM,
+  GET_ONE_ON_ONE_ROOMS,
+} from './oneOnOneRoom'
+export {
   CREATE_POST,
   DELETE_POST,
+  GET_MATCHING_POSTS,
   GET_POSTS,
   GET_POST_BY_ID,
-  GET_MATCHING_POSTS,
   UPDATE_POST,
 } from './post'
 export { CREATE_TAG, GET_TAG_BY_NAME } from './tag'
