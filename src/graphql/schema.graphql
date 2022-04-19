@@ -34,6 +34,7 @@ type MatchingPostInfoType {
 }
 
 type Mutation {
+  CreateOneOnOneRoom(memberId1: String!, memberId2: String!): OneOnOneRoom!
   DeleteFavorite(postId: String!): Favorite!
   DeleteTagPostRelation(postId: String!, tagId: String!): TagPostRelation!
   DeleteTagPostRelations(tagPostTypes: [TagPostInputType!]!): [TagPostRelation!]!

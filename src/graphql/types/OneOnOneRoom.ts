@@ -53,3 +53,58 @@ export const GetOneOnOneRoomsQuery = extendType({
     })
   },
 })
+
+export const CreateOneOnOneRoomMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.nonNull.field('CreateOneOnOneRoom', {
+      type: 'OneOnOneRoom',
+      args: {
+        memberId1: nonNull(stringArg()),
+        memberId2: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        if (ctx.user.id === args.memberId1 || ctx.user.id === args.memberId2) {
+          throw new Error(
+            'メンバーではないユーザーはルームを作成することは出来ません'
+          )
+        }
+
+        const oneOnOneRoom = await ctx.prisma.oneOnOneRoom.findFirst({
+          where: {
+            OR: [
+              {
+                AND: [
+                  { memberId1: args.memberId1 },
+                  { memberId2: args.memberId2 },
+                ],
+              },
+              {
+                AND: [
+                  { memberId2: args.memberId1 },
+                  { memberId1: args.memberId2 },
+                ],
+              },
+            ],
+          },
+        })
+
+        if (oneOnOneRoom) {
+          throw new Error('同じメンバーのルームが存在しています')
+        }
+
+        return ctx.prisma.oneOnOneRoom.create({
+          data: {
+            memberId1: args.memberId1,
+            memberId2: args.memberId2,
+            latestMessage: '',
+          },
+        })
+      },
+    })
+  },
+})
