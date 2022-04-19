@@ -68,7 +68,11 @@ export const CreateOneOnOneRoomMutation = extendType({
           throw new Error('ログインユーザーが存在しません')
         }
 
-        if (ctx.user.id === args.memberId1 || ctx.user.id === args.memberId2) {
+        if (args.memberId1 === args.memberId2) {
+          throw new Error('自分だけのルームを作成することは出来ません')
+        }
+
+        if (ctx.user.id !== args.memberId1 && ctx.user.id !== args.memberId2) {
           throw new Error(
             'メンバーではないユーザーはルームを作成することは出来ません'
           )
