@@ -120,6 +120,7 @@ enum PostCategory {
 type Query {
   GetFavorites(createdUserId: String, postId: String, sort: orderByType = asc): [Favorite!]!
   GetMatchingPosts(postId: String!): [MatchingPostInfoType!]!
+  GetMessages(sort: orderByType = asc, targetId: String!): [Message!]!
   GetNotifications(sort: orderByType = asc, targetUserId: String!): [Notification!]!
   GetOneOnOneRooms(sort: orderByType = asc, targetMemberId: String!): [OneOnOneRoom!]!
   GetPosts(groupId: String, isPrivate: Boolean, limit: Int, page: Int, sort: postOrderByType = asc, userId: String): [Post!]!
