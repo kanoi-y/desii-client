@@ -1,6 +1,7 @@
 export * from './DateTime'
 export * from './Favorite'
 export * from './Group'
+export * from './Message'
 export * from './Notification'
 export * from './OneOnOneRoom'
 export * from './Post'

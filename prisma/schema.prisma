@@ -163,6 +163,8 @@ model OneOnOneRoom {
   @@unique(fields: [memberId1, memberId2], name: "OneOnOneRoomId")
 }
 
+// typeがMEDIAの場合は、画像のリンク。typeがpostの場合はpostId
+// targetIdはOneOnOneRoomIdか、groupId
 model Message {
   id        String      @id @default(cuid())
   type      MessageType

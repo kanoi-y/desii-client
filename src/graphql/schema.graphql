@@ -33,6 +33,22 @@ type MatchingPostInfoType {
   post: Post!
 }
 
+type Message {
+  body: String!
+  createdAt: DateTime!
+  id: String!
+  targetId: String!
+  type: MessageType!
+  updatedAt: DateTime!
+  userId: String!
+}
+
+enum MessageType {
+  MEDIA
+  POST
+  TEXT
+}
+
 type Mutation {
   CreateOneOnOneRoom(memberId1: String!, memberId2: String!): OneOnOneRoom!
   DeleteFavorite(postId: String!): Favorite!
