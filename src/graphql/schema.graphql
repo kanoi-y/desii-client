@@ -136,6 +136,15 @@ type Query {
   getUser(id: String!): User
 }
 
+type ReadManagement {
+  MessageId: String!
+  createdAt: DateTime!
+  id: String!
+  isRead: Boolean!
+  targetUserId: String!
+  updatedAt: DateTime!
+}
+
 type Tag {
   createdAt: DateTime!
   id: String!
