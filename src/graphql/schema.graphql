@@ -50,6 +50,7 @@ enum MessageType {
 }
 
 type Mutation {
+  CreateMessage(body: String!, messageType: MessageType!, targetId: String!): Message!
   CreateOneOnOneRoom(memberId1: String!, memberId2: String!): OneOnOneRoom!
   DeleteFavorite(postId: String!): Favorite!
   DeleteOneOnOneRoom(id: String!): OneOnOneRoom!

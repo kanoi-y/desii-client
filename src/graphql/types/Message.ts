@@ -84,3 +84,58 @@ export const GetMessagesQuery = extendType({
     })
   },
 })
+
+export const CreateMessageMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.nonNull.field('CreateMessage', {
+      type: 'Message',
+      args: {
+        messageType: nonNull(
+          arg({
+            type: MessageType,
+          })
+        ),
+        targetId: nonNull(stringArg()),
+        body: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const oneOnOneRoom = await ctx.prisma.oneOnOneRoom.findUnique({
+          where: {
+            id: args.targetId,
+          },
+        })
+
+        const userGroupRelations = await ctx.prisma.userGroupRelation.findMany({
+          where: {
+            groupId: args.targetId,
+          },
+        })
+
+        if (
+          oneOnOneRoom?.memberId1 !== ctx.user.id &&
+          oneOnOneRoom?.memberId2 !== ctx.user.id &&
+          userGroupRelations.every(
+            (userGroupRelation) =>
+              ctx.user && userGroupRelation.userId !== ctx.user.id
+          )
+        ) {
+          throw new Error('所属していないルームのメッセージは作成できません')
+        }
+
+        return ctx.prisma.message.create({
+          data: {
+            type: args.messageType,
+            targetId: args.targetId,
+            userId: ctx.user.id,
+            body: args.body,
+          },
+        })
+      },
+    })
+  },
+})
