@@ -1,5 +1,5 @@
-import * as Apollo from '@apollo/client';
 import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -46,10 +46,29 @@ export type MatchingPostInfoType = {
   post: Post;
 };
 
+export type Message = {
+  __typename?: 'Message';
+  body: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  id: Scalars['String'];
+  targetId: Scalars['String'];
+  type: MessageType;
+  updatedAt: Scalars['DateTime'];
+  userId: Scalars['String'];
+};
+
+export enum MessageType {
+  Media = 'MEDIA',
+  Post = 'POST',
+  Text = 'TEXT'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
+  CreateMessage: Message;
   CreateOneOnOneRoom: OneOnOneRoom;
   DeleteFavorite: Favorite;
+  DeleteMessage: Message;
   DeleteOneOnOneRoom: OneOnOneRoom;
   DeleteTagPostRelation: TagPostRelation;
   DeleteTagPostRelations: Array<TagPostRelation>;
@@ -72,6 +91,13 @@ export type Mutation = {
 };
 
 
+export type MutationCreateMessageArgs = {
+  body: Scalars['String'];
+  messageType: MessageType;
+  targetId: Scalars['String'];
+};
+
+
 export type MutationCreateOneOnOneRoomArgs = {
   memberId1: Scalars['String'];
   memberId2: Scalars['String'];
@@ -80,6 +106,11 @@ export type MutationCreateOneOnOneRoomArgs = {
 
 export type MutationDeleteFavoriteArgs = {
   postId: Scalars['String'];
+};
+
+
+export type MutationDeleteMessageArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -258,6 +289,7 @@ export type Query = {
   __typename?: 'Query';
   GetFavorites: Array<Favorite>;
   GetMatchingPosts: Array<MatchingPostInfoType>;
+  GetMessages: Array<Message>;
   GetNotifications: Array<Notification>;
   GetOneOnOneRooms: Array<OneOnOneRoom>;
   GetPosts: Array<Post>;
@@ -281,6 +313,12 @@ export type QueryGetFavoritesArgs = {
 
 export type QueryGetMatchingPostsArgs = {
   postId: Scalars['String'];
+};
+
+
+export type QueryGetMessagesArgs = {
+  sort?: InputMaybe<OrderByType>;
+  targetId: Scalars['String'];
 };
 
 
@@ -464,6 +502,30 @@ export type UpdateGroupMutationVariables = Exact<{
 
 
 export type UpdateGroupMutation = { __typename?: 'Mutation', updateGroup: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } };
+
+export type GetMessagesQueryVariables = Exact<{
+  targetId: Scalars['String'];
+  sort?: InputMaybe<OrderByType>;
+}>;
+
+
+export type GetMessagesQuery = { __typename?: 'Query', GetMessages: Array<{ __typename?: 'Message', id: string, type: MessageType, targetId: string, userId: string, body: string, createdAt: Date, updatedAt: Date }> };
+
+export type CreateMessageMutationVariables = Exact<{
+  messageType: MessageType;
+  targetId: Scalars['String'];
+  body: Scalars['String'];
+}>;
+
+
+export type CreateMessageMutation = { __typename?: 'Mutation', CreateMessage: { __typename?: 'Message', id: string, type: MessageType, targetId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } };
+
+export type DeleteMessageMutationVariables = Exact<{
+  deleteMessageId: Scalars['String'];
+}>;
+
+
+export type DeleteMessageMutation = { __typename?: 'Mutation', DeleteMessage: { __typename?: 'Message', id: string, type: MessageType, targetId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } };
 
 export type GetNotificationsQueryVariables = Exact<{
   targetUserId: Scalars['String'];
@@ -1050,6 +1112,128 @@ export function useUpdateGroupMutation(baseOptions?: Apollo.MutationHookOptions<
 export type UpdateGroupMutationHookResult = ReturnType<typeof useUpdateGroupMutation>;
 export type UpdateGroupMutationResult = Apollo.MutationResult<UpdateGroupMutation>;
 export type UpdateGroupMutationOptions = Apollo.BaseMutationOptions<UpdateGroupMutation, UpdateGroupMutationVariables>;
+export const GetMessagesDocument = gql`
+    query GetMessages($targetId: String!, $sort: orderByType) {
+  GetMessages(targetId: $targetId, sort: $sort) {
+    id
+    type
+    targetId
+    userId
+    body
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetMessagesQuery__
+ *
+ * To run a query within a React component, call `useGetMessagesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMessagesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMessagesQuery({
+ *   variables: {
+ *      targetId: // value for 'targetId'
+ *      sort: // value for 'sort'
+ *   },
+ * });
+ */
+export function useGetMessagesQuery(baseOptions: Apollo.QueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
+      }
+export function useGetMessagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
+        }
+export type GetMessagesQueryHookResult = ReturnType<typeof useGetMessagesQuery>;
+export type GetMessagesLazyQueryHookResult = ReturnType<typeof useGetMessagesLazyQuery>;
+export type GetMessagesQueryResult = Apollo.QueryResult<GetMessagesQuery, GetMessagesQueryVariables>;
+export const CreateMessageDocument = gql`
+    mutation CreateMessage($messageType: MessageType!, $targetId: String!, $body: String!) {
+  CreateMessage(messageType: $messageType, targetId: $targetId, body: $body) {
+    id
+    type
+    targetId
+    userId
+    body
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateMessageMutationFn = Apollo.MutationFunction<CreateMessageMutation, CreateMessageMutationVariables>;
+
+/**
+ * __useCreateMessageMutation__
+ *
+ * To run a mutation, you first call `useCreateMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createMessageMutation, { data, loading, error }] = useCreateMessageMutation({
+ *   variables: {
+ *      messageType: // value for 'messageType'
+ *      targetId: // value for 'targetId'
+ *      body: // value for 'body'
+ *   },
+ * });
+ */
+export function useCreateMessageMutation(baseOptions?: Apollo.MutationHookOptions<CreateMessageMutation, CreateMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateMessageMutation, CreateMessageMutationVariables>(CreateMessageDocument, options);
+      }
+export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessageMutation>;
+export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
+export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
+export const DeleteMessageDocument = gql`
+    mutation DeleteMessage($deleteMessageId: String!) {
+  DeleteMessage(id: $deleteMessageId) {
+    id
+    type
+    targetId
+    userId
+    body
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type DeleteMessageMutationFn = Apollo.MutationFunction<DeleteMessageMutation, DeleteMessageMutationVariables>;
+
+/**
+ * __useDeleteMessageMutation__
+ *
+ * To run a mutation, you first call `useDeleteMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteMessageMutation, { data, loading, error }] = useDeleteMessageMutation({
+ *   variables: {
+ *      deleteMessageId: // value for 'deleteMessageId'
+ *   },
+ * });
+ */
+export function useDeleteMessageMutation(baseOptions?: Apollo.MutationHookOptions<DeleteMessageMutation, DeleteMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteMessageMutation, DeleteMessageMutationVariables>(DeleteMessageDocument, options);
+      }
+export type DeleteMessageMutationHookResult = ReturnType<typeof useDeleteMessageMutation>;
+export type DeleteMessageMutationResult = Apollo.MutationResult<DeleteMessageMutation>;
+export type DeleteMessageMutationOptions = Apollo.BaseMutationOptions<DeleteMessageMutation, DeleteMessageMutationVariables>;
 export const GetNotificationsDocument = gql`
     query GetNotifications($targetUserId: String!, $sort: orderByType) {
   GetNotifications(targetUserId: $targetUserId, sort: $sort) {
