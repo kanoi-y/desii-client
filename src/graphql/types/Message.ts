@@ -139,3 +139,40 @@ export const CreateMessageMutation = extendType({
     })
   },
 })
+
+export const DeleteMessageMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.nonNull.field('DeleteMessage', {
+      type: 'Message',
+      args: {
+        id: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const message = await ctx.prisma.message.findUnique({
+          where: {
+            id: args.id,
+          },
+        })
+
+        if (!message) {
+          throw new Error('メッセージが存在しません')
+        }
+
+        if (ctx.user.id !== message.userId) {
+          throw new Error('メッセージの作成者しか削除することは出来ません')
+        }
+
+        return ctx.prisma.message.delete({
+          where: {
+            id: args.id,
+          },
+        })
+      },
+    })
+  },
+})

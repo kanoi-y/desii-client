@@ -53,6 +53,7 @@ type Mutation {
   CreateMessage(body: String!, messageType: MessageType!, targetId: String!): Message!
   CreateOneOnOneRoom(memberId1: String!, memberId2: String!): OneOnOneRoom!
   DeleteFavorite(postId: String!): Favorite!
+  DeleteMessage(id: String!): Message!
   DeleteOneOnOneRoom(id: String!): OneOnOneRoom!
   DeleteTagPostRelation(postId: String!, tagId: String!): TagPostRelation!
   DeleteTagPostRelations(tagPostTypes: [TagPostInputType!]!): [TagPostRelation!]!
