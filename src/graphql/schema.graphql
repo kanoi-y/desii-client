@@ -95,7 +95,8 @@ enum NotificationType {
 type OneOnOneRoom {
   createdAt: DateTime!
   id: String!
-  latestMessage: String!
+  latestMessage: Message
+  latestMessageId: String
   memberId1: String!
   memberId2: String!
   updatedAt: DateTime!

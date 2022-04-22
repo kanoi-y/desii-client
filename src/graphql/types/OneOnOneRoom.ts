@@ -7,7 +7,10 @@ export const OneOnOneRoom = objectType({
     t.nonNull.string('id')
     t.nonNull.string('memberId1')
     t.nonNull.string('memberId2')
-    t.nonNull.string('latestMessage')
+    t.string('latestMessageId')
+    t.field('latestMessage', {
+      type: 'Message',
+    })
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -47,6 +50,9 @@ export const GetOneOnOneRoomsQuery = extendType({
           },
           orderBy: {
             createdAt: args.sort || 'asc',
+          },
+          include: {
+            latestMessage: true,
           },
         })
       },
@@ -105,7 +111,9 @@ export const CreateOneOnOneRoomMutation = extendType({
           data: {
             memberId1: args.memberId1,
             memberId2: args.memberId2,
-            latestMessage: '',
+          },
+          include: {
+            latestMessage: true,
           },
         })
       },
@@ -145,6 +153,9 @@ export const DeleteOneOnOneRoomMutation = extendType({
         return ctx.prisma.oneOnOneRoom.delete({
           where: {
             id: args.id,
+          },
+          include: {
+            latestMessage: true,
           },
         })
       },
