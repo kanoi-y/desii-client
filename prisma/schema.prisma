@@ -182,15 +182,15 @@ model Message {
 model ReadManagement {
   id           String   @id @default(cuid())
   targetUserId String
-  MessageId    String
+  messageId    String
   isRead       Boolean
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   targetUser User    @relation(fields: [targetUserId], references: [id], onDelete: Cascade)
-  message    Message @relation(fields: [MessageId], references: [id], onDelete: Cascade)
+  message    Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
 
-  @@unique(fields: [targetUserId, MessageId], name: "ReadManagementId")
+  @@unique(fields: [targetUserId, messageId], name: "ReadManagementId")
 }
 
 model VerificationToken {

@@ -127,6 +127,7 @@ type Query {
   GetNotifications(sort: orderByType = asc, targetUserId: String!): [Notification!]!
   GetOneOnOneRooms(sort: orderByType = asc, targetMemberId: String!): [OneOnOneRoom!]!
   GetPosts(groupId: String, isPrivate: Boolean, limit: Int, page: Int, sort: postOrderByType = asc, userId: String): [Post!]!
+  GetReadManagement(messageId: String!, targetUserId: String!): ReadManagement
   GetTagByName(name: String!): Tag
   GetTagPostRelations(postId: String, tagId: String): [TagPostRelation!]!
   GetUserGroupRelations(groupId: String, userId: String): [UserGroupRelation!]!
@@ -138,10 +139,10 @@ type Query {
 }
 
 type ReadManagement {
-  MessageId: String!
   createdAt: DateTime!
   id: String!
   isRead: Boolean!
+  messageId: String!
   targetUserId: String!
   updatedAt: DateTime!
 }
