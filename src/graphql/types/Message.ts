@@ -127,7 +127,7 @@ export const CreateMessageMutation = extendType({
           throw new Error('所属していないルームのメッセージは作成できません')
         }
 
-        return ctx.prisma.message.create({
+        const message = await ctx.prisma.message.create({
           data: {
             type: args.messageType,
             targetId: args.targetId,
@@ -135,6 +135,19 @@ export const CreateMessageMutation = extendType({
             body: args.body,
           },
         })
+
+        if (oneOnOneRoom) {
+          await ctx.prisma.oneOnOneRoom.update({
+            where: {
+              id: oneOnOneRoom.id,
+            },
+            data: {
+              latestMessageId: message.id,
+            },
+          })
+        }
+
+        return message
       },
     })
   },
