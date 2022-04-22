@@ -151,19 +151,20 @@ model Notification {
 }
 
 model OneOnOneRoom {
-  id            String   @id @default(cuid())
-  memberId1     String
-  memberId2     String
-  latestMessage String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id              String   @id @default(cuid())
+  memberId1       String
+  memberId2       String
+  latestMessageId String?  @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  member1 User @relation(name: "member1", fields: [memberId1], references: [id], onDelete: Cascade)
-  member2 User @relation(name: "member2", fields: [memberId2], references: [id], onDelete: Cascade)
+  member1       User     @relation(name: "member1", fields: [memberId1], references: [id], onDelete: Cascade)
+  member2       User     @relation(name: "member2", fields: [memberId2], references: [id], onDelete: Cascade)
+  latestMessage Message? @relation(fields: [latestMessageId], references: [id], onDelete: Restrict)
   @@unique(fields: [memberId1, memberId2], name: "OneOnOneRoomId")
 }
 
-// typeがMEDIAの場合は、画像のリンク。typeがpostの場合はpostId
+// typeがMEDIAの場合は、bodyは画像のリンク。typeがpostの場合はpostId
 // targetIdはOneOnOneRoomIdか、groupId
 model Message {
   id        String      @id @default(cuid())
@@ -174,7 +175,8 @@ model Message {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
-  ReadManagements ReadManagement[]
+  ReadManagements           ReadManagement[]
+  latestMessageOneOnOneRoom OneOnOneRoom?
 }
 
 model ReadManagement {
