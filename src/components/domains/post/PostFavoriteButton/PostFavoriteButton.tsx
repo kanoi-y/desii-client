@@ -1,12 +1,12 @@
 import { Box } from '@chakra-ui/react'
-import { MouseEvent, useCallback, useMemo, VFC } from 'react'
+import { MouseEvent, useCallback, useContext, useMemo, VFC } from 'react'
 import {
   IconButton,
   OutlineIcon,
   SolidIcon,
   Text,
 } from '~/components/parts/commons'
-import { useToast } from '~/hooks'
+import { LoginModalSetIsOpenContext, useToast } from '~/hooks'
 import {
   useCreateFavoriteMutation,
   useDeleteFavoriteMutation,
@@ -27,6 +27,7 @@ export const PostFavoriteButton: VFC<Props> = ({
   existCount = false,
 }) => {
   const { toast } = useToast()
+  const setIsOpen = useContext(LoginModalSetIsOpenContext)
   const { data: FavoritesData } = useGetFavoritesQuery({
     variables: {
       postId: postId,
@@ -55,7 +56,7 @@ export const PostFavoriteButton: VFC<Props> = ({
       e.stopPropagation()
 
       if (!currentUserId) {
-        //TODO: ログインモーダルを表示する
+        setIsOpen(true)
         toast({ title: 'ログインが必要です!', status: 'warning' })
         return
       }
@@ -69,7 +70,7 @@ export const PostFavoriteButton: VFC<Props> = ({
         toast({ title: 'リアクションの送信に失敗しました', status: 'error' })
       }
     },
-    [createFavoriteMutation, postId, currentUserId, toast]
+    [createFavoriteMutation, postId, currentUserId, toast, setIsOpen]
   )
 
   const handleDeleteFavorite = useCallback(
