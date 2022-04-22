@@ -6,7 +6,16 @@ export const GET_ONE_ON_ONE_ROOMS = gql`
       id
       memberId1
       memberId2
-      latestMessage
+      latestMessageId
+      latestMessage {
+        id
+        type
+        targetId
+        userId
+        body
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -19,7 +28,7 @@ export const CREATE_ONE_ON_ONE_ROOM = gql`
       id
       memberId1
       memberId2
-      latestMessage
+      latestMessageId
       createdAt
       updatedAt
     }
@@ -32,7 +41,7 @@ export const DELETE_ONE_ON_ONE_ROOM = gql`
       id
       memberId1
       memberId2
-      latestMessage
+      latestMessageId
       createdAt
       updatedAt
     }

@@ -112,9 +112,6 @@ export const CreateOneOnOneRoomMutation = extendType({
             memberId1: args.memberId1,
             memberId2: args.memberId2,
           },
-          include: {
-            latestMessage: true,
-          },
         })
       },
     })

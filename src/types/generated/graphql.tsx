@@ -260,7 +260,8 @@ export type OneOnOneRoom = {
   __typename?: 'OneOnOneRoom';
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
-  latestMessage: Scalars['String'];
+  latestMessage?: Maybe<Message>;
+  latestMessageId?: Maybe<Scalars['String']>;
   memberId1: Scalars['String'];
   memberId2: Scalars['String'];
   updatedAt: Scalars['DateTime'];
@@ -384,6 +385,16 @@ export type QueryGetPostArgs = {
 
 export type QueryGetUserArgs = {
   id: Scalars['String'];
+};
+
+export type ReadManagement = {
+  __typename?: 'ReadManagement';
+  MessageId: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  id: Scalars['String'];
+  isRead: Scalars['Boolean'];
+  targetUserId: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
 };
 
 export type Tag = {
@@ -549,7 +560,7 @@ export type GetOneOnOneRoomsQueryVariables = Exact<{
 }>;
 
 
-export type GetOneOnOneRoomsQuery = { __typename?: 'Query', GetOneOnOneRooms: Array<{ __typename?: 'OneOnOneRoom', id: string, memberId1: string, memberId2: string, latestMessage: string, createdAt: Date, updatedAt: Date }> };
+export type GetOneOnOneRoomsQuery = { __typename?: 'Query', GetOneOnOneRooms: Array<{ __typename?: 'OneOnOneRoom', id: string, memberId1: string, memberId2: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, targetId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } | null }> };
 
 export type CreateOneOnOneRoomMutationVariables = Exact<{
   memberId1: Scalars['String'];
@@ -557,14 +568,14 @@ export type CreateOneOnOneRoomMutationVariables = Exact<{
 }>;
 
 
-export type CreateOneOnOneRoomMutation = { __typename?: 'Mutation', CreateOneOnOneRoom: { __typename?: 'OneOnOneRoom', id: string, memberId1: string, memberId2: string, latestMessage: string, createdAt: Date, updatedAt: Date } };
+export type CreateOneOnOneRoomMutation = { __typename?: 'Mutation', CreateOneOnOneRoom: { __typename?: 'OneOnOneRoom', id: string, memberId1: string, memberId2: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } };
 
 export type DeleteOneOnOneRoomMutationVariables = Exact<{
   deleteOneOnOneRoomId: Scalars['String'];
 }>;
 
 
-export type DeleteOneOnOneRoomMutation = { __typename?: 'Mutation', DeleteOneOnOneRoom: { __typename?: 'OneOnOneRoom', id: string, memberId1: string, memberId2: string, latestMessage: string, createdAt: Date, updatedAt: Date } };
+export type DeleteOneOnOneRoomMutation = { __typename?: 'Mutation', DeleteOneOnOneRoom: { __typename?: 'OneOnOneRoom', id: string, memberId1: string, memberId2: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } };
 
 export type GetPostQueryVariables = Exact<{
   getPostId: Scalars['String'];
@@ -1326,7 +1337,16 @@ export const GetOneOnOneRoomsDocument = gql`
     id
     memberId1
     memberId2
-    latestMessage
+    latestMessageId
+    latestMessage {
+      id
+      type
+      targetId
+      userId
+      body
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
   }
@@ -1367,7 +1387,7 @@ export const CreateOneOnOneRoomDocument = gql`
     id
     memberId1
     memberId2
-    latestMessage
+    latestMessageId
     createdAt
     updatedAt
   }
@@ -1406,7 +1426,7 @@ export const DeleteOneOnOneRoomDocument = gql`
     id
     memberId1
     memberId2
-    latestMessage
+    latestMessageId
     createdAt
     updatedAt
   }
