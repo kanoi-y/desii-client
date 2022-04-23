@@ -136,7 +136,20 @@ export const CreateMessageMutation = extendType({
           },
         })
 
+        // TODO: groupのメッセージの場合の実装をする
         if (oneOnOneRoom) {
+          const targetUserId =
+            oneOnOneRoom.memberId1 === ctx.user.id
+              ? oneOnOneRoom.memberId2
+              : oneOnOneRoom.memberId1
+          await ctx.prisma.readManagement.create({
+            data: {
+              targetUserId,
+              messageId: message.id,
+              isRead: false,
+            },
+          })
+
           await ctx.prisma.oneOnOneRoom.update({
             where: {
               id: oneOnOneRoom.id,
