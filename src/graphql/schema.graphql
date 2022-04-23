@@ -59,6 +59,7 @@ type Mutation {
   DeleteTagPostRelations(tagPostTypes: [TagPostInputType!]!): [TagPostRelation!]!
   DeleteUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
   UpdateNotification(id: String!, isChecked: Boolean!): Notification!
+  UpdateReadManagement(messageId: String!, targetUserId: String!): ReadManagement!
   createFavorite(postId: String!): Favorite!
   createGroup(description: String, image: String!, name: String!, productId: String!): Group!
   createPost(bgImage: String, category: PostCategory!, content: String!, groupId: String, isPrivate: Boolean!, title: String!): Post!
