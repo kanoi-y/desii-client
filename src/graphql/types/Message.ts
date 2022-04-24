@@ -1,3 +1,4 @@
+import { UserGroupRelation } from '@prisma/client'
 import {
   arg,
   enumType,
@@ -65,7 +66,7 @@ export const GetMessagesQuery = extendType({
           oneOnOneRoom?.memberId1 !== ctx.user.id &&
           oneOnOneRoom?.memberId2 !== ctx.user.id &&
           userGroupRelations.every(
-            (userGroupRelation) =>
+            (userGroupRelation: UserGroupRelation) =>
               ctx.user && userGroupRelation.userId !== ctx.user.id
           )
         ) {
@@ -120,7 +121,7 @@ export const CreateMessageMutation = extendType({
           oneOnOneRoom?.memberId1 !== ctx.user.id &&
           oneOnOneRoom?.memberId2 !== ctx.user.id &&
           userGroupRelations.every(
-            (userGroupRelation) =>
+            (userGroupRelation: UserGroupRelation) =>
               ctx.user && userGroupRelation.userId !== ctx.user.id
           )
         ) {
