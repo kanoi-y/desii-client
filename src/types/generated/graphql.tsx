@@ -74,6 +74,7 @@ export type Mutation = {
   DeleteTagPostRelations: Array<TagPostRelation>;
   DeleteUserGroupRelation: UserGroupRelation;
   UpdateNotification: Notification;
+  UpdateReadManagement: ReadManagement;
   createFavorite: Favorite;
   createGroup: Group;
   createPost: Post;
@@ -139,6 +140,12 @@ export type MutationDeleteUserGroupRelationArgs = {
 export type MutationUpdateNotificationArgs = {
   id: Scalars['String'];
   isChecked: Scalars['Boolean'];
+};
+
+
+export type MutationUpdateReadManagementArgs = {
+  messageId: Scalars['String'];
+  targetUserId: Scalars['String'];
 };
 
 
@@ -294,6 +301,7 @@ export type Query = {
   GetNotifications: Array<Notification>;
   GetOneOnOneRooms: Array<OneOnOneRoom>;
   GetPosts: Array<Post>;
+  GetReadManagement?: Maybe<ReadManagement>;
   GetTagByName?: Maybe<Tag>;
   GetTagPostRelations: Array<TagPostRelation>;
   GetUserGroupRelations: Array<UserGroupRelation>;
@@ -345,6 +353,12 @@ export type QueryGetPostsArgs = {
 };
 
 
+export type QueryGetReadManagementArgs = {
+  messageId: Scalars['String'];
+  targetUserId: Scalars['String'];
+};
+
+
 export type QueryGetTagByNameArgs = {
   name: Scalars['String'];
 };
@@ -389,10 +403,10 @@ export type QueryGetUserArgs = {
 
 export type ReadManagement = {
   __typename?: 'ReadManagement';
-  MessageId: Scalars['String'];
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
   isRead: Scalars['Boolean'];
+  messageId: Scalars['String'];
   targetUserId: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
@@ -633,6 +647,22 @@ export type UpdatePostMutationVariables = Exact<{
 
 
 export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: { __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date } };
+
+export type GetReadManagementQueryVariables = Exact<{
+  targetUserId: Scalars['String'];
+  messageId: Scalars['String'];
+}>;
+
+
+export type GetReadManagementQuery = { __typename?: 'Query', GetReadManagement?: { __typename?: 'ReadManagement', id: string, targetUserId: string, messageId: string, isRead: boolean, createdAt: Date, updatedAt: Date } | null };
+
+export type UpdateReadManagementMutationVariables = Exact<{
+  targetUserId: Scalars['String'];
+  messageId: Scalars['String'];
+}>;
+
+
+export type UpdateReadManagementMutation = { __typename?: 'Mutation', UpdateReadManagement: { __typename?: 'ReadManagement', id: string, targetUserId: string, messageId: string, isRead: boolean, createdAt: Date, updatedAt: Date } };
 
 export type GetAllTagsQueryVariables = Exact<{
   sort?: InputMaybe<OrderByType>;
@@ -1755,6 +1785,86 @@ export function useUpdatePostMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
 export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>;
 export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
+export const GetReadManagementDocument = gql`
+    query GetReadManagement($targetUserId: String!, $messageId: String!) {
+  GetReadManagement(targetUserId: $targetUserId, messageId: $messageId) {
+    id
+    targetUserId
+    messageId
+    isRead
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetReadManagementQuery__
+ *
+ * To run a query within a React component, call `useGetReadManagementQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetReadManagementQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetReadManagementQuery({
+ *   variables: {
+ *      targetUserId: // value for 'targetUserId'
+ *      messageId: // value for 'messageId'
+ *   },
+ * });
+ */
+export function useGetReadManagementQuery(baseOptions: Apollo.QueryHookOptions<GetReadManagementQuery, GetReadManagementQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetReadManagementQuery, GetReadManagementQueryVariables>(GetReadManagementDocument, options);
+      }
+export function useGetReadManagementLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetReadManagementQuery, GetReadManagementQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetReadManagementQuery, GetReadManagementQueryVariables>(GetReadManagementDocument, options);
+        }
+export type GetReadManagementQueryHookResult = ReturnType<typeof useGetReadManagementQuery>;
+export type GetReadManagementLazyQueryHookResult = ReturnType<typeof useGetReadManagementLazyQuery>;
+export type GetReadManagementQueryResult = Apollo.QueryResult<GetReadManagementQuery, GetReadManagementQueryVariables>;
+export const UpdateReadManagementDocument = gql`
+    mutation UpdateReadManagement($targetUserId: String!, $messageId: String!) {
+  UpdateReadManagement(targetUserId: $targetUserId, messageId: $messageId) {
+    id
+    targetUserId
+    messageId
+    isRead
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdateReadManagementMutationFn = Apollo.MutationFunction<UpdateReadManagementMutation, UpdateReadManagementMutationVariables>;
+
+/**
+ * __useUpdateReadManagementMutation__
+ *
+ * To run a mutation, you first call `useUpdateReadManagementMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateReadManagementMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateReadManagementMutation, { data, loading, error }] = useUpdateReadManagementMutation({
+ *   variables: {
+ *      targetUserId: // value for 'targetUserId'
+ *      messageId: // value for 'messageId'
+ *   },
+ * });
+ */
+export function useUpdateReadManagementMutation(baseOptions?: Apollo.MutationHookOptions<UpdateReadManagementMutation, UpdateReadManagementMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateReadManagementMutation, UpdateReadManagementMutationVariables>(UpdateReadManagementDocument, options);
+      }
+export type UpdateReadManagementMutationHookResult = ReturnType<typeof useUpdateReadManagementMutation>;
+export type UpdateReadManagementMutationResult = Apollo.MutationResult<UpdateReadManagementMutation>;
+export type UpdateReadManagementMutationOptions = Apollo.BaseMutationOptions<UpdateReadManagementMutation, UpdateReadManagementMutationVariables>;
 export const GetAllTagsDocument = gql`
     query GetAllTags($sort: orderByType, $searchText: String) {
   getAllTags(sort: $sort, searchText: $searchText) {
