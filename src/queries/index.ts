@@ -20,6 +20,7 @@ export {
   GET_POST_BY_ID,
   UPDATE_POST,
 } from './post'
+export { GET_READ_MANAGEMENT, UPDATE_READ_MANAGEMENT } from './readManagement'
 export { CREATE_TAG, GET_TAG_BY_NAME } from './tag'
 export {
   CREATE_TAG_POST_RELATION,
