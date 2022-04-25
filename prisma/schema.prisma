@@ -156,23 +156,24 @@ model Room {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  latestMessage Message? @relation(fields: [latestMessageId], references: [id], onDelete: Restrict)
-  group         Group?   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  latestMessage Message?  @relation(name: "latestMessage", fields: [latestMessageId], references: [id], onDelete: Restrict)
+  group         Group?    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  messages      Message[]
 }
 
 // typeがMEDIAの場合は、bodyは画像のリンク。typeがpostの場合はpostId
-// targetIdはOneOnOneRoomIdか、groupId
 model Message {
   id        String      @id @default(cuid())
   type      MessageType
-  targetId  String
+  roomId    String?
   userId    String
   body      String
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
+  room                      Room?           @relation(fields: [roomId], references: [id], onDelete: Cascade)
   ReadManagements           ReadManagement[]
-  latestMessageOneOnOneRoom Room?
+  latestMessageOneOnOneRoom Room?            @relation(name: "latestMessage")
 }
 
 model ReadManagement {
