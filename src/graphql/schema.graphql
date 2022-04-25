@@ -33,12 +33,33 @@ type MatchingPostInfoType {
   post: Post!
 }
 
+type Message {
+  body: String!
+  createdAt: DateTime!
+  id: String!
+  targetId: String!
+  type: MessageType!
+  updatedAt: DateTime!
+  userId: String!
+}
+
+enum MessageType {
+  MEDIA
+  POST
+  TEXT
+}
+
 type Mutation {
+  CreateMessage(body: String!, messageType: MessageType!, targetId: String!): Message!
+  CreateOneOnOneRoom(memberId1: String!, memberId2: String!): OneOnOneRoom!
   DeleteFavorite(postId: String!): Favorite!
+  DeleteMessage(id: String!): Message!
+  DeleteOneOnOneRoom(id: String!): OneOnOneRoom!
   DeleteTagPostRelation(postId: String!, tagId: String!): TagPostRelation!
   DeleteTagPostRelations(tagPostTypes: [TagPostInputType!]!): [TagPostRelation!]!
   DeleteUserGroupRelation(groupId: String!, userId: String!): UserGroupRelation!
   UpdateNotification(id: String!, isChecked: Boolean!): Notification!
+  UpdateReadManagement(messageId: String!, targetUserId: String!): ReadManagement!
   createFavorite(postId: String!): Favorite!
   createGroup(description: String, image: String!, name: String!, productId: String!): Group!
   createPost(bgImage: String, category: PostCategory!, content: String!, groupId: String, isPrivate: Boolean!, title: String!): Post!
@@ -72,6 +93,16 @@ enum NotificationType {
   MATCH_POST
 }
 
+type OneOnOneRoom {
+  createdAt: DateTime!
+  id: String!
+  latestMessage: Message
+  latestMessageId: String
+  memberId1: String!
+  memberId2: String!
+  updatedAt: DateTime!
+}
+
 type Post {
   bgImage: String
   category: PostCategory!
@@ -93,8 +124,11 @@ enum PostCategory {
 type Query {
   GetFavorites(createdUserId: String, postId: String, sort: orderByType = asc): [Favorite!]!
   GetMatchingPosts(postId: String!): [MatchingPostInfoType!]!
+  GetMessages(sort: orderByType = asc, targetId: String!): [Message!]!
   GetNotifications(sort: orderByType = asc, targetUserId: String!): [Notification!]!
+  GetOneOnOneRooms(sort: orderByType = asc, targetMemberId: String!): [OneOnOneRoom!]!
   GetPosts(groupId: String, isPrivate: Boolean, limit: Int, page: Int, sort: postOrderByType = asc, userId: String): [Post!]!
+  GetReadManagement(messageId: String!, targetUserId: String!): ReadManagement
   GetTagByName(name: String!): Tag
   GetTagPostRelations(postId: String, tagId: String): [TagPostRelation!]!
   GetUserGroupRelations(groupId: String, userId: String): [UserGroupRelation!]!
@@ -103,6 +137,15 @@ type Query {
   getGroup(id: String!): Group
   getPost(id: String!): Post
   getUser(id: String!): User
+}
+
+type ReadManagement {
+  createdAt: DateTime!
+  id: String!
+  isRead: Boolean!
+  messageId: String!
+  targetUserId: String!
+  updatedAt: DateTime!
 }
 
 type Tag {

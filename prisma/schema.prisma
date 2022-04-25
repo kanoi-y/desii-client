@@ -37,23 +37,27 @@ model Session {
 }
 
 model User {
-  id                 String              @id @default(cuid())
-  name               String
-  email              String              @unique
-  emailVerified      DateTime?
-  description        String?
-  image              String?
-  accessToken        String?             @db.Text
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  accounts           Account[]
-  sessions           Session[]
-  adminGroups        Group[]
-  userGroupRelations UserGroupRelation[]
-  posts              Post[]
-  favorites          Favorite[]
-  createdUserNotifications      Notification[]  @relation(name: "createdUser")
-  targetUserNotifications       Notification[]  @relation(name: "targetUser")
+  id                       String              @id @default(cuid())
+  name                     String
+  email                    String              @unique
+  emailVerified            DateTime?
+  description              String?
+  image                    String?
+  accessToken              String?             @db.Text
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @updatedAt
+  accounts                 Account[]
+  sessions                 Session[]
+  adminGroups              Group[]
+  userGroupRelations       UserGroupRelation[]
+  posts                    Post[]
+  favorites                Favorite[]
+  createdUserNotifications Notification[]      @relation(name: "createdUser")
+  targetUserNotifications  Notification[]      @relation(name: "targetUser")
+  member1Rooms             OneOnOneRoom[]      @relation(name: "member1")
+  member2Rooms             OneOnOneRoom[]      @relation(name: "member2")
+  readManagements          ReadManagement[]
+
 }
 
 model Group {
@@ -132,18 +136,62 @@ model TagPostRelation {
 }
 
 model Notification {
-  id               String            @id @default(cuid())
-  type             NotificationType
-  createdUserId    String?
-  targetUserId     String
-  message          String
-  url              String
-  isChecked        Boolean
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  id            String           @id @default(cuid())
+  type          NotificationType
+  createdUserId String?
+  targetUserId  String
+  message       String
+  url           String
+  isChecked     Boolean
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
-  createdUser      User?     @relation(name: "createdUser", fields: [createdUserId], references: [id], onDelete: Cascade)
-  targetUser       User     @relation(name: "targetUser", fields: [targetUserId], references: [id], onDelete: Cascade)
+  createdUser User? @relation(name: "createdUser", fields: [createdUserId], references: [id], onDelete: Cascade)
+  targetUser  User  @relation(name: "targetUser", fields: [targetUserId], references: [id], onDelete: Cascade)
+}
+
+model OneOnOneRoom {
+  id              String   @id @default(cuid())
+  memberId1       String
+  memberId2       String
+  latestMessageId String?  @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  member1       User     @relation(name: "member1", fields: [memberId1], references: [id], onDelete: Cascade)
+  member2       User     @relation(name: "member2", fields: [memberId2], references: [id], onDelete: Cascade)
+  latestMessage Message? @relation(fields: [latestMessageId], references: [id], onDelete: Restrict)
+  @@unique(fields: [memberId1, memberId2], name: "OneOnOneRoomId")
+}
+
+// typeがMEDIAの場合は、bodyは画像のリンク。typeがpostの場合はpostId
+// targetIdはOneOnOneRoomIdか、groupId
+// FIXME: MessageをRoomMessageとGroupMessageのmodelに変更する
+model Message {
+  id        String      @id @default(cuid())
+  type      MessageType
+  targetId  String
+  userId    String
+  body      String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  ReadManagements           ReadManagement[]
+  latestMessageOneOnOneRoom OneOnOneRoom?
+}
+
+model ReadManagement {
+  id           String   @id @default(cuid())
+  targetUserId String
+  messageId    String
+  isRead       Boolean
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  targetUser User    @relation(fields: [targetUserId], references: [id], onDelete: Cascade)
+  message    Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@unique(fields: [targetUserId, messageId], name: "ReadManagementId")
 }
 
 model VerificationToken {
@@ -162,4 +210,10 @@ enum PostCategory {
 enum NotificationType {
   FETCH_REACTION
   MATCH_POST
+}
+
+enum MessageType {
+  TEXT
+  MEDIA
+  POST
 }

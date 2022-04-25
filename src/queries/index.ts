@@ -5,15 +5,22 @@ export {
   GET_GROUP_BY_ID,
   UPDATE_GROUP,
 } from './group'
+export { CREATE_MESSAGE, DELETE_MESSAGE, GET_MESSAGES } from './message'
 export { GET_NOTIFICATIONS, UPDATE_NOTIFICATION } from './notification'
+export {
+  CREATE_ONE_ON_ONE_ROOM,
+  DELETE_ONE_ON_ONE_ROOM,
+  GET_ONE_ON_ONE_ROOMS,
+} from './oneOnOneRoom'
 export {
   CREATE_POST,
   DELETE_POST,
+  GET_MATCHING_POSTS,
   GET_POSTS,
   GET_POST_BY_ID,
-  GET_MATCHING_POSTS,
   UPDATE_POST,
 } from './post'
+export { GET_READ_MANAGEMENT, UPDATE_READ_MANAGEMENT } from './readManagement'
 export { CREATE_TAG, GET_TAG_BY_NAME } from './tag'
 export {
   CREATE_TAG_POST_RELATION,

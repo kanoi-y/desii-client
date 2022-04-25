@@ -46,13 +46,35 @@ export type MatchingPostInfoType = {
   post: Post;
 };
 
+export type Message = {
+  __typename?: 'Message';
+  body: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  id: Scalars['String'];
+  targetId: Scalars['String'];
+  type: MessageType;
+  updatedAt: Scalars['DateTime'];
+  userId: Scalars['String'];
+};
+
+export enum MessageType {
+  Media = 'MEDIA',
+  Post = 'POST',
+  Text = 'TEXT'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
+  CreateMessage: Message;
+  CreateOneOnOneRoom: OneOnOneRoom;
   DeleteFavorite: Favorite;
+  DeleteMessage: Message;
+  DeleteOneOnOneRoom: OneOnOneRoom;
   DeleteTagPostRelation: TagPostRelation;
   DeleteTagPostRelations: Array<TagPostRelation>;
   DeleteUserGroupRelation: UserGroupRelation;
   UpdateNotification: Notification;
+  UpdateReadManagement: ReadManagement;
   createFavorite: Favorite;
   createGroup: Group;
   createPost: Post;
@@ -70,8 +92,31 @@ export type Mutation = {
 };
 
 
+export type MutationCreateMessageArgs = {
+  body: Scalars['String'];
+  messageType: MessageType;
+  targetId: Scalars['String'];
+};
+
+
+export type MutationCreateOneOnOneRoomArgs = {
+  memberId1: Scalars['String'];
+  memberId2: Scalars['String'];
+};
+
+
 export type MutationDeleteFavoriteArgs = {
   postId: Scalars['String'];
+};
+
+
+export type MutationDeleteMessageArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationDeleteOneOnOneRoomArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -95,6 +140,12 @@ export type MutationDeleteUserGroupRelationArgs = {
 export type MutationUpdateNotificationArgs = {
   id: Scalars['String'];
   isChecked: Scalars['Boolean'];
+};
+
+
+export type MutationUpdateReadManagementArgs = {
+  messageId: Scalars['String'];
+  targetUserId: Scalars['String'];
 };
 
 
@@ -212,6 +263,17 @@ export enum NotificationType {
   MatchPost = 'MATCH_POST'
 }
 
+export type OneOnOneRoom = {
+  __typename?: 'OneOnOneRoom';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['String'];
+  latestMessage?: Maybe<Message>;
+  latestMessageId?: Maybe<Scalars['String']>;
+  memberId1: Scalars['String'];
+  memberId2: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
 export type Post = {
   __typename?: 'Post';
   bgImage?: Maybe<Scalars['String']>;
@@ -235,8 +297,11 @@ export type Query = {
   __typename?: 'Query';
   GetFavorites: Array<Favorite>;
   GetMatchingPosts: Array<MatchingPostInfoType>;
+  GetMessages: Array<Message>;
   GetNotifications: Array<Notification>;
+  GetOneOnOneRooms: Array<OneOnOneRoom>;
   GetPosts: Array<Post>;
+  GetReadManagement?: Maybe<ReadManagement>;
   GetTagByName?: Maybe<Tag>;
   GetTagPostRelations: Array<TagPostRelation>;
   GetUserGroupRelations: Array<UserGroupRelation>;
@@ -260,9 +325,21 @@ export type QueryGetMatchingPostsArgs = {
 };
 
 
+export type QueryGetMessagesArgs = {
+  sort?: InputMaybe<OrderByType>;
+  targetId: Scalars['String'];
+};
+
+
 export type QueryGetNotificationsArgs = {
   sort?: InputMaybe<OrderByType>;
   targetUserId: Scalars['String'];
+};
+
+
+export type QueryGetOneOnOneRoomsArgs = {
+  sort?: InputMaybe<OrderByType>;
+  targetMemberId: Scalars['String'];
 };
 
 
@@ -273,6 +350,12 @@ export type QueryGetPostsArgs = {
   page?: InputMaybe<Scalars['Int']>;
   sort?: InputMaybe<PostOrderByType>;
   userId?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetReadManagementArgs = {
+  messageId: Scalars['String'];
+  targetUserId: Scalars['String'];
 };
 
 
@@ -316,6 +399,16 @@ export type QueryGetPostArgs = {
 
 export type QueryGetUserArgs = {
   id: Scalars['String'];
+};
+
+export type ReadManagement = {
+  __typename?: 'ReadManagement';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['String'];
+  isRead: Scalars['Boolean'];
+  messageId: Scalars['String'];
+  targetUserId: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
 };
 
 export type Tag = {
@@ -435,6 +528,30 @@ export type UpdateGroupMutationVariables = Exact<{
 
 export type UpdateGroupMutation = { __typename?: 'Mutation', updateGroup: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } };
 
+export type GetMessagesQueryVariables = Exact<{
+  targetId: Scalars['String'];
+  sort?: InputMaybe<OrderByType>;
+}>;
+
+
+export type GetMessagesQuery = { __typename?: 'Query', GetMessages: Array<{ __typename?: 'Message', id: string, type: MessageType, targetId: string, userId: string, body: string, createdAt: Date, updatedAt: Date }> };
+
+export type CreateMessageMutationVariables = Exact<{
+  messageType: MessageType;
+  targetId: Scalars['String'];
+  body: Scalars['String'];
+}>;
+
+
+export type CreateMessageMutation = { __typename?: 'Mutation', CreateMessage: { __typename?: 'Message', id: string, type: MessageType, targetId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } };
+
+export type DeleteMessageMutationVariables = Exact<{
+  deleteMessageId: Scalars['String'];
+}>;
+
+
+export type DeleteMessageMutation = { __typename?: 'Mutation', DeleteMessage: { __typename?: 'Message', id: string, type: MessageType, targetId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } };
+
 export type GetNotificationsQueryVariables = Exact<{
   targetUserId: Scalars['String'];
   sort?: InputMaybe<OrderByType>;
@@ -450,6 +567,29 @@ export type UpdateNotificationMutationVariables = Exact<{
 
 
 export type UpdateNotificationMutation = { __typename?: 'Mutation', UpdateNotification: { __typename?: 'Notification', id: string, type: NotificationType, createdUserId?: string | null, targetUserId: string, message: string, url: string, isChecked: boolean, createdAt: Date, updatedAt: Date } };
+
+export type GetOneOnOneRoomsQueryVariables = Exact<{
+  targetMemberId: Scalars['String'];
+  sort?: InputMaybe<OrderByType>;
+}>;
+
+
+export type GetOneOnOneRoomsQuery = { __typename?: 'Query', GetOneOnOneRooms: Array<{ __typename?: 'OneOnOneRoom', id: string, memberId1: string, memberId2: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, targetId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } | null }> };
+
+export type CreateOneOnOneRoomMutationVariables = Exact<{
+  memberId1: Scalars['String'];
+  memberId2: Scalars['String'];
+}>;
+
+
+export type CreateOneOnOneRoomMutation = { __typename?: 'Mutation', CreateOneOnOneRoom: { __typename?: 'OneOnOneRoom', id: string, memberId1: string, memberId2: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } };
+
+export type DeleteOneOnOneRoomMutationVariables = Exact<{
+  deleteOneOnOneRoomId: Scalars['String'];
+}>;
+
+
+export type DeleteOneOnOneRoomMutation = { __typename?: 'Mutation', DeleteOneOnOneRoom: { __typename?: 'OneOnOneRoom', id: string, memberId1: string, memberId2: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } };
 
 export type GetPostQueryVariables = Exact<{
   getPostId: Scalars['String'];
@@ -507,6 +647,22 @@ export type UpdatePostMutationVariables = Exact<{
 
 
 export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: { __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date } };
+
+export type GetReadManagementQueryVariables = Exact<{
+  targetUserId: Scalars['String'];
+  messageId: Scalars['String'];
+}>;
+
+
+export type GetReadManagementQuery = { __typename?: 'Query', GetReadManagement?: { __typename?: 'ReadManagement', id: string, targetUserId: string, messageId: string, isRead: boolean, createdAt: Date, updatedAt: Date } | null };
+
+export type UpdateReadManagementMutationVariables = Exact<{
+  targetUserId: Scalars['String'];
+  messageId: Scalars['String'];
+}>;
+
+
+export type UpdateReadManagementMutation = { __typename?: 'Mutation', UpdateReadManagement: { __typename?: 'ReadManagement', id: string, targetUserId: string, messageId: string, isRead: boolean, createdAt: Date, updatedAt: Date } };
 
 export type GetAllTagsQueryVariables = Exact<{
   sort?: InputMaybe<OrderByType>;
@@ -997,6 +1153,128 @@ export function useUpdateGroupMutation(baseOptions?: Apollo.MutationHookOptions<
 export type UpdateGroupMutationHookResult = ReturnType<typeof useUpdateGroupMutation>;
 export type UpdateGroupMutationResult = Apollo.MutationResult<UpdateGroupMutation>;
 export type UpdateGroupMutationOptions = Apollo.BaseMutationOptions<UpdateGroupMutation, UpdateGroupMutationVariables>;
+export const GetMessagesDocument = gql`
+    query GetMessages($targetId: String!, $sort: orderByType) {
+  GetMessages(targetId: $targetId, sort: $sort) {
+    id
+    type
+    targetId
+    userId
+    body
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetMessagesQuery__
+ *
+ * To run a query within a React component, call `useGetMessagesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMessagesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMessagesQuery({
+ *   variables: {
+ *      targetId: // value for 'targetId'
+ *      sort: // value for 'sort'
+ *   },
+ * });
+ */
+export function useGetMessagesQuery(baseOptions: Apollo.QueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
+      }
+export function useGetMessagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
+        }
+export type GetMessagesQueryHookResult = ReturnType<typeof useGetMessagesQuery>;
+export type GetMessagesLazyQueryHookResult = ReturnType<typeof useGetMessagesLazyQuery>;
+export type GetMessagesQueryResult = Apollo.QueryResult<GetMessagesQuery, GetMessagesQueryVariables>;
+export const CreateMessageDocument = gql`
+    mutation CreateMessage($messageType: MessageType!, $targetId: String!, $body: String!) {
+  CreateMessage(messageType: $messageType, targetId: $targetId, body: $body) {
+    id
+    type
+    targetId
+    userId
+    body
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateMessageMutationFn = Apollo.MutationFunction<CreateMessageMutation, CreateMessageMutationVariables>;
+
+/**
+ * __useCreateMessageMutation__
+ *
+ * To run a mutation, you first call `useCreateMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createMessageMutation, { data, loading, error }] = useCreateMessageMutation({
+ *   variables: {
+ *      messageType: // value for 'messageType'
+ *      targetId: // value for 'targetId'
+ *      body: // value for 'body'
+ *   },
+ * });
+ */
+export function useCreateMessageMutation(baseOptions?: Apollo.MutationHookOptions<CreateMessageMutation, CreateMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateMessageMutation, CreateMessageMutationVariables>(CreateMessageDocument, options);
+      }
+export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessageMutation>;
+export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
+export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
+export const DeleteMessageDocument = gql`
+    mutation DeleteMessage($deleteMessageId: String!) {
+  DeleteMessage(id: $deleteMessageId) {
+    id
+    type
+    targetId
+    userId
+    body
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type DeleteMessageMutationFn = Apollo.MutationFunction<DeleteMessageMutation, DeleteMessageMutationVariables>;
+
+/**
+ * __useDeleteMessageMutation__
+ *
+ * To run a mutation, you first call `useDeleteMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteMessageMutation, { data, loading, error }] = useDeleteMessageMutation({
+ *   variables: {
+ *      deleteMessageId: // value for 'deleteMessageId'
+ *   },
+ * });
+ */
+export function useDeleteMessageMutation(baseOptions?: Apollo.MutationHookOptions<DeleteMessageMutation, DeleteMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteMessageMutation, DeleteMessageMutationVariables>(DeleteMessageDocument, options);
+      }
+export type DeleteMessageMutationHookResult = ReturnType<typeof useDeleteMessageMutation>;
+export type DeleteMessageMutationResult = Apollo.MutationResult<DeleteMessageMutation>;
+export type DeleteMessageMutationOptions = Apollo.BaseMutationOptions<DeleteMessageMutation, DeleteMessageMutationVariables>;
 export const GetNotificationsDocument = gql`
     query GetNotifications($targetUserId: String!, $sort: orderByType) {
   GetNotifications(targetUserId: $targetUserId, sort: $sort) {
@@ -1083,6 +1361,133 @@ export function useUpdateNotificationMutation(baseOptions?: Apollo.MutationHookO
 export type UpdateNotificationMutationHookResult = ReturnType<typeof useUpdateNotificationMutation>;
 export type UpdateNotificationMutationResult = Apollo.MutationResult<UpdateNotificationMutation>;
 export type UpdateNotificationMutationOptions = Apollo.BaseMutationOptions<UpdateNotificationMutation, UpdateNotificationMutationVariables>;
+export const GetOneOnOneRoomsDocument = gql`
+    query GetOneOnOneRooms($targetMemberId: String!, $sort: orderByType) {
+  GetOneOnOneRooms(targetMemberId: $targetMemberId, sort: $sort) {
+    id
+    memberId1
+    memberId2
+    latestMessageId
+    latestMessage {
+      id
+      type
+      targetId
+      userId
+      body
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetOneOnOneRoomsQuery__
+ *
+ * To run a query within a React component, call `useGetOneOnOneRoomsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOneOnOneRoomsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOneOnOneRoomsQuery({
+ *   variables: {
+ *      targetMemberId: // value for 'targetMemberId'
+ *      sort: // value for 'sort'
+ *   },
+ * });
+ */
+export function useGetOneOnOneRoomsQuery(baseOptions: Apollo.QueryHookOptions<GetOneOnOneRoomsQuery, GetOneOnOneRoomsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOneOnOneRoomsQuery, GetOneOnOneRoomsQueryVariables>(GetOneOnOneRoomsDocument, options);
+      }
+export function useGetOneOnOneRoomsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneOnOneRoomsQuery, GetOneOnOneRoomsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOneOnOneRoomsQuery, GetOneOnOneRoomsQueryVariables>(GetOneOnOneRoomsDocument, options);
+        }
+export type GetOneOnOneRoomsQueryHookResult = ReturnType<typeof useGetOneOnOneRoomsQuery>;
+export type GetOneOnOneRoomsLazyQueryHookResult = ReturnType<typeof useGetOneOnOneRoomsLazyQuery>;
+export type GetOneOnOneRoomsQueryResult = Apollo.QueryResult<GetOneOnOneRoomsQuery, GetOneOnOneRoomsQueryVariables>;
+export const CreateOneOnOneRoomDocument = gql`
+    mutation CreateOneOnOneRoom($memberId1: String!, $memberId2: String!) {
+  CreateOneOnOneRoom(memberId1: $memberId1, memberId2: $memberId2) {
+    id
+    memberId1
+    memberId2
+    latestMessageId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateOneOnOneRoomMutationFn = Apollo.MutationFunction<CreateOneOnOneRoomMutation, CreateOneOnOneRoomMutationVariables>;
+
+/**
+ * __useCreateOneOnOneRoomMutation__
+ *
+ * To run a mutation, you first call `useCreateOneOnOneRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateOneOnOneRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createOneOnOneRoomMutation, { data, loading, error }] = useCreateOneOnOneRoomMutation({
+ *   variables: {
+ *      memberId1: // value for 'memberId1'
+ *      memberId2: // value for 'memberId2'
+ *   },
+ * });
+ */
+export function useCreateOneOnOneRoomMutation(baseOptions?: Apollo.MutationHookOptions<CreateOneOnOneRoomMutation, CreateOneOnOneRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateOneOnOneRoomMutation, CreateOneOnOneRoomMutationVariables>(CreateOneOnOneRoomDocument, options);
+      }
+export type CreateOneOnOneRoomMutationHookResult = ReturnType<typeof useCreateOneOnOneRoomMutation>;
+export type CreateOneOnOneRoomMutationResult = Apollo.MutationResult<CreateOneOnOneRoomMutation>;
+export type CreateOneOnOneRoomMutationOptions = Apollo.BaseMutationOptions<CreateOneOnOneRoomMutation, CreateOneOnOneRoomMutationVariables>;
+export const DeleteOneOnOneRoomDocument = gql`
+    mutation DeleteOneOnOneRoom($deleteOneOnOneRoomId: String!) {
+  DeleteOneOnOneRoom(id: $deleteOneOnOneRoomId) {
+    id
+    memberId1
+    memberId2
+    latestMessageId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type DeleteOneOnOneRoomMutationFn = Apollo.MutationFunction<DeleteOneOnOneRoomMutation, DeleteOneOnOneRoomMutationVariables>;
+
+/**
+ * __useDeleteOneOnOneRoomMutation__
+ *
+ * To run a mutation, you first call `useDeleteOneOnOneRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteOneOnOneRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteOneOnOneRoomMutation, { data, loading, error }] = useDeleteOneOnOneRoomMutation({
+ *   variables: {
+ *      deleteOneOnOneRoomId: // value for 'deleteOneOnOneRoomId'
+ *   },
+ * });
+ */
+export function useDeleteOneOnOneRoomMutation(baseOptions?: Apollo.MutationHookOptions<DeleteOneOnOneRoomMutation, DeleteOneOnOneRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteOneOnOneRoomMutation, DeleteOneOnOneRoomMutationVariables>(DeleteOneOnOneRoomDocument, options);
+      }
+export type DeleteOneOnOneRoomMutationHookResult = ReturnType<typeof useDeleteOneOnOneRoomMutation>;
+export type DeleteOneOnOneRoomMutationResult = Apollo.MutationResult<DeleteOneOnOneRoomMutation>;
+export type DeleteOneOnOneRoomMutationOptions = Apollo.BaseMutationOptions<DeleteOneOnOneRoomMutation, DeleteOneOnOneRoomMutationVariables>;
 export const GetPostDocument = gql`
     query GetPost($getPostId: String!) {
   getPost(id: $getPostId) {
@@ -1380,6 +1785,86 @@ export function useUpdatePostMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
 export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>;
 export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
+export const GetReadManagementDocument = gql`
+    query GetReadManagement($targetUserId: String!, $messageId: String!) {
+  GetReadManagement(targetUserId: $targetUserId, messageId: $messageId) {
+    id
+    targetUserId
+    messageId
+    isRead
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetReadManagementQuery__
+ *
+ * To run a query within a React component, call `useGetReadManagementQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetReadManagementQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetReadManagementQuery({
+ *   variables: {
+ *      targetUserId: // value for 'targetUserId'
+ *      messageId: // value for 'messageId'
+ *   },
+ * });
+ */
+export function useGetReadManagementQuery(baseOptions: Apollo.QueryHookOptions<GetReadManagementQuery, GetReadManagementQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetReadManagementQuery, GetReadManagementQueryVariables>(GetReadManagementDocument, options);
+      }
+export function useGetReadManagementLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetReadManagementQuery, GetReadManagementQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetReadManagementQuery, GetReadManagementQueryVariables>(GetReadManagementDocument, options);
+        }
+export type GetReadManagementQueryHookResult = ReturnType<typeof useGetReadManagementQuery>;
+export type GetReadManagementLazyQueryHookResult = ReturnType<typeof useGetReadManagementLazyQuery>;
+export type GetReadManagementQueryResult = Apollo.QueryResult<GetReadManagementQuery, GetReadManagementQueryVariables>;
+export const UpdateReadManagementDocument = gql`
+    mutation UpdateReadManagement($targetUserId: String!, $messageId: String!) {
+  UpdateReadManagement(targetUserId: $targetUserId, messageId: $messageId) {
+    id
+    targetUserId
+    messageId
+    isRead
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdateReadManagementMutationFn = Apollo.MutationFunction<UpdateReadManagementMutation, UpdateReadManagementMutationVariables>;
+
+/**
+ * __useUpdateReadManagementMutation__
+ *
+ * To run a mutation, you first call `useUpdateReadManagementMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateReadManagementMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateReadManagementMutation, { data, loading, error }] = useUpdateReadManagementMutation({
+ *   variables: {
+ *      targetUserId: // value for 'targetUserId'
+ *      messageId: // value for 'messageId'
+ *   },
+ * });
+ */
+export function useUpdateReadManagementMutation(baseOptions?: Apollo.MutationHookOptions<UpdateReadManagementMutation, UpdateReadManagementMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateReadManagementMutation, UpdateReadManagementMutationVariables>(UpdateReadManagementDocument, options);
+      }
+export type UpdateReadManagementMutationHookResult = ReturnType<typeof useUpdateReadManagementMutation>;
+export type UpdateReadManagementMutationResult = Apollo.MutationResult<UpdateReadManagementMutation>;
+export type UpdateReadManagementMutationOptions = Apollo.BaseMutationOptions<UpdateReadManagementMutation, UpdateReadManagementMutationVariables>;
 export const GetAllTagsDocument = gql`
     query GetAllTags($sort: orderByType, $searchText: String) {
   getAllTags(sort: $sort, searchText: $searchText) {
