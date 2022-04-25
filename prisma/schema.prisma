@@ -166,6 +166,7 @@ model OneOnOneRoom {
 
 // typeがMEDIAの場合は、bodyは画像のリンク。typeがpostの場合はpostId
 // targetIdはOneOnOneRoomIdか、groupId
+// FIXME: MessageをRoomMessageとGroupMessageのmodelに変更する
 model Message {
   id        String      @id @default(cuid())
   type      MessageType
