@@ -165,13 +165,13 @@ model Room {
 model Message {
   id        String      @id @default(cuid())
   type      MessageType
-  roomId    String?
+  roomId    String
   userId    String
   body      String
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
-  room                      Room?           @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  room                      Room           @relation(fields: [roomId], references: [id], onDelete: Cascade)
   ReadManagements           ReadManagement[]
   latestMessageOneOnOneRoom Room?            @relation(name: "latestMessage")
 }
