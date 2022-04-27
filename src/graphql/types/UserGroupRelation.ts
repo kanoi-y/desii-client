@@ -1,5 +1,6 @@
 import { UserGroupRelation as UserGroupRelationType } from '@prisma/client'
 import { extendType, nonNull, objectType, stringArg } from 'nexus'
+import { Context } from '../context'
 
 export const UserGroupRelation = objectType({
   name: 'UserGroupRelation',
@@ -48,6 +49,29 @@ export const GetUserGroupRelationsQuery = extendType({
   },
 })
 
+const createRoomMember = async (
+  ctx: Context,
+  groupId: string,
+  userId: string
+) => {
+  const room = await ctx.prisma.room.findUnique({
+    where: {
+      groupId,
+    },
+  })
+
+  if (!room) {
+    throw new Error('ルームが存在しません')
+  }
+
+  await ctx.prisma.roomMember.create({
+    data: {
+      roomId: room.id,
+      userId: userId,
+    },
+  })
+}
+
 export const CreateUserGroupRelationMutation = extendType({
   type: 'Mutation',
   definition(t) {
@@ -82,6 +106,8 @@ export const CreateUserGroupRelationMutation = extendType({
           throw new Error('管理者ユーザーしかユーザーを追加できません')
         }
 
+        createRoomMember(ctx, args.groupId, args.userId)
+
         return ctx.prisma.userGroupRelation.create({
           data: {
             userId: args.userId,
@@ -96,6 +122,31 @@ export const CreateUserGroupRelationMutation = extendType({
     })
   },
 })
+
+const deleteRoomMember = async (
+  ctx: Context,
+  groupId: string,
+  userId: string
+) => {
+  const room = await ctx.prisma.room.findUnique({
+    where: {
+      groupId,
+    },
+  })
+
+  if (!room) {
+    throw new Error('ルームが存在しません')
+  }
+
+  await ctx.prisma.roomMember.delete({
+    where: {
+      RoomMemberId: {
+        roomId: room.id,
+        userId,
+      },
+    },
+  })
+}
 
 export const DeleteUserGroupRelationMutation = extendType({
   type: 'Mutation',
@@ -150,6 +201,8 @@ export const DeleteUserGroupRelationMutation = extendType({
             'グループからグループの管理者を削除することは出来ません'
           )
         }
+
+        deleteRoomMember(ctx, args.groupId, args.userId);
         return ctx.prisma.userGroupRelation.delete({
           where: {
             relationId: {
