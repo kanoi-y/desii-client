@@ -51,7 +51,7 @@ enum MessageType {
 
 type Mutation {
   CreateMessage(body: String!, messageType: MessageType!, roomId: String!): Message!
-  CreateRoom(groupId: String): Room!
+  CreateRoom(memberId: String!): Room!
   DeleteFavorite(postId: String!): Favorite!
   DeleteMessage(id: String!): Message!
   DeleteRoom(id: String!): Room!
@@ -126,6 +126,7 @@ type Query {
   getCurrentUser(accessToken: String!): User
   getGroup(id: String!): Group
   getPost(id: String!): Post
+  getRoomMembers(roomId: String, userId: String): [RoomMember!]!
   getUser(id: String!): User
 }
 
@@ -145,6 +146,16 @@ type Room {
   latestMessage: Message
   latestMessageId: String
   updatedAt: DateTime!
+}
+
+type RoomMember {
+  createdAt: DateTime!
+  id: String!
+  room: Room!
+  roomId: String!
+  updatedAt: DateTime!
+  user: User!
+  userId: String!
 }
 
 type Tag {

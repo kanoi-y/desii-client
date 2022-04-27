@@ -40,64 +40,42 @@ export const GetRoomQuery = extendType({
   },
 })
 
-// export const GetRoomsQuery = extendType({
-//   type: 'Query',
-//   definition(t) {
-//     t.nonNull.list.nonNull.field('GetRooms', {
-//       type: 'Room',
-//       args: {
-//         targetMemberId: nonNull(stringArg()),
-//         sort: arg({
-//           type: OrderByType,
-//           default: 'asc',
-//         }),
-//       },
-//       resolve(_parent, args, ctx) {
-//         if (!ctx.user) {
-//           throw new Error('ログインユーザーが存在しません')
-//         }
-
-//         return ctx.prisma.room.findMany({
-//           where: {
-//             OR: [
-//               {
-//                 memberId1: args.targetMemberId,
-//               },
-//               {
-//                 memberId2: args.targetMemberId,
-//               },
-//             ],
-//           },
-//           orderBy: {
-//             createdAt: args.sort || 'asc',
-//           },
-//           include: {
-//             latestMessage: true,
-//           },
-//         })
-//       },
-//     })
-//   },
-// })
-
+// 一対一のルームを作成する
 export const CreateRoomMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.nonNull.field('CreateRoom', {
       type: 'Room',
       args: {
-        groupId: stringArg(),
+        memberId: nonNull(stringArg()),
       },
       async resolve(_parent, args, ctx) {
         if (!ctx.user) {
           throw new Error('ログインユーザーが存在しません')
         }
 
-        return ctx.prisma.room.create({
-          data: {
-            groupId: args.groupId,
-          },
+        if (ctx.user.id === args.memberId) {
+          throw new Error('自分とのルームは作成できません')
+        }
+
+        const room = await ctx.prisma.room.create({
+          data: {},
         })
+
+        await ctx.prisma.roomMember.createMany({
+          data: [
+            {
+              roomId: room.id,
+              userId: ctx.user.id,
+            },
+            {
+              roomId: room.id,
+              userId: args.memberId,
+            },
+          ],
+        })
+
+        return room
       },
     })
   },
