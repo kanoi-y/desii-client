@@ -8,11 +8,6 @@ export {
 export { CREATE_MESSAGE, DELETE_MESSAGE, GET_MESSAGES } from './message'
 export { GET_NOTIFICATIONS, UPDATE_NOTIFICATION } from './notification'
 export {
-  CREATE_ONE_ON_ONE_ROOM,
-  DELETE_ONE_ON_ONE_ROOM,
-  GET_ONE_ON_ONE_ROOMS,
-} from './oneOnOneRoom'
-export {
   CREATE_POST,
   DELETE_POST,
   GET_MATCHING_POSTS,
@@ -21,6 +16,12 @@ export {
   UPDATE_POST,
 } from './post'
 export { GET_READ_MANAGEMENT, UPDATE_READ_MANAGEMENT } from './readManagement'
+export {
+  CREATE_ROOM,
+  DELETE_ROOM,
+  GET_ROOM,
+  GET_ROOMS_BY_LOGIN_USER_ID,
+} from './room'
 export { CREATE_TAG, GET_TAG_BY_NAME } from './tag'
 export {
   CREATE_TAG_POST_RELATION,
