@@ -28,6 +28,12 @@ export type Favorite = {
   updatedAt: Scalars['DateTime'];
 };
 
+export enum GetRoomType {
+  All = 'ALL',
+  OnlyGroup = 'ONLY_GROUP',
+  OnlyOneOnOne = 'ONLY_ONE_ON_ONE'
+}
+
 export type Group = {
   __typename?: 'Group';
   adminUserId: Scalars['String'];
@@ -354,6 +360,11 @@ export type QueryGetRoomArgs = {
 };
 
 
+export type QueryGetRoomsByLoginUserIdArgs = {
+  getRoomType: GetRoomType;
+};
+
+
 export type QueryGetTagByNameArgs = {
   name: Scalars['String'];
 };
@@ -677,7 +688,9 @@ export type GetRoomQueryVariables = Exact<{
 
 export type GetRoomQuery = { __typename?: 'Query', GetRoom?: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } | null } | null };
 
-export type GetRoomsByLoginUserIdQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetRoomsByLoginUserIdQueryVariables = Exact<{
+  getRoomType: GetRoomType;
+}>;
 
 
 export type GetRoomsByLoginUserIdQuery = { __typename?: 'Query', GetRoomsByLoginUserId: Array<{ __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } | null }> };
@@ -1867,8 +1880,8 @@ export type GetRoomQueryHookResult = ReturnType<typeof useGetRoomQuery>;
 export type GetRoomLazyQueryHookResult = ReturnType<typeof useGetRoomLazyQuery>;
 export type GetRoomQueryResult = Apollo.QueryResult<GetRoomQuery, GetRoomQueryVariables>;
 export const GetRoomsByLoginUserIdDocument = gql`
-    query GetRoomsByLoginUserId {
-  GetRoomsByLoginUserId {
+    query GetRoomsByLoginUserId($getRoomType: GetRoomType!) {
+  GetRoomsByLoginUserId(getRoomType: $getRoomType) {
     id
     groupId
     latestMessageId
@@ -1899,10 +1912,11 @@ export const GetRoomsByLoginUserIdDocument = gql`
  * @example
  * const { data, loading, error } = useGetRoomsByLoginUserIdQuery({
  *   variables: {
+ *      getRoomType: // value for 'getRoomType'
  *   },
  * });
  */
-export function useGetRoomsByLoginUserIdQuery(baseOptions?: Apollo.QueryHookOptions<GetRoomsByLoginUserIdQuery, GetRoomsByLoginUserIdQueryVariables>) {
+export function useGetRoomsByLoginUserIdQuery(baseOptions: Apollo.QueryHookOptions<GetRoomsByLoginUserIdQuery, GetRoomsByLoginUserIdQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetRoomsByLoginUserIdQuery, GetRoomsByLoginUserIdQueryVariables>(GetRoomsByLoginUserIdDocument, options);
       }

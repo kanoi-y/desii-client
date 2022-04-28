@@ -17,6 +17,12 @@ type Favorite {
   updatedAt: DateTime!
 }
 
+enum GetRoomType {
+  ALL
+  ONLY_GROUP
+  ONLY_ONE_ON_ONE
+}
+
 type Group {
   adminUserId: String!
   createdAt: DateTime!
@@ -120,7 +126,7 @@ type Query {
   GetReadManagement(messageId: String!, targetUserId: String!): ReadManagement
   GetReadManagements(messageId: String!): [ReadManagement!]!
   GetRoom(id: String!): Room
-  GetRoomsByLoginUserId: [Room!]!
+  GetRoomsByLoginUserId(getRoomType: GetRoomType!): [Room!]!
   GetTagByName(name: String!): Tag
   GetTagPostRelations(postId: String, tagId: String): [TagPostRelation!]!
   GetUserGroupRelations(groupId: String, userId: String): [UserGroupRelation!]!

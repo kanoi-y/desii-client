@@ -1,5 +1,10 @@
-import {  Room as RoomType, RoomMember } from '@prisma/client'
-import { extendType, nonNull, objectType, stringArg } from 'nexus'
+import { Room as RoomType, RoomMember } from '@prisma/client'
+import { enumType, extendType, nonNull, objectType, stringArg } from 'nexus'
+
+export const GetRoomType = enumType({
+  name: 'GetRoomType',
+  members: ['ALL', 'ONLY_ONE_ON_ONE', 'ONLY_GROUP'],
+})
 
 export const Room = objectType({
   name: 'Room',
@@ -47,6 +52,7 @@ export const GetRoomsByLoginUserIdQuery = extendType({
     t.nonNull.list.nonNull.field('GetRoomsByLoginUserId', {
       type: 'Room',
       args: {
+        getRoomType: nonNull(GetRoomType),
       },
       async resolve(_parent, args, ctx) {
         if (!ctx.user) {
@@ -62,15 +68,25 @@ export const GetRoomsByLoginUserIdQuery = extendType({
           },
         })
 
-        return roomMembers.map(
-          (
-            roomMember: RoomMember & {
-              room: RoomType
+        return roomMembers
+          .map(
+            (
+              roomMember: RoomMember & {
+                room: RoomType
+              }
+            ) => {
+              return roomMember.room
             }
-          ) => {
-            return roomMember.room
-          }
-        )
+          )
+          .filter((room: RoomType) => {
+            if (args.getRoomType === 'ONLY_ONE_ON_ONE') {
+              return !room.groupId
+            }
+            if (args.getRoomType === 'ONLY_GROUP') {
+              return room.groupId
+            }
+            return true
+          })
       },
     })
   },

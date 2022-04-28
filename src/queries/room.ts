@@ -22,8 +22,8 @@ export const GET_ROOM = gql`
 `
 
 export const GET_ROOMS_BY_LOGIN_USER_ID = gql`
-  query GetRoomsByLoginUserId {
-    GetRoomsByLoginUserId {
+  query GetRoomsByLoginUserId($getRoomType: GetRoomType!) {
+    GetRoomsByLoginUserId(getRoomType: $getRoomType) {
       id
       groupId
       latestMessageId
