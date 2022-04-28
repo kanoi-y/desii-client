@@ -118,6 +118,7 @@ type Query {
   GetNotifications(sort: orderByType = asc, targetUserId: String!): [Notification!]!
   GetPosts(groupId: String, isPrivate: Boolean, limit: Int, page: Int, sort: postOrderByType = asc, userId: String): [Post!]!
   GetReadManagement(messageId: String!, targetUserId: String!): ReadManagement
+  GetReadManagements(messageId: String!): [ReadManagement!]!
   GetRoom(id: String!): Room
   GetRoomsByLoginUserId: [Room!]!
   GetTagByName(name: String!): Tag
