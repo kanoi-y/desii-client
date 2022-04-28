@@ -1,3 +1,4 @@
+import { RoomMember } from '@prisma/client'
 import { extendType, nonNull, objectType, stringArg } from 'nexus'
 
 export const Room = objectType({
@@ -81,6 +82,7 @@ export const CreateRoomMutation = extendType({
   },
 })
 
+// 一対一ルームを削除する
 export const DeleteRoomMutation = extendType({
   type: 'Mutation',
   definition(t) {
@@ -94,17 +96,36 @@ export const DeleteRoomMutation = extendType({
           throw new Error('ログインユーザーが存在しません')
         }
 
-        const Room = await ctx.prisma.room.findUnique({
+        const room = await ctx.prisma.room.findUnique({
           where: {
             id: args.id,
           },
         })
 
-        if (!Room) {
+        if (!room) {
           throw new Error('ルームが存在しません')
         }
 
-        // TODO: memberしかルームを削除できないようにする
+        if (room.groupId) {
+          throw new Error(
+            'グループに紐づいているルームはルームだけ削除することは出来ません'
+          )
+        }
+
+        const roomMembers = await ctx.prisma.roomMember.findMany({
+          where: {
+            roomId: room.id,
+          },
+        })
+
+        if (
+          roomMembers.every((roomMember: RoomMember) => {
+            roomMember.userId !== ctx.user?.id
+          })
+        ) {
+          throw new Error('メンバーしかルームを削除することは出来ません')
+        }
+
         return ctx.prisma.room.delete({
           where: {
             id: args.id,
