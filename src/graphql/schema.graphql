@@ -119,6 +119,7 @@ type Query {
   GetPosts(groupId: String, isPrivate: Boolean, limit: Int, page: Int, sort: postOrderByType = asc, userId: String): [Post!]!
   GetReadManagement(messageId: String!, targetUserId: String!): ReadManagement
   GetRoom(id: String!): Room
+  GetRoomsByLoginUserId: [Room!]!
   GetTagByName(name: String!): Tag
   GetTagPostRelations(postId: String, tagId: String): [TagPostRelation!]!
   GetUserGroupRelations(groupId: String, userId: String): [UserGroupRelation!]!

@@ -1,4 +1,4 @@
-import { RoomMember } from '@prisma/client'
+import {  Room as RoomType, RoomMember } from '@prisma/client'
 import { extendType, nonNull, objectType, stringArg } from 'nexus'
 
 export const Room = objectType({
@@ -36,6 +36,41 @@ export const GetRoomQuery = extendType({
             latestMessage: true,
           },
         })
+      },
+    })
+  },
+})
+
+export const GetRoomsByLoginUserIdQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.nonNull.list.nonNull.field('GetRoomsByLoginUserId', {
+      type: 'Room',
+      args: {
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const roomMembers = await ctx.prisma.roomMember.findMany({
+          where: {
+            userId: ctx.user.id,
+          },
+          include: {
+            room: true,
+          },
+        })
+
+        return roomMembers.map(
+          (
+            roomMember: RoomMember & {
+              room: RoomType
+            }
+          ) => {
+            return roomMember.room
+          }
+        )
       },
     })
   },
