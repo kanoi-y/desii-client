@@ -1,4 +1,5 @@
 import { extendType, nonNull, objectType, stringArg } from 'nexus'
+import { Context } from '../context'
 
 export const Group = objectType({
   name: 'Group',
@@ -37,6 +38,21 @@ export const GetGroupQuery = extendType({
   },
 })
 
+const createRoom = async (ctx: Context, groupId: string, userId: string) => {
+  const room = await ctx.prisma.room.create({
+    data: {
+      groupId,
+    },
+  })
+
+  await ctx.prisma.roomMember.create({
+    data: {
+      roomId: room.id,
+      userId: userId,
+    },
+  })
+}
+
 export const CreateGroupMutation = extendType({
   type: 'Mutation',
   definition(t) {
@@ -63,7 +79,6 @@ export const CreateGroupMutation = extendType({
           },
         })
 
-        // userTeamRelation を生成する
         await ctx.prisma.userGroupRelation.create({
           data: {
             userId: ctx.user.id,
@@ -71,11 +86,21 @@ export const CreateGroupMutation = extendType({
           },
         })
 
+        createRoom(ctx, group.id, ctx.user.id)
+
         return group
       },
     })
   },
 })
+
+const deleteRoom = async (ctx: Context, groupId: string) => {
+  await ctx.prisma.room.delete({
+    where: {
+      groupId,
+    },
+  })
+}
 
 export const DeleteGroupMutation = extendType({
   type: 'Mutation',
@@ -103,6 +128,8 @@ export const DeleteGroupMutation = extendType({
         if (ctx.user.id !== group.adminUserId) {
           throw new Error('ユーザーがチームの管理者ではありません')
         }
+
+        deleteRoom(ctx, group.id)
         return ctx.prisma.group.delete({
           where: {
             id: args.id,

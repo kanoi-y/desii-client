@@ -43,6 +43,29 @@ export const GetReadManagementQuery = extendType({
   },
 })
 
+export const GetReadManagementsQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.nonNull.list.nonNull.field('GetReadManagements', {
+      type: 'ReadManagement',
+      args: {
+        messageId: nonNull(stringArg()),
+      },
+      resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        return ctx.prisma.readManagement.findMany({
+          where: {
+            messageId: args.messageId,
+          },
+        })
+      },
+    })
+  },
+})
+
 export const UpdateReadManagementMutation = extendType({
   type: 'Mutation',
   definition(t) {

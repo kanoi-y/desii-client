@@ -1,4 +1,4 @@
-import { UserGroupRelation } from '@prisma/client'
+import { RoomMember } from '@prisma/client'
 import {
   arg,
   enumType,
@@ -7,6 +7,7 @@ import {
   objectType,
   stringArg,
 } from 'nexus'
+import { Context } from '../context'
 import { OrderByType } from './Post'
 
 export const MessageType = enumType({
@@ -21,7 +22,7 @@ export const Message = objectType({
     t.nonNull.field('type', {
       type: 'MessageType',
     })
-    t.nonNull.string('targetId')
+    t.nonNull.string('roomId')
     t.nonNull.string('userId')
     t.nonNull.string('body')
     t.nonNull.field('createdAt', {
@@ -39,7 +40,7 @@ export const GetMessagesQuery = extendType({
     t.nonNull.list.nonNull.field('GetMessages', {
       type: 'Message',
       args: {
-        targetId: nonNull(stringArg()),
+        roomId: nonNull(stringArg()),
         sort: arg({
           type: OrderByType,
           default: 'asc',
@@ -50,32 +51,25 @@ export const GetMessagesQuery = extendType({
           throw new Error('ログインユーザーが存在しません')
         }
 
-        const oneOnOneRoom = await ctx.prisma.oneOnOneRoom.findUnique({
+        const roomMembers = await ctx.prisma.roomMember.findMany({
           where: {
-            id: args.targetId,
-          },
-        })
-
-        const userGroupRelations = await ctx.prisma.userGroupRelation.findMany({
-          where: {
-            groupId: args.targetId,
+            roomId: args.roomId,
           },
         })
 
         if (
-          oneOnOneRoom?.memberId1 !== ctx.user.id &&
-          oneOnOneRoom?.memberId2 !== ctx.user.id &&
-          userGroupRelations.every(
-            (userGroupRelation: UserGroupRelation) =>
-              ctx.user && userGroupRelation.userId !== ctx.user.id
-          )
+          roomMembers.every((roomMember: RoomMember) => {
+            roomMember.userId !== ctx.user?.id
+          })
         ) {
-          throw new Error('所属していないルームのメッセージは閲覧できません')
+          throw new Error(
+            'ルームに所属していないユーザーはメッセージを取得できません'
+          )
         }
 
         return ctx.prisma.message.findMany({
           where: {
-            targetId: args.targetId,
+            roomId: args.roomId,
           },
           orderBy: {
             createdAt: args.sort || 'asc',
@@ -85,6 +79,26 @@ export const GetMessagesQuery = extendType({
     })
   },
 })
+
+const createReadManagements = async (
+  ctx: Context,
+  roomMembers: RoomMember[],
+  messageId: string
+) => {
+  await ctx.prisma.readManagement.createMany({
+    data: [
+      ...roomMembers
+        .filter((roomMember: RoomMember) => roomMember.userId !== ctx.user?.id)
+        .map((roomMember: RoomMember) => {
+          return {
+            targetUserId: roomMember.userId,
+            messageId,
+            isRead: false,
+          }
+        }),
+    ],
+  })
+}
 
 export const CreateMessageMutation = extendType({
   type: 'Mutation',
@@ -97,7 +111,7 @@ export const CreateMessageMutation = extendType({
             type: MessageType,
           })
         ),
-        targetId: nonNull(stringArg()),
+        roomId: nonNull(stringArg()),
         body: nonNull(stringArg()),
       },
       async resolve(_parent, args, ctx) {
@@ -105,61 +119,51 @@ export const CreateMessageMutation = extendType({
           throw new Error('ログインユーザーが存在しません')
         }
 
-        const oneOnOneRoom = await ctx.prisma.oneOnOneRoom.findUnique({
+        const room = await ctx.prisma.room.findUnique({
           where: {
-            id: args.targetId,
+            id: args.roomId,
           },
         })
 
-        const userGroupRelations = await ctx.prisma.userGroupRelation.findMany({
+        if (!room) {
+          throw new Error('ルームが存在しません')
+        }
+
+        const roomMembers = await ctx.prisma.roomMember.findMany({
           where: {
-            groupId: args.targetId,
+            roomId: args.roomId,
           },
         })
 
         if (
-          oneOnOneRoom?.memberId1 !== ctx.user.id &&
-          oneOnOneRoom?.memberId2 !== ctx.user.id &&
-          userGroupRelations.every(
-            (userGroupRelation: UserGroupRelation) =>
-              ctx.user && userGroupRelation.userId !== ctx.user.id
-          )
+          roomMembers.every((roomMember: RoomMember) => {
+            roomMember.userId !== ctx.user?.id
+          })
         ) {
-          throw new Error('所属していないルームのメッセージは作成できません')
+          throw new Error(
+            'ルームに所属していないユーザーはメッセージを作成できません'
+          )
         }
 
         const message = await ctx.prisma.message.create({
           data: {
             type: args.messageType,
-            targetId: args.targetId,
+            roomId: args.roomId,
             userId: ctx.user.id,
             body: args.body,
           },
         })
 
-        // TODO: groupのメッセージの場合の実装をする
-        if (oneOnOneRoom) {
-          const targetUserId =
-            oneOnOneRoom.memberId1 === ctx.user.id
-              ? oneOnOneRoom.memberId2
-              : oneOnOneRoom.memberId1
-          await ctx.prisma.readManagement.create({
-            data: {
-              targetUserId,
-              messageId: message.id,
-              isRead: false,
-            },
-          })
+        createReadManagements(ctx, roomMembers, message.id)
 
-          await ctx.prisma.oneOnOneRoom.update({
-            where: {
-              id: oneOnOneRoom.id,
-            },
-            data: {
-              latestMessageId: message.id,
-            },
-          })
-        }
+        await ctx.prisma.room.update({
+          where: {
+            id: room.id,
+          },
+          data: {
+            latestMessageId: message.id,
+          },
+        })
 
         return message
       },

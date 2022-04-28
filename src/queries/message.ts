@@ -1,11 +1,11 @@
 import { gql } from '@apollo/client'
 
 export const GET_MESSAGES = gql`
-  query GetMessages($targetId: String!, $sort: orderByType) {
-    GetMessages(targetId: $targetId, sort: $sort) {
+  query GetMessages($roomId: String!, $sort: orderByType) {
+    GetMessages(roomId: $roomId, sort: $sort) {
       id
       type
-      targetId
+      roomId
       userId
       body
       createdAt
@@ -17,13 +17,13 @@ export const GET_MESSAGES = gql`
 export const CREATE_MESSAGE = gql`
   mutation CreateMessage(
     $messageType: MessageType!
-    $targetId: String!
+    $roomId: String!
     $body: String!
   ) {
-    CreateMessage(messageType: $messageType, targetId: $targetId, body: $body) {
+    CreateMessage(messageType: $messageType, roomId: $roomId, body: $body) {
       id
       type
-      targetId
+      roomId
       userId
       body
       createdAt
@@ -37,7 +37,7 @@ export const DELETE_MESSAGE = gql`
     DeleteMessage(id: $deleteMessageId) {
       id
       type
-      targetId
+      roomId
       userId
       body
       createdAt

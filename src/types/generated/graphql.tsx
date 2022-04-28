@@ -28,6 +28,12 @@ export type Favorite = {
   updatedAt: Scalars['DateTime'];
 };
 
+export enum GetRoomType {
+  All = 'ALL',
+  OnlyGroup = 'ONLY_GROUP',
+  OnlyOneOnOne = 'ONLY_ONE_ON_ONE'
+}
+
 export type Group = {
   __typename?: 'Group';
   adminUserId: Scalars['String'];
@@ -51,7 +57,7 @@ export type Message = {
   body: Scalars['String'];
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
-  targetId: Scalars['String'];
+  roomId: Scalars['String'];
   type: MessageType;
   updatedAt: Scalars['DateTime'];
   userId: Scalars['String'];
@@ -66,10 +72,10 @@ export enum MessageType {
 export type Mutation = {
   __typename?: 'Mutation';
   CreateMessage: Message;
-  CreateOneOnOneRoom: OneOnOneRoom;
+  CreateRoom: Room;
   DeleteFavorite: Favorite;
   DeleteMessage: Message;
-  DeleteOneOnOneRoom: OneOnOneRoom;
+  DeleteRoom: Room;
   DeleteTagPostRelation: TagPostRelation;
   DeleteTagPostRelations: Array<TagPostRelation>;
   DeleteUserGroupRelation: UserGroupRelation;
@@ -95,13 +101,12 @@ export type Mutation = {
 export type MutationCreateMessageArgs = {
   body: Scalars['String'];
   messageType: MessageType;
-  targetId: Scalars['String'];
+  roomId: Scalars['String'];
 };
 
 
-export type MutationCreateOneOnOneRoomArgs = {
-  memberId1: Scalars['String'];
-  memberId2: Scalars['String'];
+export type MutationCreateRoomArgs = {
+  memberId: Scalars['String'];
 };
 
 
@@ -115,7 +120,7 @@ export type MutationDeleteMessageArgs = {
 };
 
 
-export type MutationDeleteOneOnOneRoomArgs = {
+export type MutationDeleteRoomArgs = {
   id: Scalars['String'];
 };
 
@@ -263,17 +268,6 @@ export enum NotificationType {
   MatchPost = 'MATCH_POST'
 }
 
-export type OneOnOneRoom = {
-  __typename?: 'OneOnOneRoom';
-  createdAt: Scalars['DateTime'];
-  id: Scalars['String'];
-  latestMessage?: Maybe<Message>;
-  latestMessageId?: Maybe<Scalars['String']>;
-  memberId1: Scalars['String'];
-  memberId2: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
-};
-
 export type Post = {
   __typename?: 'Post';
   bgImage?: Maybe<Scalars['String']>;
@@ -299,9 +293,11 @@ export type Query = {
   GetMatchingPosts: Array<MatchingPostInfoType>;
   GetMessages: Array<Message>;
   GetNotifications: Array<Notification>;
-  GetOneOnOneRooms: Array<OneOnOneRoom>;
   GetPosts: Array<Post>;
   GetReadManagement?: Maybe<ReadManagement>;
+  GetReadManagements: Array<ReadManagement>;
+  GetRoom?: Maybe<Room>;
+  GetRoomsByLoginUserId: Array<Room>;
   GetTagByName?: Maybe<Tag>;
   GetTagPostRelations: Array<TagPostRelation>;
   GetUserGroupRelations: Array<UserGroupRelation>;
@@ -309,6 +305,7 @@ export type Query = {
   getCurrentUser?: Maybe<User>;
   getGroup?: Maybe<Group>;
   getPost?: Maybe<Post>;
+  getRoomMembers: Array<RoomMember>;
   getUser?: Maybe<User>;
 };
 
@@ -326,20 +323,14 @@ export type QueryGetMatchingPostsArgs = {
 
 
 export type QueryGetMessagesArgs = {
+  roomId: Scalars['String'];
   sort?: InputMaybe<OrderByType>;
-  targetId: Scalars['String'];
 };
 
 
 export type QueryGetNotificationsArgs = {
   sort?: InputMaybe<OrderByType>;
   targetUserId: Scalars['String'];
-};
-
-
-export type QueryGetOneOnOneRoomsArgs = {
-  sort?: InputMaybe<OrderByType>;
-  targetMemberId: Scalars['String'];
 };
 
 
@@ -356,6 +347,21 @@ export type QueryGetPostsArgs = {
 export type QueryGetReadManagementArgs = {
   messageId: Scalars['String'];
   targetUserId: Scalars['String'];
+};
+
+
+export type QueryGetReadManagementsArgs = {
+  messageId: Scalars['String'];
+};
+
+
+export type QueryGetRoomArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryGetRoomsByLoginUserIdArgs = {
+  getRoomType: GetRoomType;
 };
 
 
@@ -397,6 +403,12 @@ export type QueryGetPostArgs = {
 };
 
 
+export type QueryGetRoomMembersArgs = {
+  roomId?: InputMaybe<Scalars['String']>;
+  userId?: InputMaybe<Scalars['String']>;
+};
+
+
 export type QueryGetUserArgs = {
   id: Scalars['String'];
 };
@@ -409,6 +421,27 @@ export type ReadManagement = {
   messageId: Scalars['String'];
   targetUserId: Scalars['String'];
   updatedAt: Scalars['DateTime'];
+};
+
+export type Room = {
+  __typename?: 'Room';
+  createdAt: Scalars['DateTime'];
+  groupId?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  latestMessage?: Maybe<Message>;
+  latestMessageId?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['DateTime'];
+};
+
+export type RoomMember = {
+  __typename?: 'RoomMember';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['String'];
+  room: Room;
+  roomId: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+  user: User;
+  userId: Scalars['String'];
 };
 
 export type Tag = {
@@ -529,28 +562,28 @@ export type UpdateGroupMutationVariables = Exact<{
 export type UpdateGroupMutation = { __typename?: 'Mutation', updateGroup: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } };
 
 export type GetMessagesQueryVariables = Exact<{
-  targetId: Scalars['String'];
+  roomId: Scalars['String'];
   sort?: InputMaybe<OrderByType>;
 }>;
 
 
-export type GetMessagesQuery = { __typename?: 'Query', GetMessages: Array<{ __typename?: 'Message', id: string, type: MessageType, targetId: string, userId: string, body: string, createdAt: Date, updatedAt: Date }> };
+export type GetMessagesQuery = { __typename?: 'Query', GetMessages: Array<{ __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date }> };
 
 export type CreateMessageMutationVariables = Exact<{
   messageType: MessageType;
-  targetId: Scalars['String'];
+  roomId: Scalars['String'];
   body: Scalars['String'];
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'Mutation', CreateMessage: { __typename?: 'Message', id: string, type: MessageType, targetId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } };
+export type CreateMessageMutation = { __typename?: 'Mutation', CreateMessage: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } };
 
 export type DeleteMessageMutationVariables = Exact<{
   deleteMessageId: Scalars['String'];
 }>;
 
 
-export type DeleteMessageMutation = { __typename?: 'Mutation', DeleteMessage: { __typename?: 'Message', id: string, type: MessageType, targetId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } };
+export type DeleteMessageMutation = { __typename?: 'Mutation', DeleteMessage: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } };
 
 export type GetNotificationsQueryVariables = Exact<{
   targetUserId: Scalars['String'];
@@ -567,29 +600,6 @@ export type UpdateNotificationMutationVariables = Exact<{
 
 
 export type UpdateNotificationMutation = { __typename?: 'Mutation', UpdateNotification: { __typename?: 'Notification', id: string, type: NotificationType, createdUserId?: string | null, targetUserId: string, message: string, url: string, isChecked: boolean, createdAt: Date, updatedAt: Date } };
-
-export type GetOneOnOneRoomsQueryVariables = Exact<{
-  targetMemberId: Scalars['String'];
-  sort?: InputMaybe<OrderByType>;
-}>;
-
-
-export type GetOneOnOneRoomsQuery = { __typename?: 'Query', GetOneOnOneRooms: Array<{ __typename?: 'OneOnOneRoom', id: string, memberId1: string, memberId2: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, targetId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } | null }> };
-
-export type CreateOneOnOneRoomMutationVariables = Exact<{
-  memberId1: Scalars['String'];
-  memberId2: Scalars['String'];
-}>;
-
-
-export type CreateOneOnOneRoomMutation = { __typename?: 'Mutation', CreateOneOnOneRoom: { __typename?: 'OneOnOneRoom', id: string, memberId1: string, memberId2: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } };
-
-export type DeleteOneOnOneRoomMutationVariables = Exact<{
-  deleteOneOnOneRoomId: Scalars['String'];
-}>;
-
-
-export type DeleteOneOnOneRoomMutation = { __typename?: 'Mutation', DeleteOneOnOneRoom: { __typename?: 'OneOnOneRoom', id: string, memberId1: string, memberId2: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } };
 
 export type GetPostQueryVariables = Exact<{
   getPostId: Scalars['String'];
@@ -656,6 +666,13 @@ export type GetReadManagementQueryVariables = Exact<{
 
 export type GetReadManagementQuery = { __typename?: 'Query', GetReadManagement?: { __typename?: 'ReadManagement', id: string, targetUserId: string, messageId: string, isRead: boolean, createdAt: Date, updatedAt: Date } | null };
 
+export type GetReadManagementsQueryVariables = Exact<{
+  messageId: Scalars['String'];
+}>;
+
+
+export type GetReadManagementsQuery = { __typename?: 'Query', GetReadManagements: Array<{ __typename?: 'ReadManagement', id: string, targetUserId: string, messageId: string, isRead: boolean, createdAt: Date, updatedAt: Date }> };
+
 export type UpdateReadManagementMutationVariables = Exact<{
   targetUserId: Scalars['String'];
   messageId: Scalars['String'];
@@ -663,6 +680,42 @@ export type UpdateReadManagementMutationVariables = Exact<{
 
 
 export type UpdateReadManagementMutation = { __typename?: 'Mutation', UpdateReadManagement: { __typename?: 'ReadManagement', id: string, targetUserId: string, messageId: string, isRead: boolean, createdAt: Date, updatedAt: Date } };
+
+export type GetRoomQueryVariables = Exact<{
+  getRoomId: Scalars['String'];
+}>;
+
+
+export type GetRoomQuery = { __typename?: 'Query', GetRoom?: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } | null } | null };
+
+export type GetRoomsByLoginUserIdQueryVariables = Exact<{
+  getRoomType: GetRoomType;
+}>;
+
+
+export type GetRoomsByLoginUserIdQuery = { __typename?: 'Query', GetRoomsByLoginUserId: Array<{ __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } | null }> };
+
+export type CreateRoomMutationVariables = Exact<{
+  memberId: Scalars['String'];
+}>;
+
+
+export type CreateRoomMutation = { __typename?: 'Mutation', CreateRoom: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } | null } };
+
+export type DeleteRoomMutationVariables = Exact<{
+  deleteRoomId: Scalars['String'];
+}>;
+
+
+export type DeleteRoomMutation = { __typename?: 'Mutation', DeleteRoom: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } | null } };
+
+export type GetRoomMembersQueryVariables = Exact<{
+  userId?: InputMaybe<Scalars['String']>;
+  roomId?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetRoomMembersQuery = { __typename?: 'Query', getRoomMembers: Array<{ __typename?: 'RoomMember', id: string, roomId: string, userId: string, createdAt: Date, updatedAt: Date, room: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date }, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, accessToken?: string | null, createdAt: Date, updatedAt: Date } }> };
 
 export type GetAllTagsQueryVariables = Exact<{
   sort?: InputMaybe<OrderByType>;
@@ -1154,11 +1207,11 @@ export type UpdateGroupMutationHookResult = ReturnType<typeof useUpdateGroupMuta
 export type UpdateGroupMutationResult = Apollo.MutationResult<UpdateGroupMutation>;
 export type UpdateGroupMutationOptions = Apollo.BaseMutationOptions<UpdateGroupMutation, UpdateGroupMutationVariables>;
 export const GetMessagesDocument = gql`
-    query GetMessages($targetId: String!, $sort: orderByType) {
-  GetMessages(targetId: $targetId, sort: $sort) {
+    query GetMessages($roomId: String!, $sort: orderByType) {
+  GetMessages(roomId: $roomId, sort: $sort) {
     id
     type
-    targetId
+    roomId
     userId
     body
     createdAt
@@ -1179,7 +1232,7 @@ export const GetMessagesDocument = gql`
  * @example
  * const { data, loading, error } = useGetMessagesQuery({
  *   variables: {
- *      targetId: // value for 'targetId'
+ *      roomId: // value for 'roomId'
  *      sort: // value for 'sort'
  *   },
  * });
@@ -1196,11 +1249,11 @@ export type GetMessagesQueryHookResult = ReturnType<typeof useGetMessagesQuery>;
 export type GetMessagesLazyQueryHookResult = ReturnType<typeof useGetMessagesLazyQuery>;
 export type GetMessagesQueryResult = Apollo.QueryResult<GetMessagesQuery, GetMessagesQueryVariables>;
 export const CreateMessageDocument = gql`
-    mutation CreateMessage($messageType: MessageType!, $targetId: String!, $body: String!) {
-  CreateMessage(messageType: $messageType, targetId: $targetId, body: $body) {
+    mutation CreateMessage($messageType: MessageType!, $roomId: String!, $body: String!) {
+  CreateMessage(messageType: $messageType, roomId: $roomId, body: $body) {
     id
     type
-    targetId
+    roomId
     userId
     body
     createdAt
@@ -1224,7 +1277,7 @@ export type CreateMessageMutationFn = Apollo.MutationFunction<CreateMessageMutat
  * const [createMessageMutation, { data, loading, error }] = useCreateMessageMutation({
  *   variables: {
  *      messageType: // value for 'messageType'
- *      targetId: // value for 'targetId'
+ *      roomId: // value for 'roomId'
  *      body: // value for 'body'
  *   },
  * });
@@ -1241,7 +1294,7 @@ export const DeleteMessageDocument = gql`
   DeleteMessage(id: $deleteMessageId) {
     id
     type
-    targetId
+    roomId
     userId
     body
     createdAt
@@ -1361,133 +1414,6 @@ export function useUpdateNotificationMutation(baseOptions?: Apollo.MutationHookO
 export type UpdateNotificationMutationHookResult = ReturnType<typeof useUpdateNotificationMutation>;
 export type UpdateNotificationMutationResult = Apollo.MutationResult<UpdateNotificationMutation>;
 export type UpdateNotificationMutationOptions = Apollo.BaseMutationOptions<UpdateNotificationMutation, UpdateNotificationMutationVariables>;
-export const GetOneOnOneRoomsDocument = gql`
-    query GetOneOnOneRooms($targetMemberId: String!, $sort: orderByType) {
-  GetOneOnOneRooms(targetMemberId: $targetMemberId, sort: $sort) {
-    id
-    memberId1
-    memberId2
-    latestMessageId
-    latestMessage {
-      id
-      type
-      targetId
-      userId
-      body
-      createdAt
-      updatedAt
-    }
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-/**
- * __useGetOneOnOneRoomsQuery__
- *
- * To run a query within a React component, call `useGetOneOnOneRoomsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetOneOnOneRoomsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetOneOnOneRoomsQuery({
- *   variables: {
- *      targetMemberId: // value for 'targetMemberId'
- *      sort: // value for 'sort'
- *   },
- * });
- */
-export function useGetOneOnOneRoomsQuery(baseOptions: Apollo.QueryHookOptions<GetOneOnOneRoomsQuery, GetOneOnOneRoomsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetOneOnOneRoomsQuery, GetOneOnOneRoomsQueryVariables>(GetOneOnOneRoomsDocument, options);
-      }
-export function useGetOneOnOneRoomsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneOnOneRoomsQuery, GetOneOnOneRoomsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetOneOnOneRoomsQuery, GetOneOnOneRoomsQueryVariables>(GetOneOnOneRoomsDocument, options);
-        }
-export type GetOneOnOneRoomsQueryHookResult = ReturnType<typeof useGetOneOnOneRoomsQuery>;
-export type GetOneOnOneRoomsLazyQueryHookResult = ReturnType<typeof useGetOneOnOneRoomsLazyQuery>;
-export type GetOneOnOneRoomsQueryResult = Apollo.QueryResult<GetOneOnOneRoomsQuery, GetOneOnOneRoomsQueryVariables>;
-export const CreateOneOnOneRoomDocument = gql`
-    mutation CreateOneOnOneRoom($memberId1: String!, $memberId2: String!) {
-  CreateOneOnOneRoom(memberId1: $memberId1, memberId2: $memberId2) {
-    id
-    memberId1
-    memberId2
-    latestMessageId
-    createdAt
-    updatedAt
-  }
-}
-    `;
-export type CreateOneOnOneRoomMutationFn = Apollo.MutationFunction<CreateOneOnOneRoomMutation, CreateOneOnOneRoomMutationVariables>;
-
-/**
- * __useCreateOneOnOneRoomMutation__
- *
- * To run a mutation, you first call `useCreateOneOnOneRoomMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateOneOnOneRoomMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createOneOnOneRoomMutation, { data, loading, error }] = useCreateOneOnOneRoomMutation({
- *   variables: {
- *      memberId1: // value for 'memberId1'
- *      memberId2: // value for 'memberId2'
- *   },
- * });
- */
-export function useCreateOneOnOneRoomMutation(baseOptions?: Apollo.MutationHookOptions<CreateOneOnOneRoomMutation, CreateOneOnOneRoomMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateOneOnOneRoomMutation, CreateOneOnOneRoomMutationVariables>(CreateOneOnOneRoomDocument, options);
-      }
-export type CreateOneOnOneRoomMutationHookResult = ReturnType<typeof useCreateOneOnOneRoomMutation>;
-export type CreateOneOnOneRoomMutationResult = Apollo.MutationResult<CreateOneOnOneRoomMutation>;
-export type CreateOneOnOneRoomMutationOptions = Apollo.BaseMutationOptions<CreateOneOnOneRoomMutation, CreateOneOnOneRoomMutationVariables>;
-export const DeleteOneOnOneRoomDocument = gql`
-    mutation DeleteOneOnOneRoom($deleteOneOnOneRoomId: String!) {
-  DeleteOneOnOneRoom(id: $deleteOneOnOneRoomId) {
-    id
-    memberId1
-    memberId2
-    latestMessageId
-    createdAt
-    updatedAt
-  }
-}
-    `;
-export type DeleteOneOnOneRoomMutationFn = Apollo.MutationFunction<DeleteOneOnOneRoomMutation, DeleteOneOnOneRoomMutationVariables>;
-
-/**
- * __useDeleteOneOnOneRoomMutation__
- *
- * To run a mutation, you first call `useDeleteOneOnOneRoomMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteOneOnOneRoomMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteOneOnOneRoomMutation, { data, loading, error }] = useDeleteOneOnOneRoomMutation({
- *   variables: {
- *      deleteOneOnOneRoomId: // value for 'deleteOneOnOneRoomId'
- *   },
- * });
- */
-export function useDeleteOneOnOneRoomMutation(baseOptions?: Apollo.MutationHookOptions<DeleteOneOnOneRoomMutation, DeleteOneOnOneRoomMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteOneOnOneRoomMutation, DeleteOneOnOneRoomMutationVariables>(DeleteOneOnOneRoomDocument, options);
-      }
-export type DeleteOneOnOneRoomMutationHookResult = ReturnType<typeof useDeleteOneOnOneRoomMutation>;
-export type DeleteOneOnOneRoomMutationResult = Apollo.MutationResult<DeleteOneOnOneRoomMutation>;
-export type DeleteOneOnOneRoomMutationOptions = Apollo.BaseMutationOptions<DeleteOneOnOneRoomMutation, DeleteOneOnOneRoomMutationVariables>;
 export const GetPostDocument = gql`
     query GetPost($getPostId: String!) {
   getPost(id: $getPostId) {
@@ -1826,6 +1752,46 @@ export function useGetReadManagementLazyQuery(baseOptions?: Apollo.LazyQueryHook
 export type GetReadManagementQueryHookResult = ReturnType<typeof useGetReadManagementQuery>;
 export type GetReadManagementLazyQueryHookResult = ReturnType<typeof useGetReadManagementLazyQuery>;
 export type GetReadManagementQueryResult = Apollo.QueryResult<GetReadManagementQuery, GetReadManagementQueryVariables>;
+export const GetReadManagementsDocument = gql`
+    query GetReadManagements($messageId: String!) {
+  GetReadManagements(messageId: $messageId) {
+    id
+    targetUserId
+    messageId
+    isRead
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetReadManagementsQuery__
+ *
+ * To run a query within a React component, call `useGetReadManagementsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetReadManagementsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetReadManagementsQuery({
+ *   variables: {
+ *      messageId: // value for 'messageId'
+ *   },
+ * });
+ */
+export function useGetReadManagementsQuery(baseOptions: Apollo.QueryHookOptions<GetReadManagementsQuery, GetReadManagementsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetReadManagementsQuery, GetReadManagementsQueryVariables>(GetReadManagementsDocument, options);
+      }
+export function useGetReadManagementsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetReadManagementsQuery, GetReadManagementsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetReadManagementsQuery, GetReadManagementsQueryVariables>(GetReadManagementsDocument, options);
+        }
+export type GetReadManagementsQueryHookResult = ReturnType<typeof useGetReadManagementsQuery>;
+export type GetReadManagementsLazyQueryHookResult = ReturnType<typeof useGetReadManagementsLazyQuery>;
+export type GetReadManagementsQueryResult = Apollo.QueryResult<GetReadManagementsQuery, GetReadManagementsQueryVariables>;
 export const UpdateReadManagementDocument = gql`
     mutation UpdateReadManagement($targetUserId: String!, $messageId: String!) {
   UpdateReadManagement(targetUserId: $targetUserId, messageId: $messageId) {
@@ -1865,6 +1831,251 @@ export function useUpdateReadManagementMutation(baseOptions?: Apollo.MutationHoo
 export type UpdateReadManagementMutationHookResult = ReturnType<typeof useUpdateReadManagementMutation>;
 export type UpdateReadManagementMutationResult = Apollo.MutationResult<UpdateReadManagementMutation>;
 export type UpdateReadManagementMutationOptions = Apollo.BaseMutationOptions<UpdateReadManagementMutation, UpdateReadManagementMutationVariables>;
+export const GetRoomDocument = gql`
+    query GetRoom($getRoomId: String!) {
+  GetRoom(id: $getRoomId) {
+    id
+    groupId
+    latestMessageId
+    latestMessage {
+      id
+      type
+      roomId
+      userId
+      body
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetRoomQuery__
+ *
+ * To run a query within a React component, call `useGetRoomQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRoomQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRoomQuery({
+ *   variables: {
+ *      getRoomId: // value for 'getRoomId'
+ *   },
+ * });
+ */
+export function useGetRoomQuery(baseOptions: Apollo.QueryHookOptions<GetRoomQuery, GetRoomQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRoomQuery, GetRoomQueryVariables>(GetRoomDocument, options);
+      }
+export function useGetRoomLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoomQuery, GetRoomQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRoomQuery, GetRoomQueryVariables>(GetRoomDocument, options);
+        }
+export type GetRoomQueryHookResult = ReturnType<typeof useGetRoomQuery>;
+export type GetRoomLazyQueryHookResult = ReturnType<typeof useGetRoomLazyQuery>;
+export type GetRoomQueryResult = Apollo.QueryResult<GetRoomQuery, GetRoomQueryVariables>;
+export const GetRoomsByLoginUserIdDocument = gql`
+    query GetRoomsByLoginUserId($getRoomType: GetRoomType!) {
+  GetRoomsByLoginUserId(getRoomType: $getRoomType) {
+    id
+    groupId
+    latestMessageId
+    latestMessage {
+      id
+      type
+      roomId
+      userId
+      body
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetRoomsByLoginUserIdQuery__
+ *
+ * To run a query within a React component, call `useGetRoomsByLoginUserIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRoomsByLoginUserIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRoomsByLoginUserIdQuery({
+ *   variables: {
+ *      getRoomType: // value for 'getRoomType'
+ *   },
+ * });
+ */
+export function useGetRoomsByLoginUserIdQuery(baseOptions: Apollo.QueryHookOptions<GetRoomsByLoginUserIdQuery, GetRoomsByLoginUserIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRoomsByLoginUserIdQuery, GetRoomsByLoginUserIdQueryVariables>(GetRoomsByLoginUserIdDocument, options);
+      }
+export function useGetRoomsByLoginUserIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoomsByLoginUserIdQuery, GetRoomsByLoginUserIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRoomsByLoginUserIdQuery, GetRoomsByLoginUserIdQueryVariables>(GetRoomsByLoginUserIdDocument, options);
+        }
+export type GetRoomsByLoginUserIdQueryHookResult = ReturnType<typeof useGetRoomsByLoginUserIdQuery>;
+export type GetRoomsByLoginUserIdLazyQueryHookResult = ReturnType<typeof useGetRoomsByLoginUserIdLazyQuery>;
+export type GetRoomsByLoginUserIdQueryResult = Apollo.QueryResult<GetRoomsByLoginUserIdQuery, GetRoomsByLoginUserIdQueryVariables>;
+export const CreateRoomDocument = gql`
+    mutation CreateRoom($memberId: String!) {
+  CreateRoom(memberId: $memberId) {
+    id
+    groupId
+    latestMessageId
+    latestMessage {
+      id
+      type
+      roomId
+      userId
+      body
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateRoomMutationFn = Apollo.MutationFunction<CreateRoomMutation, CreateRoomMutationVariables>;
+
+/**
+ * __useCreateRoomMutation__
+ *
+ * To run a mutation, you first call `useCreateRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createRoomMutation, { data, loading, error }] = useCreateRoomMutation({
+ *   variables: {
+ *      memberId: // value for 'memberId'
+ *   },
+ * });
+ */
+export function useCreateRoomMutation(baseOptions?: Apollo.MutationHookOptions<CreateRoomMutation, CreateRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateRoomMutation, CreateRoomMutationVariables>(CreateRoomDocument, options);
+      }
+export type CreateRoomMutationHookResult = ReturnType<typeof useCreateRoomMutation>;
+export type CreateRoomMutationResult = Apollo.MutationResult<CreateRoomMutation>;
+export type CreateRoomMutationOptions = Apollo.BaseMutationOptions<CreateRoomMutation, CreateRoomMutationVariables>;
+export const DeleteRoomDocument = gql`
+    mutation DeleteRoom($deleteRoomId: String!) {
+  DeleteRoom(id: $deleteRoomId) {
+    id
+    groupId
+    latestMessageId
+    latestMessage {
+      id
+      type
+      roomId
+      userId
+      body
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type DeleteRoomMutationFn = Apollo.MutationFunction<DeleteRoomMutation, DeleteRoomMutationVariables>;
+
+/**
+ * __useDeleteRoomMutation__
+ *
+ * To run a mutation, you first call `useDeleteRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteRoomMutation, { data, loading, error }] = useDeleteRoomMutation({
+ *   variables: {
+ *      deleteRoomId: // value for 'deleteRoomId'
+ *   },
+ * });
+ */
+export function useDeleteRoomMutation(baseOptions?: Apollo.MutationHookOptions<DeleteRoomMutation, DeleteRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteRoomMutation, DeleteRoomMutationVariables>(DeleteRoomDocument, options);
+      }
+export type DeleteRoomMutationHookResult = ReturnType<typeof useDeleteRoomMutation>;
+export type DeleteRoomMutationResult = Apollo.MutationResult<DeleteRoomMutation>;
+export type DeleteRoomMutationOptions = Apollo.BaseMutationOptions<DeleteRoomMutation, DeleteRoomMutationVariables>;
+export const GetRoomMembersDocument = gql`
+    query GetRoomMembers($userId: String, $roomId: String) {
+  getRoomMembers(userId: $userId, roomId: $roomId) {
+    id
+    roomId
+    userId
+    createdAt
+    updatedAt
+    room {
+      id
+      groupId
+      latestMessageId
+      createdAt
+      updatedAt
+    }
+    user {
+      id
+      name
+      email
+      description
+      image
+      accessToken
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetRoomMembersQuery__
+ *
+ * To run a query within a React component, call `useGetRoomMembersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRoomMembersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRoomMembersQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useGetRoomMembersQuery(baseOptions?: Apollo.QueryHookOptions<GetRoomMembersQuery, GetRoomMembersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRoomMembersQuery, GetRoomMembersQueryVariables>(GetRoomMembersDocument, options);
+      }
+export function useGetRoomMembersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoomMembersQuery, GetRoomMembersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRoomMembersQuery, GetRoomMembersQueryVariables>(GetRoomMembersDocument, options);
+        }
+export type GetRoomMembersQueryHookResult = ReturnType<typeof useGetRoomMembersQuery>;
+export type GetRoomMembersLazyQueryHookResult = ReturnType<typeof useGetRoomMembersLazyQuery>;
+export type GetRoomMembersQueryResult = Apollo.QueryResult<GetRoomMembersQuery, GetRoomMembersQueryVariables>;
 export const GetAllTagsDocument = gql`
     query GetAllTags($sort: orderByType, $searchText: String) {
   getAllTags(sort: $sort, searchText: $searchText) {

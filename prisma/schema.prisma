@@ -54,10 +54,8 @@ model User {
   favorites                Favorite[]
   createdUserNotifications Notification[]      @relation(name: "createdUser")
   targetUserNotifications  Notification[]      @relation(name: "targetUser")
-  member1Rooms             OneOnOneRoom[]      @relation(name: "member1")
-  member2Rooms             OneOnOneRoom[]      @relation(name: "member2")
   readManagements          ReadManagement[]
-
+  roomMember               RoomMember[]
 }
 
 model Group {
@@ -72,6 +70,7 @@ model Group {
   adminUser          User                @relation(fields: [adminUserId], references: [id], onDelete: Restrict)
   userGroupRelations UserGroupRelation[]
   posts              Post[]
+  room               Room?
 }
 
 model UserGroupRelation {
@@ -150,34 +149,45 @@ model Notification {
   targetUser  User  @relation(name: "targetUser", fields: [targetUserId], references: [id], onDelete: Cascade)
 }
 
-model OneOnOneRoom {
+model Room {
   id              String   @id @default(cuid())
-  memberId1       String
-  memberId2       String
+  groupId         String?  @unique
   latestMessageId String?  @unique
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  member1       User     @relation(name: "member1", fields: [memberId1], references: [id], onDelete: Cascade)
-  member2       User     @relation(name: "member2", fields: [memberId2], references: [id], onDelete: Cascade)
-  latestMessage Message? @relation(fields: [latestMessageId], references: [id], onDelete: Restrict)
-  @@unique(fields: [memberId1, memberId2], name: "OneOnOneRoomId")
+  latestMessage Message?     @relation(name: "latestMessage", fields: [latestMessageId], references: [id], onDelete: Restrict)
+  group         Group?       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  messages      Message[]
+  roomMember    RoomMember[]
+}
+
+model RoomMember {
+  id        String   @id @default(cuid())
+  roomId    String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique(fields: [roomId, userId], name: "RoomMemberId")
 }
 
 // typeがMEDIAの場合は、bodyは画像のリンク。typeがpostの場合はpostId
-// targetIdはOneOnOneRoomIdか、groupId
-// FIXME: MessageをRoomMessageとGroupMessageのmodelに変更する
 model Message {
   id        String      @id @default(cuid())
   type      MessageType
-  targetId  String
+  roomId    String
   userId    String
   body      String
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
+  room                      Room             @relation(fields: [roomId], references: [id], onDelete: Cascade)
   ReadManagements           ReadManagement[]
-  latestMessageOneOnOneRoom OneOnOneRoom?
+  latestMessageOneOnOneRoom Room?            @relation(name: "latestMessage")
 }
 
 model ReadManagement {
