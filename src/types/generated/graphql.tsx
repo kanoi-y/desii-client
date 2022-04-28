@@ -655,6 +655,13 @@ export type GetReadManagementQueryVariables = Exact<{
 
 export type GetReadManagementQuery = { __typename?: 'Query', GetReadManagement?: { __typename?: 'ReadManagement', id: string, targetUserId: string, messageId: string, isRead: boolean, createdAt: Date, updatedAt: Date } | null };
 
+export type GetReadManagementsQueryVariables = Exact<{
+  messageId: Scalars['String'];
+}>;
+
+
+export type GetReadManagementsQuery = { __typename?: 'Query', GetReadManagements: Array<{ __typename?: 'ReadManagement', id: string, targetUserId: string, messageId: string, isRead: boolean, createdAt: Date, updatedAt: Date }> };
+
 export type UpdateReadManagementMutationVariables = Exact<{
   targetUserId: Scalars['String'];
   messageId: Scalars['String'];
@@ -1732,6 +1739,46 @@ export function useGetReadManagementLazyQuery(baseOptions?: Apollo.LazyQueryHook
 export type GetReadManagementQueryHookResult = ReturnType<typeof useGetReadManagementQuery>;
 export type GetReadManagementLazyQueryHookResult = ReturnType<typeof useGetReadManagementLazyQuery>;
 export type GetReadManagementQueryResult = Apollo.QueryResult<GetReadManagementQuery, GetReadManagementQueryVariables>;
+export const GetReadManagementsDocument = gql`
+    query GetReadManagements($messageId: String!) {
+  GetReadManagements(messageId: $messageId) {
+    id
+    targetUserId
+    messageId
+    isRead
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetReadManagementsQuery__
+ *
+ * To run a query within a React component, call `useGetReadManagementsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetReadManagementsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetReadManagementsQuery({
+ *   variables: {
+ *      messageId: // value for 'messageId'
+ *   },
+ * });
+ */
+export function useGetReadManagementsQuery(baseOptions: Apollo.QueryHookOptions<GetReadManagementsQuery, GetReadManagementsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetReadManagementsQuery, GetReadManagementsQueryVariables>(GetReadManagementsDocument, options);
+      }
+export function useGetReadManagementsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetReadManagementsQuery, GetReadManagementsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetReadManagementsQuery, GetReadManagementsQueryVariables>(GetReadManagementsDocument, options);
+        }
+export type GetReadManagementsQueryHookResult = ReturnType<typeof useGetReadManagementsQuery>;
+export type GetReadManagementsLazyQueryHookResult = ReturnType<typeof useGetReadManagementsLazyQuery>;
+export type GetReadManagementsQueryResult = Apollo.QueryResult<GetReadManagementsQuery, GetReadManagementsQueryVariables>;
 export const UpdateReadManagementDocument = gql`
     mutation UpdateReadManagement($targetUserId: String!, $messageId: String!) {
   UpdateReadManagement(targetUserId: $targetUserId, messageId: $messageId) {
