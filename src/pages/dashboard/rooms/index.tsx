@@ -2,6 +2,8 @@ import { Box } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React from 'react'
+import { SolidIcon, Text } from '~/components/parts/commons'
+import { SIZING } from '~/constants'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER } from '~/queries'
 import {
@@ -18,8 +20,31 @@ type Props = {
 
 const RoomsPage: NextPage<Props> = ({ currentUser }) => {
   return (
-    <Box textAlign="center">
-      <p>{currentUser.name}</p>
+    <Box display="flex">
+      <Box
+        p="28px 10px 0"
+        borderRight="2px solid"
+        borderColor="secondary.light"
+        maxW="100%"
+        width="340px"
+        minH={`calc(100vh - ${SIZING.headerHeight})`}
+      >
+        <Box
+          display="flex"
+          alignItems="center"
+          gap="4px"
+          pb="16px"
+          mb="16px"
+          borderBottom="2px solid"
+          borderColor="secondary.light"
+        >
+          <SolidIcon icon="SOLID_CHAT" size={36} />
+          <Text fontSize="lg" isBold>
+            メッセージ
+          </Text>
+        </Box>
+      </Box>
+      <Box></Box>
     </Box>
   )
 }
