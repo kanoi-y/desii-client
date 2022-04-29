@@ -47,7 +47,7 @@
     "swiper": "8.1.4"
   },
   "devDependencies": {
-    "@babel/core": "7.17.9",
+    "@babel/core": "7.17.10",
     "@graphql-codegen/cli": "2.6.2",
     "@graphql-codegen/typescript": "2.4.8",
     "@graphql-codegen/typescript-graphql-request": "4.4.5",
@@ -65,7 +65,7 @@
     "@types/node": "16.11.27",
     "@types/react": "17.0.44",
     "babel-jest": "27.5.1",
-    "babel-loader": "8.2.4",
+    "babel-loader": "8.2.5",
     "cross-env": "7.0.3",
     "eslint": "8.10.0",
     "eslint-config-next": "12.1.4",
