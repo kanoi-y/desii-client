@@ -35,6 +35,13 @@ export const Component: VFC<Props> = ({
       <Box display="flex" alignItems="center" gap="20px">
         <Box
           cursor="pointer"
+          _hover={{ opacity: 0.7 }}
+          onClick={() => router.push('/dashboard/rooms')}
+        >
+          <SolidIcon icon="SOLID_CHAT" size={30} />
+        </Box>
+        <Box
+          cursor="pointer"
           position="relative"
           _hover={{ opacity: 0.7 }}
           onClick={() => router.push('/dashboard/notifications')}
