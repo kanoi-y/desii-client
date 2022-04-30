@@ -7,6 +7,7 @@ import {
   SkeletonNotificationListItem,
 } from '~/components/domains/notification/NotificationListItem'
 import { SolidIcon, Text } from '~/components/parts/commons'
+import { FooterLayout } from '~/components/parts/layout/FooterLayout'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER } from '~/queries'
 import {
@@ -33,36 +34,38 @@ const NotificationsPage: NextPage<Props> = ({ currentUser }) => {
   })
 
   return (
-    <Box p={['28px 10px 0', '40px 20px 0']}>
-      <Box mx="auto" maxW="700px">
-        <Box
-          display="flex"
-          alignItems="center"
-          gap="4px"
-          pb="16px"
-          mb="16px"
-          borderBottom="2px solid"
-          borderColor="secondary.light"
-        >
-          <SolidIcon icon="SOLID_BELL" size={36} />
-          <Text fontSize="lg" isBold>
-            通知
-          </Text>
-        </Box>
-        <Box w="100%" display="flex" flexDirection="column" gap="16px">
-          {data ? (
-            data.GetNotifications.map((notification) => (
-              <NotificationListItem
-                key={notification.id}
-                notification={notification}
-              />
-            ))
-          ) : (
-            <SkeletonNotificationListItem />
-          )}
+    <FooterLayout>
+      <Box p={['28px 10px 0', '40px 20px 0']}>
+        <Box mx="auto" maxW="700px">
+          <Box
+            display="flex"
+            alignItems="center"
+            gap="4px"
+            pb="16px"
+            mb="16px"
+            borderBottom="2px solid"
+            borderColor="secondary.light"
+          >
+            <SolidIcon icon="SOLID_BELL" size={36} />
+            <Text fontSize="lg" isBold>
+              通知
+            </Text>
+          </Box>
+          <Box w="100%" display="flex" flexDirection="column" gap="16px">
+            {data ? (
+              data.GetNotifications.map((notification) => (
+                <NotificationListItem
+                  key={notification.id}
+                  notification={notification}
+                />
+              ))
+            ) : (
+              <SkeletonNotificationListItem />
+            )}
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </FooterLayout>
   )
 }
 
