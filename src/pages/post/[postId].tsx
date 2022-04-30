@@ -1,4 +1,4 @@
-import { Box, Spinner, useDisclosure } from '@chakra-ui/react'
+import { Box, Spinner, useDisclosure, useToast } from '@chakra-ui/react'
 import { GetStaticPropsContext, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useContext, useMemo } from 'react'
@@ -15,6 +15,7 @@ import { theme } from '~/theme'
 import {
   GetPostQuery,
   GetPostQueryVariables,
+  useCreateRoomMutation,
   useGetPostQuery,
   useGetTagPostRelationsQuery,
 } from '~/types/generated/graphql'
@@ -29,6 +30,7 @@ const PostPage: NextPage<Props> = ({ postId }) => {
   const router = useRouter()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { currentUser } = useContext(CurrentUserContext)
+  const toast = useToast()
 
   const { width } = useWindowDimensions()
 
@@ -45,6 +47,8 @@ const PostPage: NextPage<Props> = ({ postId }) => {
     fetchPolicy: 'cache-and-network',
   })
 
+  const [createRoomMutation] = useCreateRoomMutation()
+
   const twitterUrl = useMemo(
     () =>
       `https://twitter.com/intent/tweet?url=${
@@ -53,9 +57,26 @@ const PostPage: NextPage<Props> = ({ postId }) => {
     [postId]
   )
 
-  const handleClickApplyButton = () => {
-    console.log('応募する')
-    // TODO: 投稿者とログインユーザーの間にroomを作成し、rooms/[roomId]に遷移するように実装
+  // TODO: 既にルームがある場合、メッセージに遷移するだけにする
+  const handleClickApplyButton = async () => {
+    if (!postData?.getPost?.createdUserId) return
+
+    try {
+      const { data: roomData } = await createRoomMutation({
+        variables: {
+          memberId: postData.getPost.createdUserId,
+        },
+      })
+
+      router.push(`/dashboard/rooms/${roomData?.CreateRoom.id}`)
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: error.message,
+          status: 'error',
+        })
+      }
+    }
   }
 
   if (router.isFallback || !postId || !postData?.getPost) {

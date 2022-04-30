@@ -18,9 +18,6 @@ type Props = {
   currentUser: User
 }
 
-// TODO: このページではfooterが表示されないようにする
-// TODO: 応募をしたときに、ルームが作成される
-
 const RoomsPage: NextPage<Props> = ({ currentUser }) => {
   return (
     <Box display="flex">
