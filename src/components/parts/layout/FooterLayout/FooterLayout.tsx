@@ -4,9 +4,11 @@ import { Footer } from '../Footer/Footer'
 
 export const FooterLayout: FC = ({ children }) => {
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" minH="100vh" w="100%">
       {children}
-      <Footer />
+      <Box mt="auto">
+        <Footer />
+      </Box>
     </Box>
   )
 }
