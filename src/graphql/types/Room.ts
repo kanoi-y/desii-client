@@ -46,6 +46,62 @@ export const GetRoomQuery = extendType({
   },
 })
 
+export const GetOneOnOneRoomQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.field('GetOneOnOneRoom', {
+      type: 'Room',
+      args: {
+        memberId: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const roomMembers: (RoomMember & {
+          room: RoomType
+        })[] = await ctx.prisma.roomMember.findMany({
+          where: {
+            OR: [
+              {
+                userId: args.memberId,
+              },
+              {
+                userId: ctx.user.id,
+              },
+            ],
+          },
+          include: {
+            room: true,
+          },
+        })
+
+        return (
+          roomMembers.find(
+            (
+              roomMember: RoomMember & {
+                room: RoomType
+              },
+              index,
+              self
+            ) => {
+              const selfIndex = self.findIndex(
+                (
+                  dataElement: RoomMember & {
+                    room: RoomType
+                  }
+                ) => dataElement.roomId === roomMember.roomId
+              )
+              return selfIndex !== index && !roomMember.room.groupId
+            }
+          )?.room || null
+        )
+      },
+    })
+  },
+})
+
 export const GetRoomsByLoginUserIdQuery = extendType({
   type: 'Query',
   definition(t) {
