@@ -17,6 +17,7 @@ import {
   GetPostQueryVariables,
   useCreateRoomMutation,
   useGetPostQuery,
+  useGetRoomQuery,
   useGetTagPostRelationsQuery,
 } from '~/types/generated/graphql'
 
@@ -58,6 +59,8 @@ const PostPage: NextPage<Props> = ({ postId }) => {
   )
 
   // TODO: 既にルームがある場合、メッセージに遷移するだけにする
+  // TODO: ルームが作成される際に、postメッセージを作成する
+  // TODO: ログインしてない場合は、ログインモーダルとtoastを表示する
   const handleClickApplyButton = async () => {
     if (!postData?.getPost?.createdUserId) return
 
