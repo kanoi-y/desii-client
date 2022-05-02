@@ -7,7 +7,7 @@ import { PostFavoriteButton } from '~/components/domains/post/PostFavoriteButton
 import { Button, Link, Modal, Tag, Text } from '~/components/parts/commons'
 import { FooterLayout } from '~/components/parts/layout/FooterLayout'
 import { BREAKPOINTS } from '~/constants'
-import { useWindowDimensions } from '~/hooks'
+import { LoginModalSetIsOpenContext, useWindowDimensions } from '~/hooks'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 import { addApolloState, initializeApollo } from '~/lib/apolloClient'
 import { GET_POST_BY_ID } from '~/queries'
@@ -31,6 +31,7 @@ const PostPage: NextPage<Props> = ({ postId }) => {
   const router = useRouter()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { currentUser } = useContext(CurrentUserContext)
+  const setIsOpen = useContext(LoginModalSetIsOpenContext)
   const toast = useToast()
 
   const { width } = useWindowDimensions()
@@ -66,15 +67,11 @@ const PostPage: NextPage<Props> = ({ postId }) => {
   )
 
   // TODO: ルームが作成される際に、postメッセージを作成する
-  // TODO: ログインしてない場合は、ログインモーダルとtoastを表示する
   const handleClickApplyButton = async () => {
-    if (!postData?.getPost?.createdUserId) return
+    if (!postData?.getPost?.createdUserId || oneOnOneRoomData?.GetOneOnOneRoom)
+      return
 
     try {
-      if (oneOnOneRoomData?.GetOneOnOneRoom) {
-        router.push(`/dashboard/rooms/${oneOnOneRoomData?.GetOneOnOneRoom.id}`)
-        return
-      }
       const { data: roomData } = await createRoomMutation({
         variables: {
           memberId: postData.getPost.createdUserId,
@@ -90,6 +87,19 @@ const PostPage: NextPage<Props> = ({ postId }) => {
         })
       }
     }
+  }
+
+  const handleClickButton = () => {
+    if (!currentUser) {
+      setIsOpen(true)
+      toast({ title: 'ログインが必要です!', status: 'warning' })
+      return
+    }
+    if (oneOnOneRoomData?.GetOneOnOneRoom) {
+      router.push(`/dashboard/rooms/${oneOnOneRoomData?.GetOneOnOneRoom.id}`)
+      return
+    }
+    onOpen()
   }
 
   if (router.isFallback || !postId || !postData?.getPost) {
@@ -159,7 +169,11 @@ const PostPage: NextPage<Props> = ({ postId }) => {
           </Box>
           <Box display="flex" alignItems="center">
             {postData.getPost.createdUserId !== currentUser?.id && (
-              <Button onClick={onOpen}>応募する</Button>
+              <Button onClick={handleClickButton}>
+                {oneOnOneRoomData?.GetOneOnOneRoom
+                  ? 'メッセージを送る'
+                  : '応募する'}
+              </Button>
             )}
             <Box
               display="flex"
