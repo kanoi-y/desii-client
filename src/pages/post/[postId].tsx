@@ -16,8 +16,8 @@ import {
   GetPostQuery,
   GetPostQueryVariables,
   useCreateRoomMutation,
+  useGetOneOnOneRoomQuery,
   useGetPostQuery,
-  useGetRoomQuery,
   useGetTagPostRelationsQuery,
 } from '~/types/generated/graphql'
 
@@ -48,6 +48,13 @@ const PostPage: NextPage<Props> = ({ postId }) => {
     fetchPolicy: 'cache-and-network',
   })
 
+  const { data: oneOnOneRoomData } = useGetOneOnOneRoomQuery({
+    variables: {
+      memberId: postData?.getPost?.createdUserId || '',
+    },
+    fetchPolicy: 'cache-and-network',
+  })
+
   const [createRoomMutation] = useCreateRoomMutation()
 
   const twitterUrl = useMemo(
@@ -58,13 +65,16 @@ const PostPage: NextPage<Props> = ({ postId }) => {
     [postId]
   )
 
-  // TODO: 既にルームがある場合、メッセージに遷移するだけにする
   // TODO: ルームが作成される際に、postメッセージを作成する
   // TODO: ログインしてない場合は、ログインモーダルとtoastを表示する
   const handleClickApplyButton = async () => {
     if (!postData?.getPost?.createdUserId) return
 
     try {
+      if (oneOnOneRoomData?.GetOneOnOneRoom) {
+        router.push(`/dashboard/rooms/${oneOnOneRoomData?.GetOneOnOneRoom.id}`)
+        return
+      }
       const { data: roomData } = await createRoomMutation({
         variables: {
           memberId: postData.getPost.createdUserId,
