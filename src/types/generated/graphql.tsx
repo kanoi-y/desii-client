@@ -293,6 +293,7 @@ export type Query = {
   GetMatchingPosts: Array<MatchingPostInfoType>;
   GetMessages: Array<Message>;
   GetNotifications: Array<Notification>;
+  GetOneOnOneRoom?: Maybe<Room>;
   GetPosts: Array<Post>;
   GetReadManagement?: Maybe<ReadManagement>;
   GetReadManagements: Array<ReadManagement>;
@@ -331,6 +332,11 @@ export type QueryGetMessagesArgs = {
 export type QueryGetNotificationsArgs = {
   sort?: InputMaybe<OrderByType>;
   targetUserId: Scalars['String'];
+};
+
+
+export type QueryGetOneOnOneRoomArgs = {
+  memberId: Scalars['String'];
 };
 
 
@@ -687,6 +693,13 @@ export type GetRoomQueryVariables = Exact<{
 
 
 export type GetRoomQuery = { __typename?: 'Query', GetRoom?: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } | null } | null };
+
+export type GetOneOnOneRoomQueryVariables = Exact<{
+  memberId: Scalars['String'];
+}>;
+
+
+export type GetOneOnOneRoomQuery = { __typename?: 'Query', GetOneOnOneRoom?: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } | null } | null };
 
 export type GetRoomsByLoginUserIdQueryVariables = Exact<{
   getRoomType: GetRoomType;
@@ -1879,6 +1892,54 @@ export function useGetRoomLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Ge
 export type GetRoomQueryHookResult = ReturnType<typeof useGetRoomQuery>;
 export type GetRoomLazyQueryHookResult = ReturnType<typeof useGetRoomLazyQuery>;
 export type GetRoomQueryResult = Apollo.QueryResult<GetRoomQuery, GetRoomQueryVariables>;
+export const GetOneOnOneRoomDocument = gql`
+    query GetOneOnOneRoom($memberId: String!) {
+  GetOneOnOneRoom(memberId: $memberId) {
+    id
+    groupId
+    latestMessageId
+    latestMessage {
+      id
+      type
+      roomId
+      userId
+      body
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetOneOnOneRoomQuery__
+ *
+ * To run a query within a React component, call `useGetOneOnOneRoomQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOneOnOneRoomQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOneOnOneRoomQuery({
+ *   variables: {
+ *      memberId: // value for 'memberId'
+ *   },
+ * });
+ */
+export function useGetOneOnOneRoomQuery(baseOptions: Apollo.QueryHookOptions<GetOneOnOneRoomQuery, GetOneOnOneRoomQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOneOnOneRoomQuery, GetOneOnOneRoomQueryVariables>(GetOneOnOneRoomDocument, options);
+      }
+export function useGetOneOnOneRoomLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneOnOneRoomQuery, GetOneOnOneRoomQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOneOnOneRoomQuery, GetOneOnOneRoomQueryVariables>(GetOneOnOneRoomDocument, options);
+        }
+export type GetOneOnOneRoomQueryHookResult = ReturnType<typeof useGetOneOnOneRoomQuery>;
+export type GetOneOnOneRoomLazyQueryHookResult = ReturnType<typeof useGetOneOnOneRoomLazyQuery>;
+export type GetOneOnOneRoomQueryResult = Apollo.QueryResult<GetOneOnOneRoomQuery, GetOneOnOneRoomQueryVariables>;
 export const GetRoomsByLoginUserIdDocument = gql`
     query GetRoomsByLoginUserId($getRoomType: GetRoomType!) {
   GetRoomsByLoginUserId(getRoomType: $getRoomType) {

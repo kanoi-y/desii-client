@@ -21,6 +21,27 @@ export const GET_ROOM = gql`
   }
 `
 
+export const GET_ONE_ON_ONE_ROOM = gql`
+  query GetOneOnOneRoom($memberId: String!) {
+    GetOneOnOneRoom(memberId: $memberId) {
+      id
+      groupId
+      latestMessageId
+      latestMessage {
+        id
+        type
+        roomId
+        userId
+        body
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`
+
 export const GET_ROOMS_BY_LOGIN_USER_ID = gql`
   query GetRoomsByLoginUserId($getRoomType: GetRoomType!) {
     GetRoomsByLoginUserId(getRoomType: $getRoomType) {

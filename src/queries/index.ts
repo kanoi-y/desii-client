@@ -15,10 +15,15 @@ export {
   GET_POST_BY_ID,
   UPDATE_POST,
 } from './post'
-export { GET_READ_MANAGEMENT, GET_READ_MANAGEMENTS, UPDATE_READ_MANAGEMENT } from './readManagement'
+export {
+  GET_READ_MANAGEMENT,
+  GET_READ_MANAGEMENTS,
+  UPDATE_READ_MANAGEMENT,
+} from './readManagement'
 export {
   CREATE_ROOM,
   DELETE_ROOM,
+  GET_ONE_ON_ONE_ROOM,
   GET_ROOM,
   GET_ROOMS_BY_LOGIN_USER_ID,
 } from './room'
