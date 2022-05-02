@@ -2,7 +2,8 @@ import { Box } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React from 'react'
-import { SolidIcon, Text } from '~/components/parts/commons'
+import { UserIcon } from '~/components/domains/user/UserIcon'
+import { Link, SolidIcon, Text } from '~/components/parts/commons'
 import { SIZING } from '~/constants'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER } from '~/queries'
@@ -42,6 +43,33 @@ const RoomsPage: NextPage<Props> = ({ currentUser }) => {
           <Text fontSize="lg" isBold>
             メッセージ
           </Text>
+        </Box>
+        <Box>
+          <Box
+            display="flex"
+            alignItems="flex-start"
+            gap="16px"
+            padding="8px 16px"
+            cursor="pointer"
+            _hover={{ bgColor: 'secondary.light' }}
+          >
+            <Link href={`/user/${currentUser.id}`}>
+              <UserIcon user={currentUser} size="md" />
+            </Link>
+            <Box>
+              <Link href={`/user/${currentUser.id}`}>
+                <Text fontSize="md" isBold color="primary.main">
+                  {currentUser.name}
+                </Text>
+              </Link>
+              <Text fontSize="sm">ねこ、かわいいよね</Text>
+            </Box>
+            <Box ml="auto">
+              <Text fontSize="xs" isBold>
+                1日前
+              </Text>
+            </Box>
+          </Box>
         </Box>
       </Box>
       <Box></Box>
