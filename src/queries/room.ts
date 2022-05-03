@@ -12,6 +12,15 @@ export const GET_ROOM = gql`
         roomId
         userId
         body
+        user {
+          id
+          name
+          email
+          description
+          image
+          createdAt
+          updatedAt
+        }
         createdAt
         updatedAt
       }
@@ -33,6 +42,15 @@ export const GET_ONE_ON_ONE_ROOM = gql`
         roomId
         userId
         body
+        user {
+          id
+          name
+          email
+          description
+          image
+          createdAt
+          updatedAt
+        }
         createdAt
         updatedAt
       }
@@ -54,6 +72,15 @@ export const GET_ROOMS_BY_LOGIN_USER_ID = gql`
         roomId
         userId
         body
+        user {
+          id
+          name
+          email
+          description
+          image
+          createdAt
+          updatedAt
+        }
         createdAt
         updatedAt
       }
@@ -96,6 +123,15 @@ export const DELETE_ROOM = gql`
         roomId
         userId
         body
+        user {
+          id
+          name
+          email
+          description
+          image
+          createdAt
+          updatedAt
+        }
         createdAt
         updatedAt
       }

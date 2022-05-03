@@ -38,7 +38,11 @@ export const GetRoomQuery = extendType({
             id: args.id,
           },
           include: {
-            latestMessage: true,
+            latestMessage: {
+              include: {
+                user: true,
+              },
+            },
           },
         })
       },
@@ -238,7 +242,11 @@ export const DeleteRoomMutation = extendType({
             id: args.id,
           },
           include: {
-            latestMessage: true,
+            latestMessage: {
+              include: {
+                user: true,
+              },
+            },
           },
         })
       },
