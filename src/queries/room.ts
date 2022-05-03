@@ -24,6 +24,16 @@ export const GET_ROOM = gql`
         createdAt
         updatedAt
       }
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -54,6 +64,16 @@ export const GET_ONE_ON_ONE_ROOM = gql`
         createdAt
         updatedAt
       }
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -81,6 +101,16 @@ export const GET_ROOMS_BY_LOGIN_USER_ID = gql`
           createdAt
           updatedAt
         }
+        createdAt
+        updatedAt
+      }
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
         createdAt
         updatedAt
       }
@@ -132,6 +162,16 @@ export const DELETE_ROOM = gql`
           createdAt
           updatedAt
         }
+        createdAt
+        updatedAt
+      }
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
         createdAt
         updatedAt
       }

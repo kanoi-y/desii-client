@@ -15,6 +15,9 @@ export const Room = objectType({
     t.field('latestMessage', {
       type: 'Message',
     })
+    t.field('group', {
+      type: 'Group',
+    })
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -43,6 +46,7 @@ export const GetRoomQuery = extendType({
                 user: true,
               },
             },
+            group: true,
           },
         })
       },
@@ -247,6 +251,7 @@ export const DeleteRoomMutation = extendType({
                 user: true,
               },
             },
+            group: true,
           },
         })
       },
