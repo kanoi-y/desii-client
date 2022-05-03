@@ -57,9 +57,11 @@ export type Message = {
   body: Scalars['String'];
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
+  room: Room;
   roomId: Scalars['String'];
   type: MessageType;
   updatedAt: Scalars['DateTime'];
+  user: User;
   userId: Scalars['String'];
 };
 
@@ -573,7 +575,7 @@ export type GetMessagesQueryVariables = Exact<{
 }>;
 
 
-export type GetMessagesQuery = { __typename?: 'Query', GetMessages: Array<{ __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date }> };
+export type GetMessagesQuery = { __typename?: 'Query', GetMessages: Array<{ __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } }> };
 
 export type CreateMessageMutationVariables = Exact<{
   messageType: MessageType;
@@ -582,14 +584,14 @@ export type CreateMessageMutationVariables = Exact<{
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'Mutation', CreateMessage: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } };
+export type CreateMessageMutation = { __typename?: 'Mutation', CreateMessage: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } } };
 
 export type DeleteMessageMutationVariables = Exact<{
   deleteMessageId: Scalars['String'];
 }>;
 
 
-export type DeleteMessageMutation = { __typename?: 'Mutation', DeleteMessage: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } };
+export type DeleteMessageMutation = { __typename?: 'Mutation', DeleteMessage: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } } };
 
 export type GetNotificationsQueryVariables = Exact<{
   targetUserId: Scalars['String'];
@@ -1227,6 +1229,15 @@ export const GetMessagesDocument = gql`
     roomId
     userId
     body
+    user {
+      id
+      name
+      email
+      description
+      image
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
   }
@@ -1269,6 +1280,15 @@ export const CreateMessageDocument = gql`
     roomId
     userId
     body
+    user {
+      id
+      name
+      email
+      description
+      image
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
   }
@@ -1310,6 +1330,15 @@ export const DeleteMessageDocument = gql`
     roomId
     userId
     body
+    user {
+      id
+      name
+      email
+      description
+      image
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
   }

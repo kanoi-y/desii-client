@@ -55,7 +55,8 @@ model User {
   createdUserNotifications Notification[]      @relation(name: "createdUser")
   targetUserNotifications  Notification[]      @relation(name: "targetUser")
   readManagements          ReadManagement[]
-  roomMember               RoomMember[]
+  roomMembers              RoomMember[]
+  messages                 Message[]
 }
 
 model Group {
@@ -175,7 +176,7 @@ model RoomMember {
   @@unique(fields: [roomId, userId], name: "RoomMemberId")
 }
 
-// typeがMEDIAの場合は、bodyは画像のリンク。typeがpostの場合はpostId
+// typeがMEDIAの場合はbodyは画像のリンク。typeがpostの場合はpostId
 model Message {
   id        String      @id @default(cuid())
   type      MessageType
@@ -186,6 +187,7 @@ model Message {
   updatedAt DateTime    @updatedAt
 
   room                      Room             @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user                      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   ReadManagements           ReadManagement[]
   latestMessageOneOnOneRoom Room?            @relation(name: "latestMessage")
 }
