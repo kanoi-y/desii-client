@@ -30,6 +30,7 @@ export const GetTargetRoomMemberQuery = extendType({
       type: 'RoomMember',
       args: {
         roomId: nonNull(stringArg()),
+        userId: nonNull(stringArg()),
       },
       async resolve(_parent, args, ctx) {
         if (!ctx.user) {
@@ -54,7 +55,7 @@ export const GetTargetRoomMemberQuery = extendType({
           where: {
             roomId: args.roomId,
             NOT: {
-              userId: ctx.user.id,
+              userId: args.userId,
             },
           },
           include: {

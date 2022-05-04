@@ -308,6 +308,7 @@ export type Query = {
   getGroup?: Maybe<Group>;
   getPost?: Maybe<Post>;
   getRoomMembers: Array<RoomMember>;
+  getTargetRoomMember?: Maybe<RoomMember>;
   getUser?: Maybe<User>;
 };
 
@@ -413,6 +414,12 @@ export type QueryGetPostArgs = {
 export type QueryGetRoomMembersArgs = {
   roomId?: InputMaybe<Scalars['String']>;
   userId?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetTargetRoomMemberArgs = {
+  roomId: Scalars['String'];
+  userId: Scalars['String'];
 };
 
 
@@ -723,6 +730,14 @@ export type DeleteRoomMutationVariables = Exact<{
 
 
 export type DeleteRoomMutation = { __typename?: 'Mutation', DeleteRoom: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } } | null, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } };
+
+export type GetTargetRoomMemberQueryVariables = Exact<{
+  roomId: Scalars['String'];
+  userId: Scalars['String'];
+}>;
+
+
+export type GetTargetRoomMemberQuery = { __typename?: 'Query', getTargetRoomMember?: { __typename?: 'RoomMember', id: string, roomId: string, userId: string, createdAt: Date, updatedAt: Date, room: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date }, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } } | null };
 
 export type GetRoomMembersQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['String']>;
@@ -2185,6 +2200,62 @@ export function useDeleteRoomMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteRoomMutationHookResult = ReturnType<typeof useDeleteRoomMutation>;
 export type DeleteRoomMutationResult = Apollo.MutationResult<DeleteRoomMutation>;
 export type DeleteRoomMutationOptions = Apollo.BaseMutationOptions<DeleteRoomMutation, DeleteRoomMutationVariables>;
+export const GetTargetRoomMemberDocument = gql`
+    query GetTargetRoomMember($roomId: String!, $userId: String!) {
+  getTargetRoomMember(roomId: $roomId, userId: $userId) {
+    id
+    roomId
+    userId
+    createdAt
+    updatedAt
+    room {
+      id
+      groupId
+      latestMessageId
+      createdAt
+      updatedAt
+    }
+    user {
+      id
+      name
+      email
+      description
+      image
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetTargetRoomMemberQuery__
+ *
+ * To run a query within a React component, call `useGetTargetRoomMemberQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTargetRoomMemberQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTargetRoomMemberQuery({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetTargetRoomMemberQuery(baseOptions: Apollo.QueryHookOptions<GetTargetRoomMemberQuery, GetTargetRoomMemberQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTargetRoomMemberQuery, GetTargetRoomMemberQueryVariables>(GetTargetRoomMemberDocument, options);
+      }
+export function useGetTargetRoomMemberLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTargetRoomMemberQuery, GetTargetRoomMemberQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTargetRoomMemberQuery, GetTargetRoomMemberQueryVariables>(GetTargetRoomMemberDocument, options);
+        }
+export type GetTargetRoomMemberQueryHookResult = ReturnType<typeof useGetTargetRoomMemberQuery>;
+export type GetTargetRoomMemberLazyQueryHookResult = ReturnType<typeof useGetTargetRoomMemberLazyQuery>;
+export type GetTargetRoomMemberQueryResult = Apollo.QueryResult<GetTargetRoomMemberQuery, GetTargetRoomMemberQueryVariables>;
 export const GetRoomMembersDocument = gql`
     query GetRoomMembers($userId: String, $roomId: String) {
   getRoomMembers(userId: $userId, roomId: $roomId) {
