@@ -1,4 +1,4 @@
-import { Avatar, Box } from '@chakra-ui/react'
+import { Avatar, Box, SkeletonText } from '@chakra-ui/react'
 import { useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Link, Text } from '~/components/parts/commons'
@@ -10,7 +10,6 @@ type Props = {
   currentUserId: string
 }
 
-// TODO: グループに紐づく場合と一対一の場合を実装する
 export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
   const displayDate = formatDistanceToNow(new Date(room.updatedAt))
 
@@ -51,6 +50,30 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
     return <GuestUserIcon />
   }, [room.group, targetRoomMemberData?.getTargetRoomMember])
 
+  const RoomListItemName = useMemo(() => {
+    if (room.group) {
+      return (
+        <Link href={`/${room.group.productId}`}>
+          <Text fontSize="md" isBold color="primary.main">
+            {room.group.name}
+          </Text>
+        </Link>
+      )
+    }
+
+    if (targetRoomMemberData?.getTargetRoomMember) {
+      return (
+        <Link href={`user/${targetRoomMemberData.getTargetRoomMember.userId}`}>
+          <Text fontSize="md" isBold color="primary.main">
+            {targetRoomMemberData.getTargetRoomMember.user.name}
+          </Text>
+        </Link>
+      )
+    }
+
+    return <SkeletonText w="80px" noOfLines={1} />
+  }, [room.group, targetRoomMemberData?.getTargetRoomMember])
+
   const LatestMessage = useMemo(() => {
     if (!room.latestMessage) {
       return <Text fontSize="sm">{''}</Text>
@@ -80,6 +103,7 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
 
     return <Text fontSize="sm">{room.latestMessage.body}</Text>
   }, [room.latestMessage, currentUserId])
+
   return (
     <Box
       display="flex"
@@ -89,11 +113,9 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
       cursor="pointer"
       _hover={{ bgColor: 'secondary.light' }}
     >
-      { RoomListItemIcon }
+      {RoomListItemIcon}
       <Box>
-        <Link href={`/user/${currentUser.id}`}>
-          <Text fontSize="md" isBold color="primary.main"></Text>
-        </Link>
+        {RoomListItemName}
         {LatestMessage}
       </Box>
       <Box ml="auto">
