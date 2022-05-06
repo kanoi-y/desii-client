@@ -2,6 +2,7 @@ import { ApolloProvider } from '@apollo/client'
 import { Box } from '@chakra-ui/react'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { initializeApollo } from '~/lib/apolloClient'
+import { roomFactory } from '~/mocks/factories'
 import { RoomListItem } from './RoomListItem'
 
 export default {
@@ -23,6 +24,18 @@ const Template: ComponentStory<typeof RoomListItem> = ({ ...args }) => {
   )
 }
 
-// TODO: mockのroomを作成
+const mockRoom = roomFactory()
 
-export const DefaultRoomListItem = Template.bind({})
+export const RoomListItemRelatedByGroup = Template.bind({})
+RoomListItemRelatedByGroup.args = {
+  room: mockRoom,
+  currentUserId: 'currentUserId',
+}
+
+const mockOneOnOneRoom = roomFactory({ groupId: undefined, group: undefined })
+
+export const OneOnOneRoomListItem = Template.bind({})
+OneOnOneRoomListItem.args = {
+  room: mockOneOnOneRoom,
+  currentUserId: 'currentUserId',
+}

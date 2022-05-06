@@ -4,7 +4,7 @@ export const getTargetRoomMember = (req: any, res: any, ctx: any) => {
   const { roomId } = req.variables
   return res(
     ctx.data({
-      GetTargetRoomMember: {
+      getTargetRoomMember: {
         ...roomMemberFactory({ roomId, userId: 'targetUserId' }),
       },
     })
