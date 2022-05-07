@@ -1,4 +1,5 @@
 import { Avatar, Box, SkeletonText } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 import { useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Link, Text } from '~/components/parts/commons'
@@ -33,6 +34,7 @@ export const SkeletonRoomListItem: VFC = () => {
 }
 
 export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
+  const router = useRouter()
   const displayDate = formatDistanceToNow(new Date(room.updatedAt))
 
   const { data: targetRoomMemberData } = useGetTargetRoomMemberQuery({
@@ -85,7 +87,7 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
 
     if (targetRoomMemberData?.getTargetRoomMember) {
       return (
-        <Link href={`user/${targetRoomMemberData.getTargetRoomMember.userId}`}>
+        <Link href={`/user/${targetRoomMemberData.getTargetRoomMember.userId}`}>
           <Text fontSize="md" isBold color="primary.main">
             {targetRoomMemberData.getTargetRoomMember.user.name}
           </Text>
@@ -133,10 +135,20 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
       gap="16px"
       padding="8px 16px"
       cursor="pointer"
+      position="relative"
       _hover={{ bgColor: 'secondary.light' }}
     >
-      {RoomListItemIcon}
-      <Box>
+      <Box
+        position="absolute"
+        top="0"
+        left="0"
+        width="100%"
+        height="100%"
+        zIndex="1"
+        onClick={() => router.push(`/dashboard/rooms/${room.id}`)}
+      ></Box>
+      <Box zIndex="2">{RoomListItemIcon}</Box>
+      <Box zIndex="2">
         {RoomListItemName}
         {LatestMessage}
       </Box>
