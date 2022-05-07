@@ -52,7 +52,7 @@ const RoomsPage: NextPage<Props> = ({ currentUser }) => {
             メッセージ
           </Text>
         </Box>
-        <Box>
+        <Box display="flex" flexDirection="column" gap="12px">
           {data ? (
             data.GetRoomsByLoginUserId.map((room) => (
               <RoomListItem

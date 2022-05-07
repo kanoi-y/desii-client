@@ -81,7 +81,12 @@ export const GetOneOnOneRoomQuery = extendType({
             ],
           },
           include: {
-            room: true,
+            room: {
+              include: {
+                latestMessage: true,
+                group: true,
+              },
+            },
           },
         })
 
@@ -128,7 +133,12 @@ export const GetRoomsByLoginUserIdQuery = extendType({
             userId: ctx.user.id,
           },
           include: {
-            room: true,
+            room: {
+              include: {
+                latestMessage: true,
+                group: true,
+              },
+            },
           },
         })
 
