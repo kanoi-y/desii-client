@@ -2,14 +2,17 @@ import { Box } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React from 'react'
-import { UserIcon } from '~/components/domains/user/UserIcon'
-import { Link, SolidIcon, Text } from '~/components/parts/commons'
+import { SkeletonPostListItem } from '~/components/domains/post/PostListItem'
+import { RoomListItem } from '~/components/domains/room/RoomListItem'
+import { SolidIcon, Text } from '~/components/parts/commons'
 import { SIZING } from '~/constants'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER } from '~/queries'
 import {
   GetCurrentUserQuery,
   GetCurrentUserQueryVariables,
+  GetRoomType,
+  useGetRoomsByLoginUserIdQuery,
   User,
 } from '~/types/generated/graphql'
 
@@ -20,6 +23,11 @@ type Props = {
 }
 
 const RoomsPage: NextPage<Props> = ({ currentUser }) => {
+  const { data } = useGetRoomsByLoginUserIdQuery({
+    variables: {
+      getRoomType: GetRoomType.OnlyOneOnOne,
+    },
+  })
   return (
     <Box display="flex">
       <Box
@@ -45,31 +53,21 @@ const RoomsPage: NextPage<Props> = ({ currentUser }) => {
           </Text>
         </Box>
         <Box>
-          <Box
-            display="flex"
-            alignItems="flex-start"
-            gap="16px"
-            padding="8px 16px"
-            cursor="pointer"
-            _hover={{ bgColor: 'secondary.light' }}
-          >
-            <Link href={`/user/${currentUser.id}`}>
-              <UserIcon user={currentUser} size="md" />
-            </Link>
-            <Box>
-              <Link href={`/user/${currentUser.id}`}>
-                <Text fontSize="md" isBold color="primary.main">
-                  {currentUser.name}
-                </Text>
-              </Link>
-              <Text fontSize="sm">ねこ、かわいいよね</Text>
-            </Box>
-            <Box ml="auto">
-              <Text fontSize="xs" isBold>
-                1日前
-              </Text>
-            </Box>
-          </Box>
+          {data ? (
+            data.GetRoomsByLoginUserId.map((room) => (
+              <RoomListItem
+                key={room.id}
+                room={room}
+                currentUserId={currentUser.id}
+              />
+            ))
+          ) : (
+            <>
+              <SkeletonPostListItem />
+              <SkeletonPostListItem />
+              <SkeletonPostListItem />
+            </>
+          )}
         </Box>
       </Box>
       <Box></Box>
