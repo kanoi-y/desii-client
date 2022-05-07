@@ -1,1 +1,1 @@
-export { RoomListItem } from './RoomListItem'
+export { RoomListItem, SkeletonRoomListItem } from './RoomListItem'

@@ -3,7 +3,7 @@ import { Box } from '@chakra-ui/react'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { initializeApollo } from '~/lib/apolloClient'
 import { roomFactory } from '~/mocks/factories'
-import { RoomListItem } from './RoomListItem'
+import { RoomListItem, SkeletonRoomListItem } from './RoomListItem'
 
 export default {
   title: 'domains/room/RoomListItem',
@@ -39,3 +39,15 @@ OneOnOneRoomListItem.args = {
   room: mockOneOnOneRoom,
   currentUserId: 'currentUserId',
 }
+
+const SkeletonTemplate: ComponentStory<typeof SkeletonRoomListItem> = () => {
+  return (
+    <Box>
+      <SkeletonRoomListItem />
+      <SkeletonRoomListItem />
+      <SkeletonRoomListItem />
+    </Box>
+  )
+}
+
+export const Skeleton = SkeletonTemplate.bind({})

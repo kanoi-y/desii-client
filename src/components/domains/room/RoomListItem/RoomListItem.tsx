@@ -10,6 +10,28 @@ type Props = {
   currentUserId: string
 }
 
+export const SkeletonRoomListItem: VFC = () => {
+  return (
+    <Box
+      display="flex"
+      alignItems="flex-start"
+      gap="16px"
+      padding="8px 16px"
+      cursor="pointer"
+      _hover={{ bgColor: 'secondary.light' }}
+    >
+      <GuestUserIcon />
+      <Box>
+        <SkeletonText w="80px" noOfLines={1} />
+        <SkeletonText w="120px" noOfLines={1} mt="12px" />
+      </Box>
+      <Box ml="auto">
+        <SkeletonText w="40px" noOfLines={1} />
+      </Box>
+    </Box>
+  )
+}
+
 export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
   const displayDate = formatDistanceToNow(new Date(room.updatedAt))
 
