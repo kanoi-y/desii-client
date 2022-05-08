@@ -161,6 +161,9 @@ export const GetRoomsByLoginUserIdQuery = extendType({
             }
             return true
           })
+          .sort((a, b) => {
+            return a.updatedAt < b.updatedAt ? 1 : -1
+          })
       },
     })
   },
