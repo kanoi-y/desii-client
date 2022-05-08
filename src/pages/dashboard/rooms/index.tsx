@@ -22,6 +22,8 @@ type Props = {
   currentUser: User
 }
 
+// TODO: レスポンシブデザインをする
+
 const RoomsPage: NextPage<Props> = ({ currentUser }) => {
   const { data } = useGetRoomsByLoginUserIdQuery({
     variables: {
@@ -70,7 +72,14 @@ const RoomsPage: NextPage<Props> = ({ currentUser }) => {
           )}
         </Box>
       </Box>
-      <Box></Box>
+      <Box p="32px" flex="1">
+        <Box
+          bgColor="secondary.light"
+          w="100%"
+          h="100%"
+          borderRadius="24px"
+        ></Box>
+      </Box>
     </Box>
   )
 }
