@@ -5,7 +5,7 @@ export const userFactory = (options?: Partial<User>): User => {
   return {
     __typename: 'User',
     id: nextFactoryId('user'),
-    name: 'name',
+    name: 'userName',
     description: 'description',
     email: 'email',
     image: 'image',

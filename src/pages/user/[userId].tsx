@@ -13,6 +13,7 @@ import React, { useContext } from 'react'
 import { PostCard, SkeletonPostCard } from '~/components/domains/post/PostCard'
 import { UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Link, Text } from '~/components/parts/commons'
+import { FooterLayout } from '~/components/parts/layout/FooterLayout'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 import { addApolloState, initializeApollo } from '~/lib/apolloClient'
 import { GET_USER_BY_ID } from '~/queries'
@@ -56,103 +57,105 @@ const UserPage: NextPage<Props> = ({ user }) => {
     )
   }
   return (
-    <Box p={['28px 10px 0', '40px 20px 0']} position="relative">
-      <Box maxW="780px" mx="auto">
-        {user.id === currentUser?.id && (
-          <Box position="absolute">
-            <Link href="/dashboard">
-              <Button>編集</Button>
-            </Link>
+    <FooterLayout>
+      <Box p={['28px 10px 0', '40px 20px 0']} position="relative">
+        <Box maxW="780px" mx="auto">
+          {user.id === currentUser?.id && (
+            <Box position="absolute">
+              <Link href="/dashboard">
+                <Button>編集</Button>
+              </Link>
+            </Box>
+          )}
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            mb="16px"
+          >
+            <UserIcon user={user} size="2xl" />
           </Box>
-        )}
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          mb="16px"
-        >
-          <UserIcon user={user} size="2xl" />
-        </Box>
-        <Box textAlign="center" mb="24px">
-          <Text fontSize="3xl" isBold>
-            {user.name}
-          </Text>
-        </Box>
-        <Box mx="auto" w="fit-content">
-          <Text fontSize="lg">{user.description || ''}</Text>
-        </Box>
-        <Tabs mt="40px" size="lg" align="center" colorScheme="green" isFitted>
-          <TabList mb="40px">
-            <Tab>
-              <Text fontSize="lg" isBold>
-                出来ること
-              </Text>
-            </Tab>
-            <Tab>
-              <Text fontSize="lg" isBold>
-                してほしいこと
-              </Text>
-            </Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel>
-              <Box
-                display="flex"
-                flexWrap="wrap"
-                gap="20px"
-                alignItems="center"
-                justifyContent="center"
-              >
-                {data ? (
-                  data.GetPosts.filter(
-                    (post) => post.category === PostCategory.GiveYou
-                  ).map((post) => (
-                    <Box key={post.id} w="100%" maxW="360px">
-                      <PostCard
-                        currentUserId={currentUser?.id}
-                        post={post}
-                        isLink
-                      />
+          <Box textAlign="center" mb="24px">
+            <Text fontSize="3xl" isBold>
+              {user.name}
+            </Text>
+          </Box>
+          <Box mx="auto" w="fit-content">
+            <Text fontSize="lg">{user.description || ''}</Text>
+          </Box>
+          <Tabs mt="40px" size="lg" align="center" colorScheme="green" isFitted>
+            <TabList mb="40px">
+              <Tab>
+                <Text fontSize="lg" isBold>
+                  出来ること
+                </Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="lg" isBold>
+                  してほしいこと
+                </Text>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                <Box
+                  display="flex"
+                  flexWrap="wrap"
+                  gap="20px"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  {data ? (
+                    data.GetPosts.filter(
+                      (post) => post.category === PostCategory.GiveYou
+                    ).map((post) => (
+                      <Box key={post.id} w="100%" maxW="360px">
+                        <PostCard
+                          currentUserId={currentUser?.id}
+                          post={post}
+                          isLink
+                        />
+                      </Box>
+                    ))
+                  ) : (
+                    <Box w="100%" maxW="360px">
+                      <SkeletonPostCard />
                     </Box>
-                  ))
-                ) : (
-                  <Box w="100%" maxW="360px">
-                    <SkeletonPostCard />
-                  </Box>
-                )}
-              </Box>
-            </TabPanel>
-            <TabPanel>
-              <Box
-                display="flex"
-                flexWrap="wrap"
-                gap="20px"
-                alignItems="center"
-                justifyContent="center"
-              >
-                {data ? (
-                  data.GetPosts.filter(
-                    (post) => post.category === PostCategory.GiveMe
-                  ).map((post) => (
-                    <Box key={post.id} w="100%" maxW="360px">
-                      <PostCard
-                        currentUserId={currentUser?.id}
-                        post={post}
-                        isLink
-                      />
+                  )}
+                </Box>
+              </TabPanel>
+              <TabPanel>
+                <Box
+                  display="flex"
+                  flexWrap="wrap"
+                  gap="20px"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  {data ? (
+                    data.GetPosts.filter(
+                      (post) => post.category === PostCategory.GiveMe
+                    ).map((post) => (
+                      <Box key={post.id} w="100%" maxW="360px">
+                        <PostCard
+                          currentUserId={currentUser?.id}
+                          post={post}
+                          isLink
+                        />
+                      </Box>
+                    ))
+                  ) : (
+                    <Box w="100%" maxW="360px">
+                      <SkeletonPostCard />
                     </Box>
-                  ))
-                ) : (
-                  <Box w="100%" maxW="360px">
-                    <SkeletonPostCard />
-                  </Box>
-                )}
-              </Box>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+                  )}
+                </Box>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </Box>
       </Box>
-    </Box>
+    </FooterLayout>
   )
 }
 

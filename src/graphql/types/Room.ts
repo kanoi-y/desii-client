@@ -15,6 +15,9 @@ export const Room = objectType({
     t.field('latestMessage', {
       type: 'Message',
     })
+    t.field('group', {
+      type: 'Group',
+    })
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -38,9 +41,75 @@ export const GetRoomQuery = extendType({
             id: args.id,
           },
           include: {
-            latestMessage: true,
+            latestMessage: {
+              include: {
+                user: true,
+              },
+            },
+            group: true,
           },
         })
+      },
+    })
+  },
+})
+
+export const GetOneOnOneRoomQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.field('GetOneOnOneRoom', {
+      type: 'Room',
+      args: {
+        memberId: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const roomMembers: (RoomMember & {
+          room: RoomType
+        })[] = await ctx.prisma.roomMember.findMany({
+          where: {
+            OR: [
+              {
+                userId: args.memberId,
+              },
+              {
+                userId: ctx.user.id,
+              },
+            ],
+          },
+          include: {
+            room: {
+              include: {
+                latestMessage: true,
+                group: true,
+              },
+            },
+          },
+        })
+
+        return (
+          roomMembers.find(
+            (
+              roomMember: RoomMember & {
+                room: RoomType
+              },
+              index,
+              self
+            ) => {
+              const selfIndex = self.findIndex(
+                (
+                  dataElement: RoomMember & {
+                    room: RoomType
+                  }
+                ) => dataElement.roomId === roomMember.roomId
+              )
+              return selfIndex !== index && !roomMember.room.groupId
+            }
+          )?.room || null
+        )
       },
     })
   },
@@ -64,7 +133,12 @@ export const GetRoomsByLoginUserIdQuery = extendType({
             userId: ctx.user.id,
           },
           include: {
-            room: true,
+            room: {
+              include: {
+                latestMessage: true,
+                group: true,
+              },
+            },
           },
         })
 
@@ -86,6 +160,9 @@ export const GetRoomsByLoginUserIdQuery = extendType({
               return room.groupId
             }
             return true
+          })
+          .sort((a: RoomType, b: RoomType) => {
+            return a.updatedAt < b.updatedAt ? 1 : -1
           })
       },
     })
@@ -182,7 +259,12 @@ export const DeleteRoomMutation = extendType({
             id: args.id,
           },
           include: {
-            latestMessage: true,
+            latestMessage: {
+              include: {
+                user: true,
+              },
+            },
+            group: true,
           },
         })
       },

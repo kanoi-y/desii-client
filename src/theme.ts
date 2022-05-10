@@ -1,4 +1,5 @@
 import { extendTheme, theme as baseTheme } from '@chakra-ui/react'
+import { BREAKPOINTS } from './constants'
 
 export const theme = extendTheme({
   colors: {
@@ -35,5 +36,9 @@ export const theme = extendTheme({
         backgroundColor: 'secondary.main',
       },
     },
+  },
+  breakpoints: {
+    sm: `${BREAKPOINTS.sm}px`,
+    md: `${BREAKPOINTS.md}px`,
   },
 })

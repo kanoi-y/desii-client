@@ -5,6 +5,7 @@ import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React, { ChangeEvent, useState } from 'react'
 import { Button, SolidIcon, Text, UploadIcon } from '~/components/parts/commons'
+import { FooterLayout } from '~/components/parts/layout/FooterLayout'
 import { useToast } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER } from '~/queries'
@@ -106,72 +107,74 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
   }
 
   return (
-    <Box p={['28px 10px 0', '40px 20px 0']}>
-      <Box mx="auto" maxW="700px">
-        <Box
-          display="flex"
-          alignItems="center"
-          gap="4px"
-          pb="16px"
-          mb="40px"
-          borderBottom="2px solid"
-          borderColor="secondary.light"
-        >
-          <SolidIcon icon="SOLID_USER" color="primary.main" size={36} />
-          <Text fontSize="lg" isBold>
-            プロフィール編集
-          </Text>
-        </Box>
-        <Box
-          mb="40px"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <UploadIcon
-            onSelectImage={handleChangeFile}
-            currentImagePath={newUser.image || ''}
-            size="2xl"
-          />
-        </Box>
-        <Box mb="32px">
-          <Box mb="4px">
-            <Text fontSize="md" isBold>
-              ユーザー名
+    <FooterLayout>
+      <Box p={['28px 10px 0', '40px 20px 0']}>
+        <Box mx="auto" maxW="700px">
+          <Box
+            display="flex"
+            alignItems="center"
+            gap="4px"
+            pb="16px"
+            mb="40px"
+            borderBottom="2px solid"
+            borderColor="secondary.light"
+          >
+            <SolidIcon icon="SOLID_USER" color="primary.main" size={36} />
+            <Text fontSize="lg" isBold>
+              プロフィール編集
             </Text>
           </Box>
-          <Input
-            bgColor="white.main"
-            boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-            value={newUser.name}
-            onChange={(e) => updateUserForm({ name: e.target.value })}
-          />
-        </Box>
-        <Box mb="40px">
-          <Box mb="4px">
-            <Text fontSize="md" isBold>
-              自己紹介
-            </Text>
+          <Box
+            mb="40px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <UploadIcon
+              onSelectImage={handleChangeFile}
+              currentImagePath={newUser.image || ''}
+              size="2xl"
+            />
           </Box>
-          <Textarea
-            bgColor="white.main"
-            boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-            rows={8}
-            value={newUser.description || ''}
-            onChange={(e) => updateUserForm({ description: e.target.value })}
-          />
-        </Box>
-        <Box
-          w="100%"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          mb="40px"
-        >
-          <Button onClick={handleUpdateProfile}>更新する</Button>
+          <Box mb="32px">
+            <Box mb="4px">
+              <Text fontSize="md" isBold>
+                ユーザー名
+              </Text>
+            </Box>
+            <Input
+              bgColor="white.main"
+              boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+              value={newUser.name}
+              onChange={(e) => updateUserForm({ name: e.target.value })}
+            />
+          </Box>
+          <Box mb="40px">
+            <Box mb="4px">
+              <Text fontSize="md" isBold>
+                自己紹介
+              </Text>
+            </Box>
+            <Textarea
+              bgColor="white.main"
+              boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+              rows={8}
+              value={newUser.description || ''}
+              onChange={(e) => updateUserForm({ description: e.target.value })}
+            />
+          </Box>
+          <Box
+            w="100%"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            mb="40px"
+          >
+            <Button onClick={handleUpdateProfile}>更新する</Button>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </FooterLayout>
   )
 }
 

@@ -8,6 +8,15 @@ export const GET_MESSAGES = gql`
       roomId
       userId
       body
+      user {
+        id
+        name
+        email
+        description
+        image
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -26,6 +35,15 @@ export const CREATE_MESSAGE = gql`
       roomId
       userId
       body
+      user {
+        id
+        name
+        email
+        description
+        image
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -40,6 +58,15 @@ export const DELETE_MESSAGE = gql`
       roomId
       userId
       body
+      user {
+        id
+        name
+        email
+        description
+        image
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }

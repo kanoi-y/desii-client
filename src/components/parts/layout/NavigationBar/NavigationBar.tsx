@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import { useContext, useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Link, Menu, SolidIcon } from '~/components/parts/commons'
+import { SIZING } from '~/constants'
 import { LoginModalSetIsOpenContext } from '~/hooks'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 import { useGetNotificationsQuery, User } from '~/types/generated/graphql'
@@ -32,6 +33,13 @@ export const Component: VFC<Props> = ({
 
     return (
       <Box display="flex" alignItems="center" gap="20px">
+        <Box
+          cursor="pointer"
+          _hover={{ opacity: 0.7 }}
+          onClick={() => router.push('/dashboard/rooms')}
+        >
+          <SolidIcon icon="SOLID_CHAT" size={30} />
+        </Box>
         <Box
           cursor="pointer"
           position="relative"
@@ -97,14 +105,15 @@ export const Component: VFC<Props> = ({
   return (
     <Box
       width="100%"
-      p="12px"
+      h={SIZING.headerHeight}
+      p="0 12px"
       display="flex"
       alignItems="center"
       justifyContent="space-between"
       bgColor="#fff"
     >
       <Link href="/">
-        <Box width="100px">
+        <Box w="100px">
           <Image
             src="/images/Desii_logo.svg"
             alt="Desii_logo"

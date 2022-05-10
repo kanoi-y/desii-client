@@ -21,6 +21,7 @@ import {
   Tag,
   Text,
 } from '~/components/parts/commons'
+import { FooterLayout } from '~/components/parts/layout/FooterLayout'
 import { useToast } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER, GET_POST_BY_ID } from '~/queries'
@@ -235,175 +236,177 @@ const UpdatePostPage: NextPage<Props> = () => {
   }
 
   return (
-    <Box p={['28px 10px 0', '40px 20px 0']}>
-      <Box mx="auto" maxW="700px">
-        <Box mb="32px">
-          <Box mb="12px">
-            <Text fontSize="md" isBold>
-              タイトル
-            </Text>
+    <FooterLayout>
+      <Box p={['28px 10px 0', '40px 20px 0']}>
+        <Box mx="auto" maxW="700px">
+          <Box mb="32px">
+            <Box mb="12px">
+              <Text fontSize="md" isBold>
+                タイトル
+              </Text>
+            </Box>
+            <Input
+              bgColor="white.main"
+              boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+              value={newPost.title}
+              onChange={(e) => updatePost({ title: e.target.value })}
+            />
           </Box>
-          <Input
-            bgColor="white.main"
-            boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-            value={newPost.title}
-            onChange={(e) => updatePost({ title: e.target.value })}
-          />
-        </Box>
-        <Box mb="32px">
-          <Box mb="12px">
-            <Text fontSize="md" isBold>
-              本文
-            </Text>
+          <Box mb="32px">
+            <Box mb="12px">
+              <Text fontSize="md" isBold>
+                本文
+              </Text>
+            </Box>
+            <Textarea
+              bgColor="white.main"
+              boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+              rows={12}
+              value={newPost.content}
+              onChange={(e) => updatePost({ content: e.target.value })}
+            />
           </Box>
-          <Textarea
-            bgColor="white.main"
-            boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-            rows={12}
-            value={newPost.content}
-            onChange={(e) => updatePost({ content: e.target.value })}
-          />
-        </Box>
-        <Box mb="32px">
-          <Box mb="12px">
-            <Text fontSize="md" isBold>
-              カテゴリー
-            </Text>
-          </Box>
-          <Box
-            p="8px 12px"
-            bgColor="white.main"
-            display="flex"
-            alignItems="center"
-            boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-            borderRadius="8px"
-            cursor="pointer"
-            gap="4px"
-          >
-            {postCategoryList.map((category, i) => {
-              const isSelected =
-                newPost.category === PostCategory[category.value]
-              return (
-                <Box
-                  key={i}
-                  w="100%"
-                  p="16px"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  borderRadius="16px"
-                  bgColor={isSelected ? 'orange.main' : 'white.main'}
-                  boxShadow={
-                    isSelected ? '0 3px 6px rgba(0, 0, 0, 0.16)' : 'none'
-                  }
-                  cursor={isSelected ? 'auto' : 'pointer'}
-                  onClick={() =>
-                    updatePost({ category: PostCategory[category.value] })
-                  }
-                >
-                  <Text
-                    fontSize="lg"
-                    isBold
-                    color={isSelected ? 'white.main' : 'text.main'}
+          <Box mb="32px">
+            <Box mb="12px">
+              <Text fontSize="md" isBold>
+                カテゴリー
+              </Text>
+            </Box>
+            <Box
+              p="8px 12px"
+              bgColor="white.main"
+              display="flex"
+              alignItems="center"
+              boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+              borderRadius="8px"
+              cursor="pointer"
+              gap="4px"
+            >
+              {postCategoryList.map((category, i) => {
+                const isSelected =
+                  newPost.category === PostCategory[category.value]
+                return (
+                  <Box
+                    key={i}
+                    w="100%"
+                    p="16px"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    borderRadius="16px"
+                    bgColor={isSelected ? 'orange.main' : 'white.main'}
+                    boxShadow={
+                      isSelected ? '0 3px 6px rgba(0, 0, 0, 0.16)' : 'none'
+                    }
+                    cursor={isSelected ? 'auto' : 'pointer'}
+                    onClick={() =>
+                      updatePost({ category: PostCategory[category.value] })
+                    }
                   >
-                    {category.name}
-                  </Text>
+                    <Text
+                      fontSize="lg"
+                      isBold
+                      color={isSelected ? 'white.main' : 'text.main'}
+                    >
+                      {category.name}
+                    </Text>
+                  </Box>
+                )
+              })}
+            </Box>
+          </Box>
+          <Box mb="32px">
+            <Box mb="12px">
+              <Text fontSize="md" isBold>
+                マッチングタグ
+              </Text>
+            </Box>
+            <Button isFullWidth onClick={onOpen}>
+              <Text fontSize="md" color="text.light">
+                タグを検索、または作成する
+              </Text>
+            </Button>
+            <TagModal
+              isOpen={isOpen}
+              onClose={onClose}
+              postTags={postTags}
+              setPostTags={handlePostTags}
+            />
+            <Box mt="12px" display="flex" flexWrap="wrap" gap="8px">
+              {postTags.map((tag, i) => (
+                <Tag
+                  text={tag.name}
+                  key={i}
+                  canDelete
+                  onClose={() => handleDeleteTag(tag.id)}
+                />
+              ))}
+            </Box>
+          </Box>
+          <Box mb="56px">
+            <Box mb="12px">
+              <Text fontSize="md" isBold>
+                背景画像
+              </Text>
+            </Box>
+            {newPost.bgImage ? (
+              <Box position="relative">
+                <Box position="absolute" top="4px" left="4px">
+                  <IconButton
+                    icon={<SolidIcon icon="SOLID_X" size={16} />}
+                    size="xs"
+                    label="x"
+                    isRound
+                    onClick={() => updatePost({ bgImage: undefined })}
+                  />
                 </Box>
-              )
-            })}
-          </Box>
-        </Box>
-        <Box mb="32px">
-          <Box mb="12px">
-            <Text fontSize="md" isBold>
-              マッチングタグ
-            </Text>
-          </Box>
-          <Button isFullWidth onClick={onOpen}>
-            <Text fontSize="md" color="text.light">
-              タグを検索、または作成する
-            </Text>
-          </Button>
-          <TagModal
-            isOpen={isOpen}
-            onClose={onClose}
-            postTags={postTags}
-            setPostTags={handlePostTags}
-          />
-          <Box mt="12px" display="flex" flexWrap="wrap" gap="8px">
-            {postTags.map((tag, i) => (
-              <Tag
-                text={tag.name}
-                key={i}
-                canDelete
-                onClose={() => handleDeleteTag(tag.id)}
-              />
-            ))}
-          </Box>
-        </Box>
-        <Box mb="56px">
-          <Box mb="12px">
-            <Text fontSize="md" isBold>
-              背景画像
-            </Text>
-          </Box>
-          {newPost.bgImage ? (
-            <Box position="relative">
-              <Box position="absolute" top="4px" left="4px">
-                <IconButton
-                  icon={<SolidIcon icon="SOLID_X" size={16} />}
-                  size="xs"
-                  label="x"
-                  isRound
-                  onClick={() => updatePost({ bgImage: undefined })}
+                <Image
+                  src={newPost.bgImage}
+                  alt="投稿の背景画像"
+                  objectFit="cover"
+                  w="300px"
+                  h="158px"
                 />
               </Box>
-              <Image
-                src={newPost.bgImage}
-                alt="投稿の背景画像"
-                objectFit="cover"
-                w="300px"
-                h="158px"
+            ) : (
+              <IconButton
+                icon={
+                  <StyledLabel htmlFor="image">
+                    <SolidIcon icon="SOLID_PHOTOGRAPH" />
+                    <Box display="none">
+                      <input
+                        type="file"
+                        name="image"
+                        id="image"
+                        onChange={handleUploadFile}
+                        accept="image/*"
+                      />
+                    </Box>
+                    {isUploading && <Spinner />}
+                  </StyledLabel>
+                }
+                label="PHOTOGRAPH"
+                isRound
               />
-            </Box>
-          ) : (
-            <IconButton
-              icon={
-                <StyledLabel htmlFor="image">
-                  <SolidIcon icon="SOLID_PHOTOGRAPH" />
-                  <Box display="none">
-                    <input
-                      type="file"
-                      name="image"
-                      id="image"
-                      onChange={handleUploadFile}
-                      accept="image/*"
-                    />
-                  </Box>
-                  {isUploading && <Spinner />}
-                </StyledLabel>
+            )}
+          </Box>
+          <Box display="flex" alignItems="center" justifyContent="space-evenly">
+            <Button onClick={() => router.push('/dashboard/posts')}>
+              キャンセル
+            </Button>
+            <Button
+              onClick={handleUpdatePost}
+              disabled={
+                newPost.title.trim().length === 0 ||
+                newPost.content.trim().length === 0
               }
-              label="PHOTOGRAPH"
-              isRound
-            />
-          )}
-        </Box>
-        <Box display="flex" alignItems="center" justifyContent="space-evenly">
-          <Button onClick={() => router.push('/dashboard/posts')}>
-            キャンセル
-          </Button>
-          <Button
-            onClick={handleUpdatePost}
-            disabled={
-              newPost.title.trim().length === 0 ||
-              newPost.content.trim().length === 0
-            }
-          >
-            更新する
-          </Button>
+            >
+              更新する
+            </Button>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </FooterLayout>
   )
 }
 

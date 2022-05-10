@@ -12,6 +12,65 @@ export const GET_ROOM = gql`
         roomId
         userId
         body
+        user {
+          id
+          name
+          email
+          description
+          image
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`
+
+export const GET_ONE_ON_ONE_ROOM = gql`
+  query GetOneOnOneRoom($memberId: String!) {
+    GetOneOnOneRoom(memberId: $memberId) {
+      id
+      groupId
+      latestMessageId
+      latestMessage {
+        id
+        type
+        roomId
+        userId
+        body
+        user {
+          id
+          name
+          email
+          description
+          image
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
         createdAt
         updatedAt
       }
@@ -33,6 +92,25 @@ export const GET_ROOMS_BY_LOGIN_USER_ID = gql`
         roomId
         userId
         body
+        user {
+          id
+          name
+          email
+          description
+          image
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
         createdAt
         updatedAt
       }
@@ -75,6 +153,25 @@ export const DELETE_ROOM = gql`
         roomId
         userId
         body
+        user {
+          id
+          name
+          email
+          description
+          image
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
         createdAt
         updatedAt
       }

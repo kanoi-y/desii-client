@@ -25,6 +25,9 @@ export const Message = objectType({
     t.nonNull.string('roomId')
     t.nonNull.string('userId')
     t.nonNull.string('body')
+    t.nonNull.field('user', {
+      type: 'User',
+    })
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -73,6 +76,9 @@ export const GetMessagesQuery = extendType({
           },
           orderBy: {
             createdAt: args.sort || 'asc',
+          },
+          include: {
+            user: true,
           },
         })
       },
@@ -152,6 +158,9 @@ export const CreateMessageMutation = extendType({
             userId: ctx.user.id,
             body: args.body,
           },
+          include: {
+            user: true,
+          },
         })
 
         createReadManagements(ctx, roomMembers, message.id)
@@ -201,6 +210,9 @@ export const DeleteMessageMutation = extendType({
         return ctx.prisma.message.delete({
           where: {
             id: args.id,
+          },
+          include: {
+            user: true,
           },
         })
       },

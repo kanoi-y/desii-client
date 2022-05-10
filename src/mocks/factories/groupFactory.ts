@@ -5,7 +5,7 @@ export const groupFactory = (options?: Partial<Group>): Group => {
   return {
     __typename: 'Group',
     id: nextFactoryId('group'),
-    name: 'name',
+    name: 'groupName',
     image: 'image',
     description: 'description',
     adminUserId: 'adminUserId',

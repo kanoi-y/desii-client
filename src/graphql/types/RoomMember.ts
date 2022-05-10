@@ -1,5 +1,5 @@
 import { RoomMember as RoomMemberType } from '@prisma/client'
-import { extendType, objectType, stringArg } from 'nexus'
+import { extendType, nonNull, objectType, stringArg } from 'nexus'
 
 export const RoomMember = objectType({
   name: 'RoomMember',
@@ -18,6 +18,52 @@ export const RoomMember = objectType({
     })
     t.nonNull.field('user', {
       type: 'User',
+    })
+  },
+})
+
+// 一対一ルームの相手のroomMemberを取得する
+export const GetTargetRoomMemberQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.field('getTargetRoomMember', {
+      type: 'RoomMember',
+      args: {
+        roomId: nonNull(stringArg()),
+        userId: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error('ログインユーザーが存在しません')
+        }
+
+        const room = await ctx.prisma.room.findUnique({
+          where: {
+            id: args.roomId,
+          },
+        })
+
+        if (!room) {
+          throw new Error('ルームが存在しません')
+        }
+
+        if (room.groupId) {
+          throw new Error('ルームが一対一のルームではありません')
+        }
+
+        return ctx.prisma.roomMember.findFirst({
+          where: {
+            roomId: args.roomId,
+            NOT: {
+              userId: args.userId,
+            },
+          },
+          include: {
+            user: true,
+            room: true,
+          },
+        })
+      },
     })
   },
 })
