@@ -161,7 +161,7 @@ export const GetRoomsByLoginUserIdQuery = extendType({
             }
             return true
           })
-          .sort((a, b) => {
+          .sort((a: RoomType, b: RoomType) => {
             return a.updatedAt < b.updatedAt ? 1 : -1
           })
       },
