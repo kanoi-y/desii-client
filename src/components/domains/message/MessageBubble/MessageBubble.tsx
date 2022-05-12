@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react'
 import { VFC } from 'react'
-import { Text } from '~/components/parts/commons'
-import { Message } from '~/types/generated/graphql'
+import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
+import { Message, useGetUserQuery } from '~/types/generated/graphql'
 
 type Props = {
   message: Message
@@ -15,19 +15,33 @@ type Props = {
 export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
   const isCreatedUser = message.userId === currentUserId
 
-  if (isCreatedUser) {
+  const { data: userData } = useGetUserQuery({
+    variables: {
+      getUserId: message.userId,
+    },
+  })
+
+  if (message.type === 'TEXT') {
+    if (isCreatedUser) {
+      return (
+        <Box display="flex" alignItems="center" justifyContent="flex-start">
+          <Box></Box>
+        </Box>
+      )
+    }
     return (
-      <Box display="flex" alignItems="center">
-        <Box>
-          <Text fontSize="md">既読１</Text>
-          <Text fontSize="md">12:34</Text>
-        </Box>
-        <Box>
-          <Text fontSize="lg">{message.body}</Text>
-        </Box>
+      <Box display="flex" alignItems="center" justifyContent="flex-start">
+        {userData?.getUser ? (
+          <UserIcon user={userData.getUser} />
+        ) : (
+          <GuestUserIcon />
+        )}
+        <Box></Box>
       </Box>
     )
   }
-
+  if (message.type === 'MEDIA') {
+    return <Box></Box>
+  }
   return <Box></Box>
 }
