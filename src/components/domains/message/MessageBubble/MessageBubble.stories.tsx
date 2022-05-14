@@ -29,3 +29,9 @@ DefaultMessageBubble.args = {
   message: mockMessage,
   currentUserId: "userId",
 }
+
+export const TargetUserMessageBubble = Template.bind({})
+TargetUserMessageBubble.args = {
+  message: mockMessage,
+  currentUserId: "currentUserId",
+}

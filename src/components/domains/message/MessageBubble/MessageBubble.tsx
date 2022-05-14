@@ -44,21 +44,27 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
       )
     }
     return (
-      <Box display="flex" alignItems="center" justifyContent="flex-start">
+      <Box display="flex" alignItems="flex-end" gap="4px">
         {userData?.getUser ? (
-          <UserIcon user={userData.getUser} />
+          <UserIcon size="sm" user={userData.getUser} />
         ) : (
-          <GuestUserIcon />
+          <GuestUserIcon size="sm" />
         )}
         <Box>
-          <Text fontSize="sm">{message.user.name}</Text>
-          <Box p="8px 12px" borderRadius="12px" bgColor="primary.main">
-            <Text fontSize="md" color="white.main">
+          <Box pl="8px">
+            <Text fontSize="xs" color="text.light">
+              {message.user.name}
+            </Text>
+          </Box>
+          <Box p="8px 12px" borderRadius="12px" bgColor="white.main">
+            <Text fontSize="md">
               {message.body}
             </Text>
           </Box>
         </Box>
-        <Text fontSize="xs">12:34</Text>
+        <Text fontSize="xs" color="text.light">
+          {`${message.createdAt.getHours()}:${message.createdAt.getMinutes()}`}
+        </Text>
       </Box>
     )
   }
