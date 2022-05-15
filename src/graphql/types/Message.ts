@@ -28,6 +28,9 @@ export const Message = objectType({
     t.nonNull.field('user', {
       type: 'User',
     })
+    t.nonNull.field('room', {
+      type: 'Room',
+    })
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -79,6 +82,7 @@ export const GetMessagesQuery = extendType({
           },
           include: {
             user: true,
+            room: true,
           },
         })
       },
@@ -160,6 +164,7 @@ export const CreateMessageMutation = extendType({
           },
           include: {
             user: true,
+            room: true,
           },
         })
 
@@ -213,6 +218,7 @@ export const DeleteMessageMutation = extendType({
           },
           include: {
             user: true,
+            room: true,
           },
         })
       },

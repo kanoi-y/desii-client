@@ -17,6 +17,13 @@ export const GET_MESSAGES = gql`
         createdAt
         updatedAt
       }
+      room {
+        id
+        groupId
+        latestMessageId
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -44,6 +51,13 @@ export const CREATE_MESSAGE = gql`
         createdAt
         updatedAt
       }
+      room {
+        id
+        groupId
+        latestMessageId
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -64,6 +78,13 @@ export const DELETE_MESSAGE = gql`
         email
         description
         image
+        createdAt
+        updatedAt
+      }
+      room {
+        id
+        groupId
+        latestMessageId
         createdAt
         updatedAt
       }

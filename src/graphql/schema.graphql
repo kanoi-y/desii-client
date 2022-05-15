@@ -43,6 +43,7 @@ type Message {
   body: String!
   createdAt: DateTime!
   id: String!
+  room: Room!
   roomId: String!
   type: MessageType!
   updatedAt: DateTime!
