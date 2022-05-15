@@ -51,15 +51,15 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
           <GuestUserIcon size="sm" />
         )}
         <Box>
-          <Box pl="8px">
-            <Text fontSize="xs" color="text.light">
-              {message.user.name}
-            </Text>
-          </Box>
+          {message.room.groupId && (
+            <Box pl="8px">
+              <Text fontSize="xs" color="text.light">
+                {message.user.name}
+              </Text>
+            </Box>
+          )}
           <Box p="8px 12px" borderRadius="12px" bgColor="white.main">
-            <Text fontSize="md">
-              {message.body}
-            </Text>
+            <Text fontSize="md">{message.body}</Text>
           </Box>
         </Box>
         <Text fontSize="xs" color="text.light">
