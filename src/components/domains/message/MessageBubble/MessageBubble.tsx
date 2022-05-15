@@ -9,7 +9,6 @@ type Props = {
   currentUserId: string
 }
 
-// TODO: roomがグループに紐づいている場合、メッセージ作成者の名前を上に表示する
 // TODO: メッセージの作成者である場合とない場合を実装
 // TODO: messageのtypeがTEXTとPOSTとMEDIAの場合を実装
 // TODO: 既読を動的に表示
