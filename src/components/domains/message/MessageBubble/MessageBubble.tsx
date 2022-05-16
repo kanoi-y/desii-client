@@ -2,7 +2,11 @@ import { Box } from '@chakra-ui/react'
 import { VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Text } from '~/components/parts/commons'
-import { Message, useGetUserQuery } from '~/types/generated/graphql'
+import {
+  Message,
+  useGetReadManagementsQuery,
+  useGetUserQuery,
+} from '~/types/generated/graphql'
 
 type Props = {
   message: Message
@@ -12,6 +16,7 @@ type Props = {
 // TODO: メッセージの作成者である場合とない場合を実装
 // TODO: messageのtypeがTEXTとPOSTとMEDIAの場合を実装
 // TODO: 既読を動的に表示
+// TODO: readManagementのmockを作成する
 
 export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
   const isCreatedUser = message.userId === currentUserId
@@ -22,14 +27,25 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
     },
   })
 
+  const { data: readManagementsData } = useGetReadManagementsQuery({
+    variables: {
+      messageId: message.id,
+    },
+  })
+
+  const readManagementsCount =
+    readManagementsData?.GetReadManagements.length || 0
+
   if (message.type === 'TEXT') {
     if (isCreatedUser) {
       return (
         <Box display="flex" alignItems="flex-end" gap="4px">
           <Box>
-            <Text fontSize="xs" color="text.light">
-              既読
-            </Text>
+            {readManagementsCount > 0 && (
+              <Text fontSize="xs" color="text.light">
+                {`既読 ${readManagementsCount}`}
+              </Text>
+            )}
             <Text fontSize="xs" color="text.light">
               {`${message.createdAt.getHours()}:${message.createdAt.getMinutes()}`}
             </Text>
