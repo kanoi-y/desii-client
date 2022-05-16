@@ -30,6 +30,16 @@ DefaultMessageBubble.args = {
   currentUserId: 'userId',
 }
 
+const mockReadMessage = messageFactory({
+  id: 'messageId',
+  room: roomFactory({ groupId: 'groupId' }),
+})
+export const ReadMessageBubble = Template.bind({})
+ReadMessageBubble.args = {
+  message: mockReadMessage,
+  currentUserId: 'userId',
+}
+
 export const TargetUserMessageBubble = Template.bind({})
 TargetUserMessageBubble.args = {
   message: mockMessage,

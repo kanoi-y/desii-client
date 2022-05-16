@@ -34,7 +34,9 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
   })
 
   const readManagementsCount =
-    readManagementsData?.GetReadManagements.length || 0
+    readManagementsData?.GetReadManagements.filter(
+      (readManagement) => readManagement.isRead
+    ).length || 0
 
   if (message.type === 'TEXT') {
     if (isCreatedUser) {
@@ -43,7 +45,7 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
           <Box>
             {readManagementsCount > 0 && (
               <Text fontSize="xs" color="text.light">
-                {`既読 ${readManagementsCount}`}
+                {`既読 ${message.room.groupId ? readManagementsCount : ''}`}
               </Text>
             )}
             <Text fontSize="xs" color="text.light">
