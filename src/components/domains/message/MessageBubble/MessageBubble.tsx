@@ -13,10 +13,7 @@ type Props = {
   currentUserId: string
 }
 
-// TODO: メッセージの作成者である場合とない場合を実装
 // TODO: messageのtypeがTEXTとPOSTとMEDIAの場合を実装
-// TODO: 既読を動的に表示
-// TODO: readManagementのmockを作成する
 
 export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
   const isCreatedUser = message.userId === currentUserId
