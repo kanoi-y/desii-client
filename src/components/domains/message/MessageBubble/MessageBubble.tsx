@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react'
+import { Box, Image } from '@chakra-ui/react'
 import { VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Text } from '~/components/parts/commons'
@@ -83,7 +83,49 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
     )
   }
   if (message.type === 'MEDIA') {
-    return <Box></Box>
+    if (isCreatedUser) {
+      return (
+        <Box display="flex" alignItems="flex-end" gap="4px">
+          <Box>
+            {readManagementsCount > 0 && (
+              <Text fontSize="xs" color="text.light">
+                {`既読 ${message.room.groupId ? readManagementsCount : ''}`}
+              </Text>
+            )}
+            <Text fontSize="xs" color="text.light">
+              {`${message.createdAt.getHours()}:${message.createdAt.getMinutes()}`}
+            </Text>
+          </Box>
+          <Box p="8px 12px" borderRadius="12px" overflow="hidden">
+            <Image src={message.body} alt="画像" maxH="200px" maxW="100%" />
+          </Box>
+        </Box>
+      )
+    }
+    return (
+      <Box display="flex" alignItems="flex-end" gap="4px">
+        {userData?.getUser ? (
+          <UserIcon size="sm" user={userData.getUser} />
+        ) : (
+          <GuestUserIcon size="sm" />
+        )}
+        <Box>
+          {message.room.groupId && (
+            <Box pl="8px">
+              <Text fontSize="xs" color="text.light">
+                {message.user.name}
+              </Text>
+            </Box>
+          )}
+          <Box p="8px 12px" borderRadius="12px" overflow="hidden">
+            <Image src={message.body} alt="画像" maxH="200px" maxW="100%" />
+          </Box>
+        </Box>
+        <Text fontSize="xs" color="text.light">
+          {`${message.createdAt.getHours()}:${message.createdAt.getMinutes()}`}
+        </Text>
+      </Box>
+    )
   }
   return <Box></Box>
 }
