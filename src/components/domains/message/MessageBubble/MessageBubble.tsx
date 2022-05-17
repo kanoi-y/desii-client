@@ -96,7 +96,7 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
               {`${message.createdAt.getHours()}:${message.createdAt.getMinutes()}`}
             </Text>
           </Box>
-          <Box p="8px 12px" borderRadius="12px" overflow="hidden">
+          <Box borderRadius="12px" overflow="hidden">
             <Image src={message.body} alt="画像" maxH="200px" maxW="100%" />
           </Box>
         </Box>
@@ -117,7 +117,7 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
               </Text>
             </Box>
           )}
-          <Box p="8px 12px" borderRadius="12px" overflow="hidden">
+          <Box borderRadius="12px" overflow="hidden">
             <Image src={message.body} alt="画像" maxH="200px" maxW="100%" />
           </Box>
         </Box>

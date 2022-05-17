@@ -4,6 +4,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import React from 'react'
 import { initializeApollo } from '~/lib/apolloClient'
 import { messageFactory, roomFactory } from '~/mocks/factories'
+import { MessageType } from '~/types/generated/graphql'
 import { MessageBubble } from './MessageBubble'
 
 export default {
@@ -54,4 +55,14 @@ export const TargetUserByRoomRelatedGroupMessageBubble = Template.bind({})
 TargetUserByRoomRelatedGroupMessageBubble.args = {
   message: mockMessageByRoomRelatedGroup,
   currentUserId: 'currentUserId',
+}
+
+const mockMediaMessage = messageFactory({
+  type: MessageType.Media,
+  body: 'images/Desii_bgImage.png',
+})
+export const DefaultMediaMessageBubble = Template.bind({})
+DefaultMediaMessageBubble.args = {
+  message: mockMediaMessage,
+  currentUserId: 'userId',
 }
