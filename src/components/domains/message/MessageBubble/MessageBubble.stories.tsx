@@ -66,3 +66,9 @@ DefaultMediaMessageBubble.args = {
   message: mockMediaMessage,
   currentUserId: 'userId',
 }
+
+export const TargetUserMediaMessageBubble = Template.bind({})
+TargetUserMediaMessageBubble.args = {
+  message: mockMediaMessage,
+  currentUserId: 'currentUserId',
+}

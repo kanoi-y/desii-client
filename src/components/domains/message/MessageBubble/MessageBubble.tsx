@@ -38,7 +38,13 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
   if (message.type === 'TEXT') {
     if (isCreatedUser) {
       return (
-        <Box display="flex" alignItems="flex-end" gap="4px">
+        <Box
+          display="flex"
+          alignItems="flex-end"
+          justifyContent="flex-start"
+          gap="4px"
+          w="100%"
+        >
           <Box>
             {readManagementsCount > 0 && (
               <Text fontSize="xs" color="text.light">
@@ -49,7 +55,12 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
               {`${message.createdAt.getHours()}:${message.createdAt.getMinutes()}`}
             </Text>
           </Box>
-          <Box p="8px 12px" borderRadius="12px" bgColor="primary.main">
+          <Box
+            p="8px 12px"
+            borderRadius="12px"
+            bgColor="primary.main"
+            maxW="65%"
+          >
             <Text fontSize="md" color="white.main">
               {message.body}
             </Text>
@@ -58,13 +69,19 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
       )
     }
     return (
-      <Box display="flex" alignItems="flex-end" gap="4px">
+      <Box
+        display="flex"
+        alignItems="flex-end"
+        justifyContent="flex-start"
+        gap="4px"
+        w="100%"
+      >
         {userData?.getUser ? (
           <UserIcon size="sm" user={userData.getUser} />
         ) : (
           <GuestUserIcon size="sm" />
         )}
-        <Box>
+        <Box maxW="65%">
           {message.room.groupId && (
             <Box pl="8px">
               <Text fontSize="xs" color="text.light">
@@ -85,7 +102,13 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
   if (message.type === 'MEDIA') {
     if (isCreatedUser) {
       return (
-        <Box display="flex" alignItems="flex-end" gap="4px">
+        <Box
+          display="flex"
+          alignItems="flex-end"
+          justifyContent="flex-start"
+          gap="4px"
+          w="100%"
+        >
           <Box>
             {readManagementsCount > 0 && (
               <Text fontSize="xs" color="text.light">
@@ -96,20 +119,26 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
               {`${message.createdAt.getHours()}:${message.createdAt.getMinutes()}`}
             </Text>
           </Box>
-          <Box borderRadius="12px" overflow="hidden">
+          <Box borderRadius="12px" overflow="hidden" maxW="65%">
             <Image src={message.body} alt="画像" maxH="200px" maxW="100%" />
           </Box>
         </Box>
       )
     }
     return (
-      <Box display="flex" alignItems="flex-end" gap="4px">
+      <Box
+        display="flex"
+        alignItems="flex-end"
+        justifyContent="flex-start"
+        gap="4px"
+        w="100%"
+      >
         {userData?.getUser ? (
           <UserIcon size="sm" user={userData.getUser} />
         ) : (
           <GuestUserIcon size="sm" />
         )}
-        <Box>
+        <Box maxW="65%">
           {message.room.groupId && (
             <Box pl="8px">
               <Text fontSize="xs" color="text.light">
