@@ -41,7 +41,7 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
         <Box
           display="flex"
           alignItems="flex-end"
-          justifyContent="flex-start"
+          justifyContent="flex-end"
           gap="4px"
           w="100%"
         >
@@ -105,7 +105,7 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
         <Box
           display="flex"
           alignItems="flex-end"
-          justifyContent="flex-start"
+          justifyContent="flex-end"
           gap="4px"
           w="100%"
         >
