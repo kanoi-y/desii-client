@@ -4,9 +4,11 @@ import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Text } from '~/components/parts/commons'
 import {
   Message,
+  useGetPostQuery,
   useGetReadManagementsQuery,
   useGetUserQuery,
 } from '~/types/generated/graphql'
+import { PostCard, SkeletonPostCard } from '../../post/PostCard'
 
 type Props = {
   message: Message
@@ -27,6 +29,12 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
   const { data: readManagementsData } = useGetReadManagementsQuery({
     variables: {
       messageId: message.id,
+    },
+  })
+
+  const { data: postData } = useGetPostQuery({
+    variables: {
+      getPostId: message.body,
     },
   })
 
@@ -156,5 +164,21 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
       </Box>
     )
   }
-  return <Box></Box>
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      p="12px"
+    >
+      <Box mb="8px" maxW="360px" w="100%">
+        {postData?.getPost ? (
+          <PostCard post={postData.getPost} />
+        ) : (
+          <SkeletonPostCard />
+        )}
+      </Box>
+      <Text fontSize="md">{`${message.user.name}さんが投稿に応募しました`}</Text>
+    </Box>
+  )
 }

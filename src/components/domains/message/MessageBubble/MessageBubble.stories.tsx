@@ -72,3 +72,14 @@ TargetUserMediaMessageBubble.args = {
   message: mockMediaMessage,
   currentUserId: 'currentUserId',
 }
+
+const mockPostMessage = messageFactory({
+  type: MessageType.Post,
+  body: 'postId',
+})
+
+export const DefaultPostMessageBubble = Template.bind({})
+DefaultPostMessageBubble.args = {
+  message: mockPostMessage,
+  currentUserId: 'userId',
+}
