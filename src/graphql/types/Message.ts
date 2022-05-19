@@ -40,6 +40,29 @@ export const Message = objectType({
   },
 })
 
+export const GetMessageQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.field('getMessage', {
+      type: 'Message',
+      args: {
+        id: nonNull(stringArg()),
+      },
+      resolve(_parent, args, ctx) {
+        return ctx.prisma.message.findUnique({
+          where: {
+            id: args.id,
+          },
+          include: {
+            user: true,
+            room: true,
+          },
+        })
+      },
+    })
+  },
+})
+
 export const GetMessagesQuery = extendType({
   type: 'Query',
   definition(t) {

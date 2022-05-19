@@ -5,7 +5,12 @@ export {
   GET_GROUP_BY_ID,
   UPDATE_GROUP,
 } from './group'
-export { CREATE_MESSAGE, DELETE_MESSAGE, GET_MESSAGES } from './message'
+export {
+  CREATE_MESSAGE,
+  DELETE_MESSAGE,
+  GET_MESSAGE,
+  GET_MESSAGES,
+} from './message'
 export { GET_NOTIFICATIONS, UPDATE_NOTIFICATION } from './notification'
 export {
   CREATE_POST,

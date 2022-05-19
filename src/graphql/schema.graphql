@@ -136,6 +136,7 @@ type Query {
   getAllTags(searchText: String, sort: orderByType = asc): [Tag!]!
   getCurrentUser(accessToken: String!): User
   getGroup(id: String!): Group
+  getMessage(id: String!): Message
   getPost(id: String!): Post
   getRoomMembers(roomId: String, userId: String): [RoomMember!]!
   getTargetRoomMember(roomId: String!, userId: String!): RoomMember

@@ -307,6 +307,7 @@ export type Query = {
   getAllTags: Array<Tag>;
   getCurrentUser?: Maybe<User>;
   getGroup?: Maybe<Group>;
+  getMessage?: Maybe<Message>;
   getPost?: Maybe<Post>;
   getRoomMembers: Array<RoomMember>;
   getTargetRoomMember?: Maybe<RoomMember>;
@@ -403,6 +404,11 @@ export type QueryGetCurrentUserArgs = {
 
 
 export type QueryGetGroupArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryGetMessageArgs = {
   id: Scalars['String'];
 };
 
@@ -575,6 +581,13 @@ export type UpdateGroupMutationVariables = Exact<{
 
 
 export type UpdateGroupMutation = { __typename?: 'Mutation', updateGroup: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } };
+
+export type GetMessageQueryVariables = Exact<{
+  getMessageId: Scalars['String'];
+}>;
+
+
+export type GetMessageQuery = { __typename?: 'Query', getMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date }, room: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } } | null };
 
 export type GetMessagesQueryVariables = Exact<{
   roomId: Scalars['String'];
@@ -1236,6 +1249,73 @@ export function useUpdateGroupMutation(baseOptions?: Apollo.MutationHookOptions<
 export type UpdateGroupMutationHookResult = ReturnType<typeof useUpdateGroupMutation>;
 export type UpdateGroupMutationResult = Apollo.MutationResult<UpdateGroupMutation>;
 export type UpdateGroupMutationOptions = Apollo.BaseMutationOptions<UpdateGroupMutation, UpdateGroupMutationVariables>;
+export const GetMessageDocument = gql`
+    query GetMessage($getMessageId: String!) {
+  getMessage(id: $getMessageId) {
+    id
+    type
+    roomId
+    userId
+    body
+    user {
+      id
+      name
+      email
+      description
+      image
+      createdAt
+      updatedAt
+    }
+    room {
+      id
+      groupId
+      latestMessageId
+      group {
+        id
+        name
+        description
+        image
+        adminUserId
+        productId
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetMessageQuery__
+ *
+ * To run a query within a React component, call `useGetMessageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMessageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMessageQuery({
+ *   variables: {
+ *      getMessageId: // value for 'getMessageId'
+ *   },
+ * });
+ */
+export function useGetMessageQuery(baseOptions: Apollo.QueryHookOptions<GetMessageQuery, GetMessageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMessageQuery, GetMessageQueryVariables>(GetMessageDocument, options);
+      }
+export function useGetMessageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMessageQuery, GetMessageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMessageQuery, GetMessageQueryVariables>(GetMessageDocument, options);
+        }
+export type GetMessageQueryHookResult = ReturnType<typeof useGetMessageQuery>;
+export type GetMessageLazyQueryHookResult = ReturnType<typeof useGetMessageLazyQuery>;
+export type GetMessageQueryResult = Apollo.QueryResult<GetMessageQuery, GetMessageQueryVariables>;
 export const GetMessagesDocument = gql`
     query GetMessages($roomId: String!, $sort: orderByType) {
   GetMessages(roomId: $roomId, sort: $sort) {

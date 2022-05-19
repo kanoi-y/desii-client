@@ -10,6 +10,5 @@ export const roomFactory = (options?: Partial<Room>): Room => {
     createdAt: options?.createdAt || new Date(),
     updatedAt: options?.updatedAt || new Date(),
     group: options?.group,
-    latestMessage: options?.latestMessage,
   }
 }

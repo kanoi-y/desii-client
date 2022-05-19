@@ -1,5 +1,45 @@
 import { gql } from '@apollo/client'
 
+export const GET_MESSAGE = gql`
+  query GetMessage($getMessageId: String!) {
+    getMessage(id: $getMessageId) {
+      id
+      type
+      roomId
+      userId
+      body
+      user {
+        id
+        name
+        email
+        description
+        image
+        createdAt
+        updatedAt
+      }
+      room {
+        id
+        groupId
+        latestMessageId
+        group {
+          id
+          name
+          description
+          image
+          adminUserId
+          productId
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`
+
 export const GET_MESSAGES = gql`
   query GetMessages($roomId: String!, $sort: orderByType) {
     GetMessages(roomId: $roomId, sort: $sort) {
