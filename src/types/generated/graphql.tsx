@@ -444,7 +444,6 @@ export type Room = {
   group?: Maybe<Group>;
   groupId?: Maybe<Scalars['String']>;
   id: Scalars['String'];
-  latestMessage?: Maybe<Message>;
   latestMessageId?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
 };
@@ -702,35 +701,35 @@ export type GetRoomQueryVariables = Exact<{
 }>;
 
 
-export type GetRoomQuery = { __typename?: 'Query', GetRoom?: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } } | null, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } | null };
+export type GetRoomQuery = { __typename?: 'Query', GetRoom?: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } | null };
 
 export type GetOneOnOneRoomQueryVariables = Exact<{
   memberId: Scalars['String'];
 }>;
 
 
-export type GetOneOnOneRoomQuery = { __typename?: 'Query', GetOneOnOneRoom?: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } } | null, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } | null };
+export type GetOneOnOneRoomQuery = { __typename?: 'Query', GetOneOnOneRoom?: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } | null };
 
 export type GetRoomsByLoginUserIdQueryVariables = Exact<{
   getRoomType: GetRoomType;
 }>;
 
 
-export type GetRoomsByLoginUserIdQuery = { __typename?: 'Query', GetRoomsByLoginUserId: Array<{ __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } } | null, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null }> };
+export type GetRoomsByLoginUserIdQuery = { __typename?: 'Query', GetRoomsByLoginUserId: Array<{ __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null }> };
 
 export type CreateRoomMutationVariables = Exact<{
   memberId: Scalars['String'];
 }>;
 
 
-export type CreateRoomMutation = { __typename?: 'Mutation', CreateRoom: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date } | null } };
+export type CreateRoomMutation = { __typename?: 'Mutation', CreateRoom: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } };
 
 export type DeleteRoomMutationVariables = Exact<{
   deleteRoomId: Scalars['String'];
 }>;
 
 
-export type DeleteRoomMutation = { __typename?: 'Mutation', DeleteRoom: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, latestMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } } | null, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } };
+export type DeleteRoomMutation = { __typename?: 'Mutation', DeleteRoom: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } };
 
 export type GetTargetRoomMemberQueryVariables = Exact<{
   roomId: Scalars['String'];
@@ -1916,24 +1915,6 @@ export const GetRoomDocument = gql`
     id
     groupId
     latestMessageId
-    latestMessage {
-      id
-      type
-      roomId
-      userId
-      body
-      user {
-        id
-        name
-        email
-        description
-        image
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
     group {
       id
       name
@@ -1983,24 +1964,6 @@ export const GetOneOnOneRoomDocument = gql`
     id
     groupId
     latestMessageId
-    latestMessage {
-      id
-      type
-      roomId
-      userId
-      body
-      user {
-        id
-        name
-        email
-        description
-        image
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
     group {
       id
       name
@@ -2050,24 +2013,6 @@ export const GetRoomsByLoginUserIdDocument = gql`
     id
     groupId
     latestMessageId
-    latestMessage {
-      id
-      type
-      roomId
-      userId
-      body
-      user {
-        id
-        name
-        email
-        description
-        image
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
     group {
       id
       name
@@ -2117,12 +2062,13 @@ export const CreateRoomDocument = gql`
     id
     groupId
     latestMessageId
-    latestMessage {
+    group {
       id
-      type
-      roomId
-      userId
-      body
+      name
+      description
+      image
+      adminUserId
+      productId
       createdAt
       updatedAt
     }
@@ -2163,24 +2109,6 @@ export const DeleteRoomDocument = gql`
     id
     groupId
     latestMessageId
-    latestMessage {
-      id
-      type
-      roomId
-      userId
-      body
-      user {
-        id
-        name
-        email
-        description
-        image
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
     group {
       id
       name

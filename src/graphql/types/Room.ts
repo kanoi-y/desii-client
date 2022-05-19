@@ -12,9 +12,6 @@ export const Room = objectType({
     t.nonNull.string('id')
     t.string('groupId')
     t.string('latestMessageId')
-    t.field('latestMessage', {
-      type: 'Message',
-    })
     t.field('group', {
       type: 'Group',
     })
@@ -41,11 +38,6 @@ export const GetRoomQuery = extendType({
             id: args.id,
           },
           include: {
-            latestMessage: {
-              include: {
-                user: true,
-              },
-            },
             group: true,
           },
         })
@@ -83,7 +75,6 @@ export const GetOneOnOneRoomQuery = extendType({
           include: {
             room: {
               include: {
-                latestMessage: true,
                 group: true,
               },
             },
@@ -135,7 +126,6 @@ export const GetRoomsByLoginUserIdQuery = extendType({
           include: {
             room: {
               include: {
-                latestMessage: true,
                 group: true,
               },
             },
@@ -259,11 +249,6 @@ export const DeleteRoomMutation = extendType({
             id: args.id,
           },
           include: {
-            latestMessage: {
-              include: {
-                user: true,
-              },
-            },
             group: true,
           },
         })

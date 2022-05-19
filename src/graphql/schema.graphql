@@ -156,7 +156,6 @@ type Room {
   group: Group
   groupId: String
   id: String!
-  latestMessage: Message
   latestMessageId: String
   updatedAt: DateTime!
 }
