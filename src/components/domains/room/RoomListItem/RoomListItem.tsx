@@ -3,7 +3,11 @@ import { useRouter } from 'next/router'
 import { useMemo, VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Link, Text } from '~/components/parts/commons'
-import { Room, useGetTargetRoomMemberQuery } from '~/types/generated/graphql'
+import {
+  Room,
+  useGetMessageQuery,
+  useGetTargetRoomMemberQuery,
+} from '~/types/generated/graphql'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 
 type Props = {
@@ -42,6 +46,14 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
       roomId: room.id,
       userId: currentUserId,
     },
+    fetchPolicy: 'cache-and-network',
+  })
+
+  const { data: latestMessageData } = useGetMessageQuery({
+    variables: {
+      getMessageId: room.latestMessageId || '',
+    },
+    fetchPolicy: 'cache-and-network',
   })
 
   const RoomListItemIcon = useMemo(() => {
@@ -99,34 +111,34 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
   }, [room.group, targetRoomMemberData?.getTargetRoomMember])
 
   const LatestMessage = useMemo(() => {
-    if (!room.latestMessage) {
+    if (!latestMessageData?.getMessage) {
       return <Text fontSize="sm">{''}</Text>
     }
 
-    const isCreatedUser = room.latestMessage.userId === currentUserId
+    const isCreatedUser = latestMessageData.getMessage.userId === currentUserId
 
-    if (room.latestMessage.type === 'MEDIA') {
+    if (latestMessageData.getMessage.type === 'MEDIA') {
       return (
         <Text fontSize="sm">
           {isCreatedUser
             ? 'あなたが画像を送信しました'
-            : `${room.latestMessage.user.name}さんが画像を送信しました`}
+            : `${latestMessageData.getMessage.user.name}さんが画像を送信しました`}
         </Text>
       )
     }
 
-    if (room.latestMessage.type === 'POST') {
+    if (latestMessageData.getMessage.type === 'POST') {
       return (
         <Text fontSize="sm">
           {isCreatedUser
             ? 'あなたが投稿に応募しました'
-            : `${room.latestMessage.user.name}さんが投稿に応募しました`}
+            : `${latestMessageData.getMessage.user.name}さんが投稿に応募しました`}
         </Text>
       )
     }
 
-    return <Text fontSize="sm">{room.latestMessage.body}</Text>
-  }, [room.latestMessage, currentUserId])
+    return <Text fontSize="sm">{latestMessageData.getMessage.body}</Text>
+  }, [latestMessageData, currentUserId])
 
   return (
     <Box

@@ -6,24 +6,6 @@ export const GET_ROOM = gql`
       id
       groupId
       latestMessageId
-      latestMessage {
-        id
-        type
-        roomId
-        userId
-        body
-        user {
-          id
-          name
-          email
-          description
-          image
-          createdAt
-          updatedAt
-        }
-        createdAt
-        updatedAt
-      }
       group {
         id
         name
@@ -46,24 +28,6 @@ export const GET_ONE_ON_ONE_ROOM = gql`
       id
       groupId
       latestMessageId
-      latestMessage {
-        id
-        type
-        roomId
-        userId
-        body
-        user {
-          id
-          name
-          email
-          description
-          image
-          createdAt
-          updatedAt
-        }
-        createdAt
-        updatedAt
-      }
       group {
         id
         name
@@ -86,24 +50,6 @@ export const GET_ROOMS_BY_LOGIN_USER_ID = gql`
       id
       groupId
       latestMessageId
-      latestMessage {
-        id
-        type
-        roomId
-        userId
-        body
-        user {
-          id
-          name
-          email
-          description
-          image
-          createdAt
-          updatedAt
-        }
-        createdAt
-        updatedAt
-      }
       group {
         id
         name
@@ -126,12 +72,13 @@ export const CREATE_ROOM = gql`
       id
       groupId
       latestMessageId
-      latestMessage {
+      group {
         id
-        type
-        roomId
-        userId
-        body
+        name
+        description
+        image
+        adminUserId
+        productId
         createdAt
         updatedAt
       }
@@ -147,24 +94,6 @@ export const DELETE_ROOM = gql`
       id
       groupId
       latestMessageId
-      latestMessage {
-        id
-        type
-        roomId
-        userId
-        body
-        user {
-          id
-          name
-          email
-          description
-          image
-          createdAt
-          updatedAt
-        }
-        createdAt
-        updatedAt
-      }
       group {
         id
         name

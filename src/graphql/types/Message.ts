@@ -28,11 +28,37 @@ export const Message = objectType({
     t.nonNull.field('user', {
       type: 'User',
     })
+    t.nonNull.field('room', {
+      type: 'Room',
+    })
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
     t.nonNull.field('updatedAt', {
       type: 'DateTime',
+    })
+  },
+})
+
+export const GetMessageQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.field('getMessage', {
+      type: 'Message',
+      args: {
+        id: nonNull(stringArg()),
+      },
+      resolve(_parent, args, ctx) {
+        return ctx.prisma.message.findUnique({
+          where: {
+            id: args.id,
+          },
+          include: {
+            user: true,
+            room: true,
+          },
+        })
+      },
     })
   },
 })
@@ -79,6 +105,7 @@ export const GetMessagesQuery = extendType({
           },
           include: {
             user: true,
+            room: true,
           },
         })
       },
@@ -160,6 +187,7 @@ export const CreateMessageMutation = extendType({
           },
           include: {
             user: true,
+            room: true,
           },
         })
 
@@ -213,6 +241,7 @@ export const DeleteMessageMutation = extendType({
           },
           include: {
             user: true,
+            room: true,
           },
         })
       },
