@@ -1,0 +1,1 @@
+export { RoomSidebar } from './RoomSidebar'
