@@ -7,6 +7,7 @@ export const getRoomsByLoginUserId = (req: any, res: any, ctx: any) => {
     ctx.data({
       GetRoomsByLoginUserId: [
         roomFactory(),
+        roomFactory({ groupId: undefined, group: undefined }),
         roomFactory(),
       ],
     })

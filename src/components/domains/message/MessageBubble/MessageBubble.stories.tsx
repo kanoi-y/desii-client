@@ -23,7 +23,12 @@ const Template: ComponentStory<typeof MessageBubble> = ({ ...args }) => {
   )
 }
 
-const mockMessage = messageFactory()
+const mockMessage = messageFactory({
+  room: roomFactory({
+    groupId: undefined,
+    group: undefined,
+  }),
+})
 
 export const DefaultMessageBubble = Template.bind({})
 DefaultMessageBubble.args = {
@@ -33,7 +38,6 @@ DefaultMessageBubble.args = {
 
 const mockReadMessage = messageFactory({
   id: 'messageId',
-  room: roomFactory({ groupId: 'groupId' }),
 })
 export const ReadMessageBubble = Template.bind({})
 ReadMessageBubble.args = {
@@ -47,9 +51,7 @@ TargetUserMessageBubble.args = {
   currentUserId: 'currentUserId',
 }
 
-const mockMessageByRoomRelatedGroup = messageFactory({
-  room: roomFactory({ groupId: 'groupId' }),
-})
+const mockMessageByRoomRelatedGroup = messageFactory()
 
 export const TargetUserByRoomRelatedGroupMessageBubble = Template.bind({})
 TargetUserByRoomRelatedGroupMessageBubble.args = {

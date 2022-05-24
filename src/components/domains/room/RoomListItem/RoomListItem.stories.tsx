@@ -32,7 +32,10 @@ RoomListItemRelatedByGroup.args = {
   currentUserId: 'currentUserId',
 }
 
-const mockOneOnOneRoom = roomFactory({ groupId: undefined, group: undefined })
+const mockOneOnOneRoom = roomFactory({
+  groupId: undefined,
+  group: undefined,
+})
 
 export const OneOnOneRoomListItem = Template.bind({})
 OneOnOneRoomListItem.args = {

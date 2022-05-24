@@ -6,7 +6,7 @@ import { Link, Text } from '~/components/parts/commons'
 import {
   Room,
   useGetMessageQuery,
-  useGetTargetRoomMemberQuery,
+  useGetTargetRoomMemberQuery
 } from '~/types/generated/graphql'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 

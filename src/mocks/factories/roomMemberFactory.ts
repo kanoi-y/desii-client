@@ -13,7 +13,10 @@ export const roomMemberFactory = (
     userId: 'userId',
     createdAt: new Date(),
     updatedAt: new Date(),
-    user: userFactory({ id: options?.userId || 'userId' }),
+    user: userFactory({
+      id: options?.userId || 'userId',
+      image: 'images/Desii_icon.png',
+    }),
     room: roomFactory({ id: options?.roomId || 'roomId' }),
     ...options,
   }
