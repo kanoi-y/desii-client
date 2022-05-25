@@ -6,7 +6,7 @@ import { Link, Text } from '~/components/parts/commons'
 import {
   Room,
   useGetMessageQuery,
-  useGetTargetRoomMemberQuery
+  useGetTargetRoomMemberQuery,
 } from '~/types/generated/graphql'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 
@@ -46,14 +46,12 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
       roomId: room.id,
       userId: currentUserId,
     },
-    fetchPolicy: 'cache-and-network',
   })
 
   const { data: latestMessageData } = useGetMessageQuery({
     variables: {
       getMessageId: room.latestMessageId || '',
     },
-    fetchPolicy: 'cache-and-network',
   })
 
   const RoomListItemIcon = useMemo(() => {
