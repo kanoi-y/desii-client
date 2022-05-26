@@ -17,7 +17,7 @@ type Props = {
 export const RoomSidebar: VFC<Props> = ({ currentUser }) => {
   const { data } = useGetRoomsByLoginUserIdQuery({
     variables: {
-      getRoomType: GetRoomType.OnlyOneOnOne,
+      getRoomType: GetRoomType.All,
     },
   })
   return (

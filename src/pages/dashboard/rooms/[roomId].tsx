@@ -4,11 +4,16 @@ import { getSession } from 'next-auth/react'
 import React from 'react'
 import { RoomSidebar } from '~/components/parts/layout/RoomSidebar'
 import { initializeApollo } from '~/lib/apolloClient'
-import { GET_CURRENT_USER } from '~/queries'
+import { GET_CURRENT_USER, GET_ROOM, GET_ROOM_MEMBERS } from '~/queries'
 import {
   GetCurrentUserQuery,
   GetCurrentUserQueryVariables,
+  GetRoomMembersQuery,
+  GetRoomMembersQueryVariables,
+  GetRoomQuery,
+  GetRoomQueryVariables,
   GetRoomType,
+  Room,
   useGetRoomsByLoginUserIdQuery,
   User,
 } from '~/types/generated/graphql'
@@ -17,9 +22,10 @@ const client = initializeApollo()
 
 type Props = {
   currentUser: User
+  room: Room
 }
 
-const RoomPage: NextPage<Props> = ({ currentUser }) => {
+const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
   const { data } = useGetRoomsByLoginUserIdQuery({
     variables: {
       getRoomType: GetRoomType.OnlyOneOnOne,
@@ -38,8 +44,28 @@ const RoomPage: NextPage<Props> = ({ currentUser }) => {
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {
     const session = await getSession(ctx)
+    const roomId = ctx.params?.roomId as string | undefined
 
-    if (!session) {
+    const {
+      data: { getCurrentUser },
+    } = await client.query<GetCurrentUserQuery, GetCurrentUserQueryVariables>({
+      query: GET_CURRENT_USER,
+      variables: {
+        accessToken: session?.accessToken || '',
+      },
+    })
+
+    const {
+      data: { GetRoom },
+    } = await client.query<GetRoomQuery, GetRoomQueryVariables>({
+      query: GET_ROOM,
+      variables: {
+        getRoomId: roomId || '',
+      },
+      fetchPolicy: 'network-only',
+    })
+
+    if (!getCurrentUser || !GetRoom) {
       return {
         redirect: {
           permanent: false,
@@ -49,15 +75,20 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     }
 
     const {
-      data: { getCurrentUser },
-    } = await client.query<GetCurrentUserQuery, GetCurrentUserQueryVariables>({
-      query: GET_CURRENT_USER,
+      data: { getRoomMembers },
+    } = await client.query<GetRoomMembersQuery, GetRoomMembersQueryVariables>({
+      query: GET_ROOM_MEMBERS,
       variables: {
-        accessToken: session.accessToken || '',
+        roomId: roomId || '',
       },
+      fetchPolicy: 'network-only',
     })
 
-    if (!getCurrentUser) {
+    if (
+      getRoomMembers.every(
+        (roomMember) => roomMember.userId !== getCurrentUser.id
+      )
+    ) {
       return {
         redirect: {
           permanent: false,
@@ -69,6 +100,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return {
       props: {
         currentUser: getCurrentUser,
+        room: GetRoom,
       },
     }
   } catch (error) {
