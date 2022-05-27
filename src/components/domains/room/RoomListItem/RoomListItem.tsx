@@ -1,7 +1,8 @@
-import { Avatar, Box, SkeletonText } from '@chakra-ui/react'
+import { Box, SkeletonText } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { useMemo, VFC } from 'react'
-import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
+import { RoomIcon } from '~/components/domains/room/RoomIcon'
+import { GuestUserIcon } from '~/components/domains/user/UserIcon'
 import { Link, Text } from '~/components/parts/commons'
 import {
   Room,
@@ -53,36 +54,6 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
       getMessageId: room.latestMessageId || '',
     },
   })
-
-  const RoomListItemIcon = useMemo(() => {
-    if (room.group) {
-      return (
-        <Link href={`/${room.group.productId}`}>
-          <Avatar
-            name={room.group.name}
-            size="md"
-            src={room.group.image}
-            bg="white.main"
-            _hover={{
-              background: 'secondary.light',
-            }}
-          />
-        </Link>
-      )
-    }
-
-    if (targetRoomMemberData?.getTargetRoomMember) {
-      return (
-        <UserIcon
-          user={targetRoomMemberData.getTargetRoomMember.user}
-          size="md"
-          isLink
-        />
-      )
-    }
-
-    return <GuestUserIcon />
-  }, [room.group, targetRoomMemberData?.getTargetRoomMember])
 
   const RoomListItemName = useMemo(() => {
     if (room.group) {
@@ -157,7 +128,9 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
         zIndex="1"
         onClick={() => router.push(`/dashboard/rooms/${room.id}`)}
       ></Box>
-      <Box zIndex="2">{RoomListItemIcon}</Box>
+      <Box zIndex="2">
+        <RoomIcon room={room} currentUserId={currentUserId} />
+      </Box>
       <Box zIndex="2">
         {RoomListItemName}
         {LatestMessage}

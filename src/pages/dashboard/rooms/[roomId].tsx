@@ -1,9 +1,8 @@
-import { Avatar, Box } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
-import React, { useMemo } from 'react'
-import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
-import { Link } from '~/components/parts/commons'
+import React from 'react'
+import { RoomIcon } from '~/components/domains/room/RoomIcon'
 import { RoomSidebar } from '~/components/parts/layout/RoomSidebar'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER, GET_ROOM, GET_ROOM_MEMBERS } from '~/queries'
@@ -14,11 +13,8 @@ import {
   GetRoomMembersQueryVariables,
   GetRoomQuery,
   GetRoomQueryVariables,
-  GetRoomType,
   Room,
   useGetMessagesQuery,
-  useGetRoomsByLoginUserIdQuery,
-  useGetTargetRoomMemberQuery,
   User,
 } from '~/types/generated/graphql'
 
@@ -30,55 +26,11 @@ type Props = {
 }
 
 const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
-  const { data } = useGetRoomsByLoginUserIdQuery({
-    variables: {
-      getRoomType: GetRoomType.OnlyOneOnOne,
-    },
-  })
-
   const { data: messagesData } = useGetMessagesQuery({
     variables: {
       roomId: room.id,
     },
   })
-
-  const { data: targetRoomMemberData } = useGetTargetRoomMemberQuery({
-    variables: {
-      roomId: room.id,
-      userId: currentUser.id,
-    },
-  })
-
-  // RoomIcon componentを実装
-  const RoomIcon = useMemo(() => {
-    if (room.group) {
-      return (
-        <Link href={`/${room.group.productId}`}>
-          <Avatar
-            name={room.group.name}
-            size="md"
-            src={room.group.image}
-            bg="white.main"
-            _hover={{
-              background: 'secondary.light',
-            }}
-          />
-        </Link>
-      )
-    }
-
-    if (targetRoomMemberData?.getTargetRoomMember) {
-      return (
-        <UserIcon
-          user={targetRoomMemberData.getTargetRoomMember.user}
-          size="md"
-          isLink
-        />
-      )
-    }
-
-    return <GuestUserIcon />
-  }, [room.group, targetRoomMemberData?.getTargetRoomMember])
 
   return (
     <Box display="flex" alignItems="center" justifyContent="center">
@@ -86,7 +38,9 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
         <RoomSidebar currentUser={currentUser} />
       </Box>
       <Box p="28px" flex="1" display="flex" flexDirection="column">
-        <Box>{RoomIcon}</Box>
+        <Box>
+          <RoomIcon room={room} currentUserId={currentUser.id} />
+        </Box>
         <Box></Box>
         <Box></Box>
       </Box>
