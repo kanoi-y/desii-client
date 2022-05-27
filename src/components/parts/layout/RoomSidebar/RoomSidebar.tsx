@@ -26,8 +26,8 @@ export const RoomSidebar: VFC<Props> = ({ currentUser }) => {
       borderRight="2px solid"
       borderLeft="2px solid"
       borderColor="secondary.light"
-      maxW={{ base: '600px', md: '340px' }}
-      width="100%"
+      width={{ base: '600px', md: '340px' }}
+      maxW="100%"
       minH={`calc(100vh - ${SIZING.headerHeight})`}
     >
       <Box
