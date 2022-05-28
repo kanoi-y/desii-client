@@ -3,6 +3,7 @@ import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React from 'react'
 import { RoomIcon } from '~/components/domains/room/RoomIcon'
+import { RoomName } from '~/components/domains/room/RoomName'
 import { RoomSidebar } from '~/components/parts/layout/RoomSidebar'
 import { SIZING } from '~/constants'
 import { initializeApollo } from '~/lib/apolloClient'
@@ -47,6 +48,7 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
       >
         <Box>
           <RoomIcon room={room} currentUserId={currentUser.id} />
+          <RoomName room={room} currentUserId={currentUser.id} />
         </Box>
         <Box flex="1"></Box>
         <Box></Box>
