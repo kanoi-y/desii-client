@@ -4,6 +4,7 @@ import { getSession } from 'next-auth/react'
 import React from 'react'
 import { RoomIcon } from '~/components/domains/room/RoomIcon'
 import { RoomSidebar } from '~/components/parts/layout/RoomSidebar'
+import { SIZING } from '~/constants'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER, GET_ROOM, GET_ROOM_MEMBERS } from '~/queries'
 import {
@@ -42,12 +43,12 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
         display="flex"
         flexDirection="column"
         w="100%"
-        h="100%"
+        h={`calc(100vh - ${SIZING.headerHeight})`}
       >
         <Box>
           <RoomIcon room={room} currentUserId={currentUser.id} />
         </Box>
-        <Box></Box>
+        <Box flex="1"></Box>
         <Box></Box>
       </Box>
     </Box>
