@@ -114,7 +114,7 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
       display="flex"
       alignItems="flex-start"
       gap="16px"
-      padding="8px 16px"
+      padding="12px 16px"
       cursor="pointer"
       position="relative"
       _hover={{ bgColor: 'secondary.light' }}

@@ -34,10 +34,16 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
 
   return (
     <Box display="flex" alignItems="center" justifyContent="center">
-      <Box w="100%" display={{ base: 'none', md: 'block' }}>
+      <Box display={{ base: 'none', md: 'block' }}>
         <RoomSidebar currentUser={currentUser} />
       </Box>
-      <Box p="28px" flex="1" display="flex" flexDirection="column">
+      <Box
+        flex="1"
+        display="flex"
+        flexDirection="column"
+        w="100%"
+        h="100%"
+      >
         <Box>
           <RoomIcon room={room} currentUserId={currentUser.id} />
         </Box>

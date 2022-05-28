@@ -22,20 +22,17 @@ export const RoomSidebar: VFC<Props> = ({ currentUser }) => {
   })
   return (
     <Box
-      p="28px 10px 0"
       borderRight="2px solid"
       borderLeft="2px solid"
       borderColor="secondary.light"
       width={{ base: '600px', md: '340px' }}
       maxW="100%"
-      minH={`calc(100vh - ${SIZING.headerHeight})`}
     >
       <Box
         display="flex"
         alignItems="center"
         gap="4px"
-        pb="16px"
-        mb="16px"
+        p="16px 12px"
         borderBottom="2px solid"
         borderColor="secondary.light"
       >
@@ -44,7 +41,14 @@ export const RoomSidebar: VFC<Props> = ({ currentUser }) => {
           メッセージ
         </Text>
       </Box>
-      <Box display="flex" flexDirection="column" gap="12px">
+      <Box
+        display="flex"
+        flexDirection="column"
+        gap="12px"
+        h={`calc(100vh - ${SIZING.headerHeight} - 70px)`}
+        overflowY="auto"
+        p="16px 0"
+      >
         {data ? (
           data.GetRoomsByLoginUserId.map((room) => (
             <RoomListItem
