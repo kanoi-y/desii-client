@@ -1,9 +1,10 @@
-import { Box } from '@chakra-ui/react'
+import { Box, Input } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React from 'react'
 import { RoomIcon } from '~/components/domains/room/RoomIcon'
 import { RoomName } from '~/components/domains/room/RoomName'
+import { SolidIcon } from '~/components/parts/commons'
 import { RoomSidebar } from '~/components/parts/layout/RoomSidebar'
 import { SIZING } from '~/constants'
 import { initializeApollo } from '~/lib/apolloClient'
@@ -46,12 +47,20 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
         w="100%"
         h={`calc(100vh - ${SIZING.headerHeight})`}
       >
-        <Box>
+        <Box p="12px" display="flex" alignItems="center" gap="8px">
           <RoomIcon room={room} currentUserId={currentUser.id} />
           <RoomName room={room} currentUserId={currentUser.id} />
         </Box>
         <Box flex="1"></Box>
-        <Box></Box>
+        <Box p="12px 20px" display="flex" alignItems="center" gap="8px">
+          <Input
+            bgColor="white.main"
+            boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+          />
+          <Box transform="rotate(90deg)" w="fit-content">
+            <SolidIcon icon="SOLID_PAPER_AIRPLANE" size={24} />
+          </Box>
+        </Box>
       </Box>
     </Box>
   )
