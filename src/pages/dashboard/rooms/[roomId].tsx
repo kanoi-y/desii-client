@@ -2,12 +2,14 @@ import { Box, Input } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React from 'react'
+import { MessageBubble } from '~/components/domains/message/MessageBubble'
 import { RoomIcon } from '~/components/domains/room/RoomIcon'
 import { RoomName } from '~/components/domains/room/RoomName'
 import { SolidIcon } from '~/components/parts/commons'
 import { RoomSidebar } from '~/components/parts/layout/RoomSidebar'
 import { SIZING } from '~/constants'
 import { initializeApollo } from '~/lib/apolloClient'
+import { messageFactory } from '~/mocks/factories'
 import { GET_CURRENT_USER, GET_ROOM, GET_ROOM_MEMBERS } from '~/queries'
 import {
   GetCurrentUserQuery,
@@ -51,8 +53,52 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
           <RoomIcon room={room} currentUserId={currentUser.id} />
           <RoomName room={room} currentUserId={currentUser.id} />
         </Box>
-        <Box flex="1"></Box>
-        <Box p="12px 20px" display="flex" alignItems="center" gap="8px">
+        <Box flex="1" overflowY="auto">
+          <MessageBubble
+            currentUserId={currentUser.id}
+            message={messageFactory()}
+          />
+          <MessageBubble
+            currentUserId={currentUser.id}
+            message={messageFactory({ userId: `${currentUser.id}` })}
+          />
+          <MessageBubble
+            currentUserId={currentUser.id}
+            message={messageFactory()}
+          />
+          <MessageBubble
+            currentUserId={currentUser.id}
+            message={messageFactory()}
+          />
+          <MessageBubble
+            currentUserId={currentUser.id}
+            message={messageFactory()}
+          />
+          <MessageBubble
+            currentUserId={currentUser.id}
+            message={messageFactory({ userId: `${currentUser.id}` })}
+          />
+          <MessageBubble
+            currentUserId={currentUser.id}
+            message={messageFactory({ userId: `${currentUser.id}` })}
+          />
+          <MessageBubble
+            currentUserId={currentUser.id}
+            message={messageFactory()}
+          />
+          <MessageBubble
+            currentUserId={currentUser.id}
+            message={messageFactory()}
+          />
+        </Box>
+        <Box
+          p="12px 24px"
+          display="flex"
+          alignItems="center"
+          gap="12px"
+          borderTop="2px solid"
+          borderColor="secondary.light"
+        >
           <Input
             bgColor="white.main"
             boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
