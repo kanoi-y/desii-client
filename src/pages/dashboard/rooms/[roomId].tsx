@@ -43,17 +43,30 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
         <RoomSidebar currentUser={currentUser} />
       </Box>
       <Box
+        position="relative"
         flex="1"
         display="flex"
         flexDirection="column"
         w="100%"
         h={`calc(100vh - ${SIZING.headerHeight})`}
       >
-        <Box p="12px" display="flex" alignItems="center" gap="8px">
-          <RoomIcon room={room} currentUserId={currentUser.id} />
-          <RoomName room={room} currentUserId={currentUser.id} />
+        <Box
+          p="12px"
+          display="flex"
+          alignItems="center"
+          gap="8px"
+          position="absolute"
+          zIndex="1"
+          top="0"
+          left="0"
+          backdropFilter="auto"
+          backdropBlur="12px"
+          w="100%"
+        >
+          <RoomIcon room={room} currentUserId={currentUser.id} size="sm" />
+          <RoomName room={room} currentUserId={currentUser.id} size="lg" />
         </Box>
-        <Box flex="1" overflowY="auto">
+        <Box flex="1" overflowY="auto" p="76px 16px 24px">
           <MessageBubble
             currentUserId={currentUser.id}
             message={messageFactory()}

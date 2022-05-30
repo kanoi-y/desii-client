@@ -33,8 +33,6 @@ export const RoomSidebar: VFC<Props> = ({ currentUser }) => {
         alignItems="center"
         gap="4px"
         p="16px 12px"
-        borderBottom="2px solid"
-        borderColor="secondary.light"
       >
         <SolidIcon icon="SOLID_CHAT" size={36} />
         <Text fontSize="lg" isBold>
