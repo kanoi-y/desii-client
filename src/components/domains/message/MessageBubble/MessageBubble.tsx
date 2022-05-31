@@ -71,6 +71,7 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
               {`既読 ${message.room.groupId ? readManagementsCount : ''}`}
             </Text>
           )}
+          {/* FIXME: new Dateする */}
           <Text fontSize="xs" color="text.light">
             {`${message.createdAt.getHours()}:${message.createdAt.getMinutes()}`}
           </Text>

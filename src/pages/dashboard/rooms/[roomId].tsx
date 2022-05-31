@@ -1,13 +1,14 @@
 import { Box, Input, Spinner } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
-import React from 'react'
+import React, { useState } from 'react'
 import { MessageBubble } from '~/components/domains/message/MessageBubble'
 import { RoomIcon } from '~/components/domains/room/RoomIcon'
 import { RoomName } from '~/components/domains/room/RoomName'
 import { SolidIcon } from '~/components/parts/commons'
 import { RoomSidebar } from '~/components/parts/layout/RoomSidebar'
 import { SIZING } from '~/constants'
+import { useToast } from '~/hooks'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER, GET_ROOM, GET_ROOM_MEMBERS } from '~/queries'
 import {
@@ -17,7 +18,9 @@ import {
   GetRoomMembersQueryVariables,
   GetRoomQuery,
   GetRoomQueryVariables,
+  MessageType,
   Room,
+  useCreateMessageMutation,
   useGetMessagesQuery,
   User,
 } from '~/types/generated/graphql'
@@ -30,6 +33,8 @@ type Props = {
 }
 
 const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
+  const { toast } = useToast()
+  const [messageText, setMessageText] = useState('')
   const { data: messagesData } = useGetMessagesQuery({
     variables: {
       roomId: room.id,
@@ -37,6 +42,30 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
     fetchPolicy: 'cache-and-network',
   })
 
+  const [createMessageMutation] = useCreateMessageMutation({
+    refetchQueries: ['GetMessages'],
+  })
+
+  const sendMessageText = async () => {
+    try {
+      await createMessageMutation({
+        variables: {
+          messageType: MessageType.Text,
+          roomId: room.id,
+          body: messageText,
+        },
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: error.message,
+          status: 'error',
+        })
+      }
+    } finally {
+      setMessageText('')
+    }
+  }
   return (
     <Box display="flex" alignItems="center" justifyContent="center">
       <Box display={{ base: 'none', md: 'block' }}>
@@ -102,8 +131,17 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
           <Input
             bgColor="white.main"
             boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+            value={messageText}
+            onChange={(e) => setMessageText(e.target.value)}
           />
-          <Box transform="rotate(90deg)" w="fit-content">
+          <Box
+            transform="rotate(90deg)"
+            w="fit-content"
+            cursor="pointer"
+            position="relative"
+            _hover={{ opacity: 0.7 }}
+            onClick={sendMessageText}
+          >
             <SolidIcon icon="SOLID_PAPER_AIRPLANE" size={24} />
           </Box>
         </Box>
