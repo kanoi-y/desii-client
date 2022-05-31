@@ -1,4 +1,4 @@
-import { Box, Input } from '@chakra-ui/react'
+import { Box, Input, Spinner } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React from 'react'
@@ -9,7 +9,6 @@ import { SolidIcon } from '~/components/parts/commons'
 import { RoomSidebar } from '~/components/parts/layout/RoomSidebar'
 import { SIZING } from '~/constants'
 import { initializeApollo } from '~/lib/apolloClient'
-import { messageFactory } from '~/mocks/factories'
 import { GET_CURRENT_USER, GET_ROOM, GET_ROOM_MEMBERS } from '~/queries'
 import {
   GetCurrentUserQuery,
@@ -35,6 +34,7 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
     variables: {
       roomId: room.id,
     },
+    fetchPolicy: 'cache-and-network',
   })
 
   return (
@@ -59,6 +59,7 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
           zIndex="1"
           top="0"
           left="0"
+          bgColor="rgba(237, 242, 247, 0.85)"
           backdropFilter="auto"
           backdropBlur="12px"
           w="100%"
@@ -67,42 +68,28 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
           <RoomName room={room} currentUserId={currentUser.id} size="lg" />
         </Box>
         <Box flex="1" overflowY="auto" p="76px 16px 24px">
-          <MessageBubble
-            currentUserId={currentUser.id}
-            message={messageFactory()}
-          />
-          <MessageBubble
-            currentUserId={currentUser.id}
-            message={messageFactory({ userId: `${currentUser.id}` })}
-          />
-          <MessageBubble
-            currentUserId={currentUser.id}
-            message={messageFactory()}
-          />
-          <MessageBubble
-            currentUserId={currentUser.id}
-            message={messageFactory()}
-          />
-          <MessageBubble
-            currentUserId={currentUser.id}
-            message={messageFactory()}
-          />
-          <MessageBubble
-            currentUserId={currentUser.id}
-            message={messageFactory({ userId: `${currentUser.id}` })}
-          />
-          <MessageBubble
-            currentUserId={currentUser.id}
-            message={messageFactory({ userId: `${currentUser.id}` })}
-          />
-          <MessageBubble
-            currentUserId={currentUser.id}
-            message={messageFactory()}
-          />
-          <MessageBubble
-            currentUserId={currentUser.id}
-            message={messageFactory()}
-          />
+          {messagesData?.GetMessages ? (
+            messagesData.GetMessages.map((message) => {
+              return (
+                <Box mb="12px" key={message.id}>
+                  <MessageBubble
+                    currentUserId={currentUser.id}
+                    message={message}
+                  />
+                </Box>
+              )
+            })
+          ) : (
+            <Box
+              w="100%"
+              h="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Spinner size="md" />
+            </Box>
+          )}
         </Box>
         <Box
           p="12px 24px"
