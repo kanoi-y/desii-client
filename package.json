@@ -59,7 +59,7 @@
     "@storybook/addon-links": "6.4.22",
     "@storybook/react": "6.4.22",
     "@testing-library/react": "12.1.5",
-    "@types/jest": "27.4.1",
+    "@types/jest": "27.5.2",
     "@types/micro-cors": "0.1.2",
     "@types/next-auth": "3.15.0",
     "@types/node": "16.11.36",
