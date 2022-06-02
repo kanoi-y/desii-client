@@ -1,3 +1,4 @@
+import { ReadManagement as ReadManagementType } from '@prisma/client'
 import { extendType, nonNull, objectType, stringArg } from 'nexus'
 
 export const ReadManagement = objectType({
@@ -43,22 +44,28 @@ export const GetReadManagementQuery = extendType({
   },
 })
 
+// TODO: フロントも修正する
 export const GetReadManagementsQuery = extendType({
   type: 'Query',
   definition(t) {
     t.nonNull.list.nonNull.field('GetReadManagements', {
       type: 'ReadManagement',
       args: {
-        messageId: nonNull(stringArg()),
+        messageId: stringArg(),
+        targetUserId: stringArg(),
       },
       resolve(_parent, args, ctx) {
         if (!ctx.user) {
           throw new Error('ログインユーザーが存在しません')
         }
+        const query: Partial<ReadManagementType> = {}
+        if (args.targetUserId) query.targetUserId = args.targetUserId
+        if (args.messageId) query.messageId = args.messageId
 
         return ctx.prisma.readManagement.findMany({
-          where: {
-            messageId: args.messageId,
+          where: query,
+          orderBy: {
+            createdAt: 'desc',
           },
         })
       },

@@ -127,7 +127,7 @@ type Query {
   GetOneOnOneRoom(memberId: String!): Room
   GetPosts(groupId: String, isPrivate: Boolean, limit: Int, page: Int, sort: postOrderByType = asc, userId: String): [Post!]!
   GetReadManagement(messageId: String!, targetUserId: String!): ReadManagement
-  GetReadManagements(messageId: String!): [ReadManagement!]!
+  GetReadManagements(messageId: String, targetUserId: String): [ReadManagement!]!
   GetRoom(id: String!): Room
   GetRoomsByLoginUserId(getRoomType: GetRoomType!): [Room!]!
   GetTagByName(name: String!): Tag

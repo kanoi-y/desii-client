@@ -1,7 +1,7 @@
-import { Box, Input, Spinner, Textarea } from '@chakra-ui/react'
+import { Box, Spinner, Textarea } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MessageBubble } from '~/components/domains/message/MessageBubble'
 import { RoomIcon } from '~/components/domains/room/RoomIcon'
 import { RoomName } from '~/components/domains/room/RoomName'
@@ -23,6 +23,7 @@ import {
   useCreateMessageMutation,
   useGetMessagesQuery,
   User,
+  useUpdateReadManagementMutation,
 } from '~/types/generated/graphql'
 
 const client = initializeApollo()
@@ -43,6 +44,11 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
   })
 
   const [createMessageMutation] = useCreateMessageMutation({
+    refetchQueries: ['GetMessages'],
+  })
+
+  // 既読管理を実装
+  const [updateReadManagementMutation] = useUpdateReadManagementMutation({
     refetchQueries: ['GetMessages'],
   })
 
