@@ -1,4 +1,4 @@
-import { Box, Input, Spinner } from '@chakra-ui/react'
+import { Box, Input, Spinner, Textarea } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import React, { useState } from 'react'
@@ -128,9 +128,10 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
           borderTop="2px solid"
           borderColor="secondary.light"
         >
-          <Input
+          <Textarea
             bgColor="white.main"
             boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+            rows={1}
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
           />

@@ -54,7 +54,7 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
 
     if (latestMessageData.getMessage.type === 'MEDIA') {
       return (
-        <Text fontSize="sm">
+        <Text fontSize="sm" color="text.light">
           {isCreatedUser
             ? 'あなたが画像を送信しました'
             : `${latestMessageData.getMessage.user.name}さんが画像を送信しました`}
@@ -64,7 +64,7 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
 
     if (latestMessageData.getMessage.type === 'POST') {
       return (
-        <Text fontSize="sm">
+        <Text fontSize="sm" color="text.light">
           {isCreatedUser
             ? 'あなたが投稿に応募しました'
             : `${latestMessageData.getMessage.user.name}さんが投稿に応募しました`}
@@ -72,7 +72,11 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
       )
     }
 
-    return <Text fontSize="sm">{latestMessageData.getMessage.body}</Text>
+    return (
+      <Text fontSize="sm" color="text.light" noOfLines={1}>
+        {latestMessageData.getMessage.body}
+      </Text>
+    )
   }, [latestMessageData, currentUserId])
 
   return (
@@ -101,7 +105,7 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
         <RoomName room={room} currentUserId={currentUserId} />
         {LatestMessage}
       </Box>
-      <Box ml="auto">
+      <Box ml="auto" minW="max-content">
         <Text fontSize="xs" isBold>
           {displayDate}
         </Text>
