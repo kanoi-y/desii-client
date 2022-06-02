@@ -71,9 +71,10 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
               {`既読 ${message.room.groupId ? readManagementsCount : ''}`}
             </Text>
           )}
-          {/* FIXME: new Dateする */}
           <Text fontSize="xs" color="text.light">
-            {`${message.createdAt.getHours()}:${message.createdAt.getMinutes()}`}
+            {`${new Date(message.createdAt).getHours()}:${new Date(
+              message.createdAt
+            ).getMinutes()}`}
           </Text>
         </Box>
         <Box
@@ -129,7 +130,9 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
         </Box>
       </Box>
       <Text fontSize="xs" color="text.light">
-        {`${message.createdAt.getHours()}:${message.createdAt.getMinutes()}`}
+        {`${new Date(message.createdAt).getHours()}:${new Date(
+          message.createdAt
+        ).getMinutes()}`}
       </Text>
     </Box>
   )
