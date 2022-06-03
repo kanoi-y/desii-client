@@ -102,7 +102,6 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
         <RoomIcon room={room} currentUserId={currentUserId} />
       </Box>
       <Box>
-        {/* FIXME: RoomNameのリンクを削除 */}
         <RoomName room={room} currentUserId={currentUserId} />
         {LatestMessage}
       </Box>

@@ -361,7 +361,8 @@ export type QueryGetReadManagementArgs = {
 
 
 export type QueryGetReadManagementsArgs = {
-  messageId: Scalars['String'];
+  messageId?: InputMaybe<Scalars['String']>;
+  targetUserId?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -695,7 +696,8 @@ export type GetReadManagementQueryVariables = Exact<{
 export type GetReadManagementQuery = { __typename?: 'Query', GetReadManagement?: { __typename?: 'ReadManagement', id: string, targetUserId: string, messageId: string, isRead: boolean, createdAt: Date, updatedAt: Date } | null };
 
 export type GetReadManagementsQueryVariables = Exact<{
-  messageId: Scalars['String'];
+  targetUserId?: InputMaybe<Scalars['String']>;
+  messageId?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -1911,8 +1913,8 @@ export type GetReadManagementQueryHookResult = ReturnType<typeof useGetReadManag
 export type GetReadManagementLazyQueryHookResult = ReturnType<typeof useGetReadManagementLazyQuery>;
 export type GetReadManagementQueryResult = Apollo.QueryResult<GetReadManagementQuery, GetReadManagementQueryVariables>;
 export const GetReadManagementsDocument = gql`
-    query GetReadManagements($messageId: String!) {
-  GetReadManagements(messageId: $messageId) {
+    query GetReadManagements($targetUserId: String, $messageId: String) {
+  GetReadManagements(targetUserId: $targetUserId, messageId: $messageId) {
     id
     targetUserId
     messageId
@@ -1935,11 +1937,12 @@ export const GetReadManagementsDocument = gql`
  * @example
  * const { data, loading, error } = useGetReadManagementsQuery({
  *   variables: {
+ *      targetUserId: // value for 'targetUserId'
  *      messageId: // value for 'messageId'
  *   },
  * });
  */
-export function useGetReadManagementsQuery(baseOptions: Apollo.QueryHookOptions<GetReadManagementsQuery, GetReadManagementsQueryVariables>) {
+export function useGetReadManagementsQuery(baseOptions?: Apollo.QueryHookOptions<GetReadManagementsQuery, GetReadManagementsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetReadManagementsQuery, GetReadManagementsQueryVariables>(GetReadManagementsDocument, options);
       }
