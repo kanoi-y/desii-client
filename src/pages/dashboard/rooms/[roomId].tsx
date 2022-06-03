@@ -1,7 +1,7 @@
 import { Box, Spinner, Textarea } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { MessageBubble } from '~/components/domains/message/MessageBubble'
 import { RoomIcon } from '~/components/domains/room/RoomIcon'
 import { RoomName } from '~/components/domains/room/RoomName'
@@ -19,9 +19,11 @@ import {
   GetRoomQuery,
   GetRoomQueryVariables,
   MessageType,
+  ReadManagement,
   Room,
   useCreateMessageMutation,
   useGetMessagesQuery,
+  useGetReadManagementsQuery,
   User,
   useUpdateReadManagementMutation,
 } from '~/types/generated/graphql'
@@ -43,14 +45,56 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
     fetchPolicy: 'cache-and-network',
   })
 
+  const { data: readManagementsData } = useGetReadManagementsQuery({
+    variables: {
+      targetUserId: currentUser.id,
+    },
+    fetchPolicy: 'cache-and-network',
+  })
+
   const [createMessageMutation] = useCreateMessageMutation({
     refetchQueries: ['GetMessages'],
   })
 
-  // 既読管理を実装
   const [updateReadManagementMutation] = useUpdateReadManagementMutation({
     refetchQueries: ['GetMessages'],
   })
+
+  const updateReadManagement = useCallback(
+    async (readManagements: ReadManagement[], index: number) => {
+      const readManagement = readManagements[index]
+      if (readManagement.isRead) return
+
+      try {
+        await updateReadManagementMutation({
+          variables: {
+            targetUserId: readManagement.targetUserId,
+            messageId: readManagement.messageId,
+          },
+        })
+        if (readManagements.length - 1 <= index) return
+        await updateReadManagement(readManagements, index + 1)
+      } catch (error) {
+        if (error instanceof Error) {
+          toast({
+            title: error.message,
+            status: 'error',
+          })
+        }
+      }
+    },
+    [toast, updateReadManagementMutation]
+  )
+
+  useEffect(() => {
+    if (
+      !readManagementsData?.GetReadManagements ||
+      readManagementsData.GetReadManagements.length === 0
+    )
+      return
+
+    updateReadManagement(readManagementsData.GetReadManagements, 0)
+  }, [readManagementsData, updateReadManagement])
 
   const sendMessageText = async () => {
     try {

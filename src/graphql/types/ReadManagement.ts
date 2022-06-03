@@ -44,7 +44,6 @@ export const GetReadManagementQuery = extendType({
   },
 })
 
-// TODO: フロントも修正する
 export const GetReadManagementsQuery = extendType({
   type: 'Query',
   definition(t) {
