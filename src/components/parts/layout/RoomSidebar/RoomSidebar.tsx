@@ -19,7 +19,9 @@ export const RoomSidebar: VFC<Props> = ({ currentUser }) => {
     variables: {
       getRoomType: GetRoomType.All,
     },
+    fetchPolicy: 'cache-and-network',
   })
+
   return (
     <Box
       borderRight="2px solid"
@@ -28,12 +30,7 @@ export const RoomSidebar: VFC<Props> = ({ currentUser }) => {
       width={{ base: '600px', md: '340px' }}
       maxW="100%"
     >
-      <Box
-        display="flex"
-        alignItems="center"
-        gap="4px"
-        p="16px 12px"
-      >
+      <Box display="flex" alignItems="center" gap="4px" p="16px 12px">
         <SolidIcon icon="SOLID_CHAT" size={36} />
         <Text fontSize="lg" isBold>
           メッセージ
