@@ -12,9 +12,6 @@ export const Room = objectType({
     t.nonNull.string('id')
     t.string('groupId')
     t.string('latestMessageId')
-    t.field('group', {
-      type: 'Group',
-    })
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -36,9 +33,6 @@ export const GetRoomQuery = extendType({
         return ctx.prisma.room.findUnique({
           where: {
             id: args.id,
-          },
-          include: {
-            group: true,
           },
         })
       },
@@ -73,11 +67,7 @@ export const GetOneOnOneRoomQuery = extendType({
             ],
           },
           include: {
-            room: {
-              include: {
-                group: true,
-              },
-            },
+            room: true,
           },
         })
 
@@ -124,11 +114,7 @@ export const GetRoomsByLoginUserIdQuery = extendType({
             userId: ctx.user.id,
           },
           include: {
-            room: {
-              include: {
-                group: true,
-              },
-            },
+            room: true,
           },
         })
 
@@ -247,9 +233,6 @@ export const DeleteRoomMutation = extendType({
         return ctx.prisma.room.delete({
           where: {
             id: args.id,
-          },
-          include: {
-            group: true,
           },
         })
       },
