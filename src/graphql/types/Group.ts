@@ -1,6 +1,7 @@
 import { extendType, nonNull, objectType, stringArg } from 'nexus'
 import { Context } from '../context'
 
+// TODO: roomIdを追加
 export const Group = objectType({
   name: 'Group',
   definition(t) {

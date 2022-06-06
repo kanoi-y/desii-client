@@ -6,6 +6,7 @@ export const GetRoomType = enumType({
   members: ['ALL', 'ONLY_ONE_ON_ONE', 'ONLY_GROUP'],
 })
 
+// TODO: groupIdを削除
 export const Room = objectType({
   name: 'Room',
   definition(t) {
