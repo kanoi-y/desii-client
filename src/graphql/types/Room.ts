@@ -1,4 +1,4 @@
-import { Room as RoomType, RoomMember } from '@prisma/client'
+import { Group, Room as RoomType, RoomMember } from '@prisma/client'
 import { enumType, extendType, nonNull, objectType, stringArg } from 'nexus'
 
 export const GetRoomType = enumType({
@@ -6,13 +6,14 @@ export const GetRoomType = enumType({
   members: ['ALL', 'ONLY_ONE_ON_ONE', 'ONLY_GROUP'],
 })
 
-// TODO: groupIdを削除
 export const Room = objectType({
   name: 'Room',
   definition(t) {
     t.nonNull.string('id')
-    t.string('groupId')
     t.string('latestMessageId')
+    t.field('group', {
+      type: 'Group',
+    })
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -35,6 +36,9 @@ export const GetRoomQuery = extendType({
           where: {
             id: args.id,
           },
+          include: {
+            group: true,
+          },
         })
       },
     })
@@ -55,7 +59,7 @@ export const GetOneOnOneRoomQuery = extendType({
         }
 
         const roomMembers: (RoomMember & {
-          room: RoomType
+          room: RoomType & { group: Group | null }
         })[] = await ctx.prisma.roomMember.findMany({
           where: {
             OR: [
@@ -68,7 +72,11 @@ export const GetOneOnOneRoomQuery = extendType({
             ],
           },
           include: {
-            room: true,
+            room: {
+              include: {
+                group: true,
+              },
+            },
           },
         })
 
@@ -76,7 +84,7 @@ export const GetOneOnOneRoomQuery = extendType({
           roomMembers.find(
             (
               roomMember: RoomMember & {
-                room: RoomType
+                room: RoomType & { group: Group | null }
               },
               index,
               self
@@ -84,11 +92,11 @@ export const GetOneOnOneRoomQuery = extendType({
               const selfIndex = self.findIndex(
                 (
                   dataElement: RoomMember & {
-                    room: RoomType
+                    room: RoomType & { group: Group | null }
                   }
                 ) => dataElement.roomId === roomMember.roomId
               )
-              return selfIndex !== index && !roomMember.room.groupId
+              return selfIndex !== index && !roomMember.room.group
             }
           )?.room || null
         )
@@ -115,7 +123,11 @@ export const GetRoomsByLoginUserIdQuery = extendType({
             userId: ctx.user.id,
           },
           include: {
-            room: true,
+            room: {
+              include: {
+                group: true,
+              },
+            },
           },
         })
 
@@ -123,18 +135,18 @@ export const GetRoomsByLoginUserIdQuery = extendType({
           .map(
             (
               roomMember: RoomMember & {
-                room: RoomType
+                room: RoomType & { group: Group | null }
               }
             ) => {
               return roomMember.room
             }
           )
-          .filter((room: RoomType) => {
+          .filter((room: RoomType & { group: Group | null }) => {
             if (args.getRoomType === 'ONLY_ONE_ON_ONE') {
-              return !room.groupId
+              return !room.group
             }
             if (args.getRoomType === 'ONLY_GROUP') {
-              return room.groupId
+              return !!room.group
             }
             return true
           })
@@ -205,13 +217,16 @@ export const DeleteRoomMutation = extendType({
           where: {
             id: args.id,
           },
+          include: {
+            group: true,
+          },
         })
 
         if (!room) {
           throw new Error('ルームが存在しません')
         }
 
-        if (room.groupId) {
+        if (room.group) {
           throw new Error(
             'グループに紐づいているルームはルームだけ削除することは出来ません'
           )
