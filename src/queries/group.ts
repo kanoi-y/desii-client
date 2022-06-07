@@ -9,6 +9,7 @@ export const GET_GROUP_BY_ID = gql`
       image
       adminUserId
       productId
+      roomId
       createdAt
       updatedAt
     }
@@ -34,6 +35,7 @@ export const CREATE_GROUP = gql`
       image
       adminUserId
       productId
+      roomId
       createdAt
       updatedAt
     }
@@ -48,6 +50,7 @@ export const DELETE_GROUP = gql`
       image
       adminUserId
       productId
+      roomId
       createdAt
       updatedAt
     }
@@ -75,6 +78,7 @@ export const UPDATE_GROUP = gql`
       image
       adminUserId
       productId
+      roomId
       createdAt
       updatedAt
     }
