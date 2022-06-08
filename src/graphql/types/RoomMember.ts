@@ -41,13 +41,16 @@ export const GetTargetRoomMemberQuery = extendType({
           where: {
             id: args.roomId,
           },
+          include: {
+            group: true,
+          },
         })
 
         if (!room) {
           throw new Error('ルームが存在しません')
         }
 
-        if (room.groupId) {
+        if (room.group) {
           throw new Error('ルームが一対一のルームではありません')
         }
 
