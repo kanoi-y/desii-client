@@ -12,6 +12,7 @@ export const GET_ROOM = gql`
         image
         adminUserId
         productId
+        roomId
         createdAt
         updatedAt
       }
@@ -33,6 +34,7 @@ export const GET_ONE_ON_ONE_ROOM = gql`
         image
         adminUserId
         productId
+        roomId
         createdAt
         updatedAt
       }
@@ -54,6 +56,7 @@ export const GET_ROOMS_BY_LOGIN_USER_ID = gql`
         image
         adminUserId
         productId
+        roomId
         createdAt
         updatedAt
       }
@@ -75,6 +78,7 @@ export const CREATE_ROOM = gql`
         image
         adminUserId
         productId
+        roomId
         createdAt
         updatedAt
       }
@@ -96,6 +100,7 @@ export const DELETE_ROOM = gql`
         image
         adminUserId
         productId
+        roomId
         createdAt
         updatedAt
       }

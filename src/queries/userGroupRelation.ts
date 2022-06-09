@@ -25,6 +25,7 @@ export const GET_USER_GROUP_RELATIONS = gql`
         image
         adminUserId
         productId
+        roomId
         createdAt
         updatedAt
       }
@@ -57,6 +58,7 @@ export const CREATE_USER_GROUP_RELATION = gql`
         image
         adminUserId
         productId
+        roomId
         createdAt
         updatedAt
       }
@@ -89,6 +91,7 @@ export const DELETE_USER_GROUP_RELATION = gql`
         image
         adminUserId
         productId
+        roomId
         createdAt
         updatedAt
       }

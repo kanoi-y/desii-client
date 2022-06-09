@@ -18,6 +18,7 @@ export const GET_TARGET_ROOM_MEMBER = gql`
           image
           adminUserId
           productId
+          roomId
           createdAt
           updatedAt
         }
@@ -55,6 +56,7 @@ export const GET_ROOM_MEMBERS = gql`
           image
           adminUserId
           productId
+          roomId
           createdAt
           updatedAt
         }

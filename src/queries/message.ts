@@ -27,6 +27,7 @@ export const GET_MESSAGE = gql`
           image
           adminUserId
           productId
+          roomId
           createdAt
           updatedAt
         }
@@ -66,6 +67,7 @@ export const GET_MESSAGES = gql`
           image
           adminUserId
           productId
+          roomId
           createdAt
           updatedAt
         }
@@ -109,6 +111,7 @@ export const CREATE_MESSAGE = gql`
           image
           adminUserId
           productId
+          roomId
           createdAt
           updatedAt
         }
@@ -148,6 +151,7 @@ export const DELETE_MESSAGE = gql`
           image
           adminUserId
           productId
+          roomId
           createdAt
           updatedAt
         }
