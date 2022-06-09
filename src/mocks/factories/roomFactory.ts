@@ -6,7 +6,6 @@ export const roomFactory = (options?: Partial<Room>): Room => {
   return {
     __typename: 'Room',
     id: nextFactoryId('room'),
-    groupId: 'groupId',
     latestMessageId: 'latestMessageId',
     createdAt: new Date(),
     updatedAt: new Date(),
