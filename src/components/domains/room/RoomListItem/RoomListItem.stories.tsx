@@ -33,7 +33,6 @@ RoomListItemRelatedByGroup.args = {
 }
 
 const mockOneOnOneRoom = roomFactory({
-  groupId: undefined,
   group: undefined,
 })
 

@@ -68,7 +68,7 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
         <Box>
           {readManagementsCount > 0 && (
             <Text fontSize="xs" color="text.light">
-              {`既読 ${message.room.groupId ? readManagementsCount : ''}`}
+              {`既読 ${message.room.group ? readManagementsCount : ''}`}
             </Text>
           )}
           <Text fontSize="xs" color="text.light">
@@ -109,7 +109,7 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
         <GuestUserIcon size="sm" />
       )}
       <Box maxW="65%">
-        {message.room.groupId && (
+        {message.room.group && (
           <Box pl="8px">
             <Text fontSize="xs" color="text.light">
               {message.user.name}

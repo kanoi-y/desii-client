@@ -25,7 +25,6 @@ const Template: ComponentStory<typeof MessageBubble> = ({ ...args }) => {
 
 const mockMessage = messageFactory({
   room: roomFactory({
-    groupId: undefined,
     group: undefined,
   }),
 })
