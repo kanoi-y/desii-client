@@ -308,6 +308,7 @@ export type Query = {
   getAllTags: Array<Tag>;
   getCurrentUser?: Maybe<User>;
   getGroup?: Maybe<Group>;
+  getGroupByRoomId?: Maybe<Group>;
   getMessage?: Maybe<Message>;
   getPost?: Maybe<Post>;
   getRoomMembers: Array<RoomMember>;
@@ -407,6 +408,11 @@ export type QueryGetCurrentUserArgs = {
 
 export type QueryGetGroupArgs = {
   id: Scalars['String'];
+};
+
+
+export type QueryGetGroupByRoomIdArgs = {
+  roomId: Scalars['String'];
 };
 
 
@@ -554,6 +560,13 @@ export type GetGroupQueryVariables = Exact<{
 
 
 export type GetGroupQuery = { __typename?: 'Query', getGroup?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, roomId: string, createdAt: Date, updatedAt: Date } | null };
+
+export type GetGroupByRoomIdQueryVariables = Exact<{
+  roomId: Scalars['String'];
+}>;
+
+
+export type GetGroupByRoomIdQuery = { __typename?: 'Query', getGroupByRoomId?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, roomId: string, createdAt: Date, updatedAt: Date } | null };
 
 export type CreateGroupMutationVariables = Exact<{
   name: Scalars['String'];
@@ -1114,6 +1127,49 @@ export function useGetGroupLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetGroupQueryHookResult = ReturnType<typeof useGetGroupQuery>;
 export type GetGroupLazyQueryHookResult = ReturnType<typeof useGetGroupLazyQuery>;
 export type GetGroupQueryResult = Apollo.QueryResult<GetGroupQuery, GetGroupQueryVariables>;
+export const GetGroupByRoomIdDocument = gql`
+    query GetGroupByRoomId($roomId: String!) {
+  getGroupByRoomId(roomId: $roomId) {
+    id
+    name
+    description
+    image
+    adminUserId
+    productId
+    roomId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetGroupByRoomIdQuery__
+ *
+ * To run a query within a React component, call `useGetGroupByRoomIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetGroupByRoomIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetGroupByRoomIdQuery({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useGetGroupByRoomIdQuery(baseOptions: Apollo.QueryHookOptions<GetGroupByRoomIdQuery, GetGroupByRoomIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetGroupByRoomIdQuery, GetGroupByRoomIdQueryVariables>(GetGroupByRoomIdDocument, options);
+      }
+export function useGetGroupByRoomIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetGroupByRoomIdQuery, GetGroupByRoomIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetGroupByRoomIdQuery, GetGroupByRoomIdQueryVariables>(GetGroupByRoomIdDocument, options);
+        }
+export type GetGroupByRoomIdQueryHookResult = ReturnType<typeof useGetGroupByRoomIdQuery>;
+export type GetGroupByRoomIdLazyQueryHookResult = ReturnType<typeof useGetGroupByRoomIdLazyQuery>;
+export type GetGroupByRoomIdQueryResult = Apollo.QueryResult<GetGroupByRoomIdQuery, GetGroupByRoomIdQueryVariables>;
 export const CreateGroupDocument = gql`
     mutation CreateGroup($name: String!, $image: String!, $productId: String!, $description: String) {
   createGroup(

@@ -1,5 +1,4 @@
 import { extendType, nonNull, objectType, stringArg } from 'nexus'
-import { Context } from '../context'
 
 export const Group = objectType({
   name: 'Group',
@@ -32,6 +31,25 @@ export const GetGroupQuery = extendType({
         return ctx.prisma.group.findUnique({
           where: {
             id: args.id,
+          },
+        })
+      },
+    })
+  },
+})
+
+export const GetGroupByRoomIdQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.field('getGroupByRoomId', {
+      type: 'Group',
+      args: {
+        roomId: nonNull(stringArg()),
+      },
+      resolve(_parent, args, ctx) {
+        return ctx.prisma.group.findUnique({
+          where: {
+            roomId: args.roomId,
           },
         })
       },
