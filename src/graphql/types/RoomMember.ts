@@ -41,16 +41,19 @@ export const GetTargetRoomMemberQuery = extendType({
           where: {
             id: args.roomId,
           },
-          include: {
-            group: true,
-          },
         })
 
         if (!room) {
           throw new Error('ルームが存在しません')
         }
 
-        if (room.group) {
+        const group = await ctx.prisma.group.findUnique({
+          where: {
+            roomId: args.roomId,
+          },
+        })
+
+        if (group) {
           throw new Error('ルームが一対一のルームではありません')
         }
 
