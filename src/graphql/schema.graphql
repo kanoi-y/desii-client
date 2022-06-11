@@ -156,7 +156,6 @@ type ReadManagement {
 
 type Room {
   createdAt: DateTime!
-  group: Group
   id: String!
   latestMessageId: String
   updatedAt: DateTime!

@@ -1,4 +1,4 @@
-import { Group, Room as RoomType, RoomMember } from '@prisma/client'
+import { Room as RoomType, RoomMember } from '@prisma/client'
 import { enumType, extendType, nonNull, objectType, stringArg } from 'nexus'
 
 export const GetRoomType = enumType({
@@ -11,9 +11,6 @@ export const Room = objectType({
   definition(t) {
     t.nonNull.string('id')
     t.string('latestMessageId')
-    t.field('group', {
-      type: 'Group',
-    })
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -36,9 +33,6 @@ export const GetRoomQuery = extendType({
           where: {
             id: args.id,
           },
-          include: {
-            group: true,
-          },
         })
       },
     })
@@ -59,7 +53,7 @@ export const GetOneOnOneRoomQuery = extendType({
         }
 
         const roomMembers: (RoomMember & {
-          room: RoomType & { group: Group | null }
+          room: RoomType
         })[] = await ctx.prisma.roomMember.findMany({
           where: {
             OR: [
@@ -72,19 +66,29 @@ export const GetOneOnOneRoomQuery = extendType({
             ],
           },
           include: {
-            room: {
-              include: {
-                group: true,
-              },
-            },
+            room: true,
           },
         })
+
+        console.log(roomMembers)
+
+        const roomIdRelatedByGroup = (
+          await ctx.prisma.group.findMany({
+            where: {
+              OR: roomMembers.map((roomMember) => {
+                return {
+                  roomId: roomMember.roomId,
+                }
+              }),
+            },
+          })
+        ).map((group) => group.roomId)
 
         return (
           roomMembers.find(
             (
               roomMember: RoomMember & {
-                room: RoomType & { group: Group | null }
+                room: RoomType
               },
               index,
               self
@@ -92,11 +96,14 @@ export const GetOneOnOneRoomQuery = extendType({
               const selfIndex = self.findIndex(
                 (
                   dataElement: RoomMember & {
-                    room: RoomType & { group: Group | null }
+                    room: RoomType
                   }
                 ) => dataElement.roomId === roomMember.roomId
               )
-              return selfIndex !== index && !roomMember.room.group
+              return (
+                selfIndex !== index &&
+                !roomIdRelatedByGroup.includes(roomMember.roomId)
+              )
             }
           )?.room || null
         )
@@ -123,30 +130,38 @@ export const GetRoomsByLoginUserIdQuery = extendType({
             userId: ctx.user.id,
           },
           include: {
-            room: {
-              include: {
-                group: true,
-              },
-            },
+            room: true,
           },
         })
+
+        const roomIdRelatedByGroup = (
+          await ctx.prisma.group.findMany({
+            where: {
+              OR: roomMembers.map((roomMember) => {
+                return {
+                  roomId: roomMember.roomId,
+                }
+              }),
+            },
+          })
+        ).map((group) => group.roomId)
 
         return roomMembers
           .map(
             (
               roomMember: RoomMember & {
-                room: RoomType & { group: Group | null }
+                room: RoomType
               }
             ) => {
               return roomMember.room
             }
           )
-          .filter((room: RoomType & { group: Group | null }) => {
+          .filter((room: RoomType) => {
             if (args.getRoomType === 'ONLY_ONE_ON_ONE') {
-              return !room.group
+              return !roomIdRelatedByGroup.includes(room.id)
             }
             if (args.getRoomType === 'ONLY_GROUP') {
-              return !!room.group
+              return roomIdRelatedByGroup.includes(room.id)
             }
             return true
           })
@@ -217,16 +232,19 @@ export const DeleteRoomMutation = extendType({
           where: {
             id: args.id,
           },
-          include: {
-            group: true,
-          },
         })
 
         if (!room) {
           throw new Error('ルームが存在しません')
         }
 
-        if (room.group) {
+        const group = await ctx.prisma.group.findUnique({
+          where: {
+            roomId: room.id,
+          },
+        })
+
+        if (group) {
           throw new Error(
             'グループに紐づいているルームはルームだけ削除することは出来ません'
           )
