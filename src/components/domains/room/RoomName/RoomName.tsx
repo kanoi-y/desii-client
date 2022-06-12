@@ -1,7 +1,7 @@
 import { SkeletonText } from '@chakra-ui/react'
 import { VFC } from 'react'
 import { Link, Text } from '~/components/parts/commons'
-import { Room, useGetTargetRoomMemberQuery } from '~/types/generated/graphql'
+import { Room, useGetGroupByRoomIdQuery, useGetTargetRoomMemberQuery } from '~/types/generated/graphql'
 
 type sizeType =
   | 'xs'
@@ -29,11 +29,17 @@ export const RoomName: VFC<Props> = ({ room, currentUserId, size = 'md' }) => {
     },
   })
 
-  if (room.group) {
+  const { data: groupData } = useGetGroupByRoomIdQuery({
+    variables: {
+      roomId: room.id,
+    },
+  })
+
+  if (groupData?.getGroupByRoomId) {
     return (
-      <Link href={`/${room.group.productId}`}>
+      <Link href={`/${groupData?.getGroupByRoomId.productId}`}>
         <Text fontSize={size} isBold color="primary.main">
-          {room.group.name}
+          {groupData?.getGroupByRoomId.name}
         </Text>
       </Link>
     )

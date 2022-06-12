@@ -1,9 +1,8 @@
 import { ApolloProvider } from '@apollo/client'
 import { Box } from '@chakra-ui/react'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import React from 'react'
 import { initializeApollo } from '~/lib/apolloClient'
-import { messageFactory, roomFactory } from '~/mocks/factories'
+import { messageFactory } from '~/mocks/factories'
 import { MessageType } from '~/types/generated/graphql'
 import { MessageBubble } from './MessageBubble'
 
@@ -23,11 +22,7 @@ const Template: ComponentStory<typeof MessageBubble> = ({ ...args }) => {
   )
 }
 
-const mockMessage = messageFactory({
-  room: roomFactory({
-    group: undefined,
-  }),
-})
+const mockMessage = messageFactory()
 
 export const DefaultMessageBubble = Template.bind({})
 DefaultMessageBubble.args = {
@@ -50,7 +45,9 @@ TargetUserMessageBubble.args = {
   currentUserId: 'currentUserId',
 }
 
-const mockMessageByRoomRelatedGroup = messageFactory()
+const mockMessageByRoomRelatedGroup = messageFactory({
+  roomId: 'roomIdRelatedByGroup',
+})
 
 export const TargetUserByRoomRelatedGroupMessageBubble = Template.bind({})
 TargetUserByRoomRelatedGroupMessageBubble.args = {

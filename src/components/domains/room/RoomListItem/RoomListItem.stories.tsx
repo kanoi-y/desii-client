@@ -24,7 +24,9 @@ const Template: ComponentStory<typeof RoomListItem> = ({ ...args }) => {
   )
 }
 
-const mockRoom = roomFactory()
+const mockRoom = roomFactory({
+  id: 'roomIdRelatedByGroup',
+})
 
 export const RoomListItemRelatedByGroup = Template.bind({})
 RoomListItemRelatedByGroup.args = {
@@ -32,9 +34,7 @@ RoomListItemRelatedByGroup.args = {
   currentUserId: 'currentUserId',
 }
 
-const mockOneOnOneRoom = roomFactory({
-  group: undefined,
-})
+const mockOneOnOneRoom = roomFactory()
 
 export const OneOnOneRoomListItem = Template.bind({})
 OneOnOneRoomListItem.args = {

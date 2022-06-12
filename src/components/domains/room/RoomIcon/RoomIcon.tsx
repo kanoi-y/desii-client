@@ -2,7 +2,11 @@ import { Avatar } from '@chakra-ui/react'
 import { VFC } from 'react'
 import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Link } from '~/components/parts/commons'
-import { Room, useGetTargetRoomMemberQuery } from '~/types/generated/graphql'
+import {
+  Room,
+  useGetGroupByRoomIdQuery,
+  useGetTargetRoomMemberQuery,
+} from '~/types/generated/graphql'
 
 type sizeType = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full'
 
@@ -20,13 +24,19 @@ export const RoomIcon: VFC<Props> = ({ room, currentUserId, size = 'md' }) => {
     },
   })
 
-  if (room.group) {
+  const { data: groupData } = useGetGroupByRoomIdQuery({
+    variables: {
+      roomId: room.id,
+    },
+  })
+
+  if (groupData?.getGroupByRoomId) {
     return (
-      <Link href={`/${room.group.productId}`}>
+      <Link href={`/${groupData.getGroupByRoomId.productId}`}>
         <Avatar
-          name={room.group.name}
+          name={groupData.getGroupByRoomId.name}
           size={size}
-          src={room.group.image}
+          src={groupData.getGroupByRoomId.image}
           bg="white.main"
           _hover={{
             background: 'secondary.light',
