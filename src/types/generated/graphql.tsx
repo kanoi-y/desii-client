@@ -43,6 +43,7 @@ export type Group = {
   image: Scalars['String'];
   name: Scalars['String'];
   productId: Scalars['String'];
+  roomId: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
 
@@ -307,6 +308,7 @@ export type Query = {
   getAllTags: Array<Tag>;
   getCurrentUser?: Maybe<User>;
   getGroup?: Maybe<Group>;
+  getGroupByRoomId?: Maybe<Group>;
   getMessage?: Maybe<Message>;
   getPost?: Maybe<Post>;
   getRoomMembers: Array<RoomMember>;
@@ -361,7 +363,8 @@ export type QueryGetReadManagementArgs = {
 
 
 export type QueryGetReadManagementsArgs = {
-  messageId: Scalars['String'];
+  messageId?: InputMaybe<Scalars['String']>;
+  targetUserId?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -408,6 +411,11 @@ export type QueryGetGroupArgs = {
 };
 
 
+export type QueryGetGroupByRoomIdArgs = {
+  roomId: Scalars['String'];
+};
+
+
 export type QueryGetMessageArgs = {
   id: Scalars['String'];
 };
@@ -447,8 +455,6 @@ export type ReadManagement = {
 export type Room = {
   __typename?: 'Room';
   createdAt: Scalars['DateTime'];
-  group?: Maybe<Group>;
-  groupId?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   latestMessageId?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
@@ -552,7 +558,14 @@ export type GetGroupQueryVariables = Exact<{
 }>;
 
 
-export type GetGroupQuery = { __typename?: 'Query', getGroup?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null };
+export type GetGroupQuery = { __typename?: 'Query', getGroup?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, roomId: string, createdAt: Date, updatedAt: Date } | null };
+
+export type GetGroupByRoomIdQueryVariables = Exact<{
+  roomId: Scalars['String'];
+}>;
+
+
+export type GetGroupByRoomIdQuery = { __typename?: 'Query', getGroupByRoomId?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, roomId: string, createdAt: Date, updatedAt: Date } | null };
 
 export type CreateGroupMutationVariables = Exact<{
   name: Scalars['String'];
@@ -562,14 +575,14 @@ export type CreateGroupMutationVariables = Exact<{
 }>;
 
 
-export type CreateGroupMutation = { __typename?: 'Mutation', createGroup: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } };
+export type CreateGroupMutation = { __typename?: 'Mutation', createGroup: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, roomId: string, createdAt: Date, updatedAt: Date } };
 
 export type DeleteGroupMutationVariables = Exact<{
   deleteGroupId: Scalars['String'];
 }>;
 
 
-export type DeleteGroupMutation = { __typename?: 'Mutation', deleteGroup: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } };
+export type DeleteGroupMutation = { __typename?: 'Mutation', deleteGroup: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, roomId: string, createdAt: Date, updatedAt: Date } };
 
 export type UpdateGroupMutationVariables = Exact<{
   updateGroupId: Scalars['String'];
@@ -580,14 +593,14 @@ export type UpdateGroupMutationVariables = Exact<{
 }>;
 
 
-export type UpdateGroupMutation = { __typename?: 'Mutation', updateGroup: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } };
+export type UpdateGroupMutation = { __typename?: 'Mutation', updateGroup: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, roomId: string, createdAt: Date, updatedAt: Date } };
 
 export type GetMessageQueryVariables = Exact<{
   getMessageId: Scalars['String'];
 }>;
 
 
-export type GetMessageQuery = { __typename?: 'Query', getMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date }, room: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } } | null };
+export type GetMessageQuery = { __typename?: 'Query', getMessage?: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date }, room: { __typename?: 'Room', id: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } } | null };
 
 export type GetMessagesQueryVariables = Exact<{
   roomId: Scalars['String'];
@@ -595,7 +608,7 @@ export type GetMessagesQueryVariables = Exact<{
 }>;
 
 
-export type GetMessagesQuery = { __typename?: 'Query', GetMessages: Array<{ __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date }, room: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } }> };
+export type GetMessagesQuery = { __typename?: 'Query', GetMessages: Array<{ __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date }, room: { __typename?: 'Room', id: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } }> };
 
 export type CreateMessageMutationVariables = Exact<{
   messageType: MessageType;
@@ -604,14 +617,14 @@ export type CreateMessageMutationVariables = Exact<{
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'Mutation', CreateMessage: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date }, room: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } } };
+export type CreateMessageMutation = { __typename?: 'Mutation', CreateMessage: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date }, room: { __typename?: 'Room', id: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } } };
 
 export type DeleteMessageMutationVariables = Exact<{
   deleteMessageId: Scalars['String'];
 }>;
 
 
-export type DeleteMessageMutation = { __typename?: 'Mutation', DeleteMessage: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date }, room: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } } };
+export type DeleteMessageMutation = { __typename?: 'Mutation', DeleteMessage: { __typename?: 'Message', id: string, type: MessageType, roomId: string, userId: string, body: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date }, room: { __typename?: 'Room', id: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } } };
 
 export type GetNotificationsQueryVariables = Exact<{
   targetUserId: Scalars['String'];
@@ -695,7 +708,8 @@ export type GetReadManagementQueryVariables = Exact<{
 export type GetReadManagementQuery = { __typename?: 'Query', GetReadManagement?: { __typename?: 'ReadManagement', id: string, targetUserId: string, messageId: string, isRead: boolean, createdAt: Date, updatedAt: Date } | null };
 
 export type GetReadManagementsQueryVariables = Exact<{
-  messageId: Scalars['String'];
+  targetUserId?: InputMaybe<Scalars['String']>;
+  messageId?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -714,35 +728,35 @@ export type GetRoomQueryVariables = Exact<{
 }>;
 
 
-export type GetRoomQuery = { __typename?: 'Query', GetRoom?: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } | null };
+export type GetRoomQuery = { __typename?: 'Query', GetRoom?: { __typename?: 'Room', id: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } | null };
 
 export type GetOneOnOneRoomQueryVariables = Exact<{
   memberId: Scalars['String'];
 }>;
 
 
-export type GetOneOnOneRoomQuery = { __typename?: 'Query', GetOneOnOneRoom?: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } | null };
+export type GetOneOnOneRoomQuery = { __typename?: 'Query', GetOneOnOneRoom?: { __typename?: 'Room', id: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } | null };
 
 export type GetRoomsByLoginUserIdQueryVariables = Exact<{
   getRoomType: GetRoomType;
 }>;
 
 
-export type GetRoomsByLoginUserIdQuery = { __typename?: 'Query', GetRoomsByLoginUserId: Array<{ __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null }> };
+export type GetRoomsByLoginUserIdQuery = { __typename?: 'Query', GetRoomsByLoginUserId: Array<{ __typename?: 'Room', id: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date }> };
 
 export type CreateRoomMutationVariables = Exact<{
   memberId: Scalars['String'];
 }>;
 
 
-export type CreateRoomMutation = { __typename?: 'Mutation', CreateRoom: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } };
+export type CreateRoomMutation = { __typename?: 'Mutation', CreateRoom: { __typename?: 'Room', id: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } };
 
 export type DeleteRoomMutationVariables = Exact<{
   deleteRoomId: Scalars['String'];
 }>;
 
 
-export type DeleteRoomMutation = { __typename?: 'Mutation', DeleteRoom: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date, group?: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } | null } };
+export type DeleteRoomMutation = { __typename?: 'Mutation', DeleteRoom: { __typename?: 'Room', id: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date } };
 
 export type GetTargetRoomMemberQueryVariables = Exact<{
   roomId: Scalars['String'];
@@ -750,7 +764,7 @@ export type GetTargetRoomMemberQueryVariables = Exact<{
 }>;
 
 
-export type GetTargetRoomMemberQuery = { __typename?: 'Query', getTargetRoomMember?: { __typename?: 'RoomMember', id: string, roomId: string, userId: string, createdAt: Date, updatedAt: Date, room: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date }, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } } | null };
+export type GetTargetRoomMemberQuery = { __typename?: 'Query', getTargetRoomMember?: { __typename?: 'RoomMember', id: string, roomId: string, userId: string, createdAt: Date, updatedAt: Date, room: { __typename?: 'Room', id: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date }, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } } | null };
 
 export type GetRoomMembersQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['String']>;
@@ -758,7 +772,7 @@ export type GetRoomMembersQueryVariables = Exact<{
 }>;
 
 
-export type GetRoomMembersQuery = { __typename?: 'Query', getRoomMembers: Array<{ __typename?: 'RoomMember', id: string, roomId: string, userId: string, createdAt: Date, updatedAt: Date, room: { __typename?: 'Room', id: string, groupId?: string | null, latestMessageId?: string | null, createdAt: Date, updatedAt: Date }, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, accessToken?: string | null, createdAt: Date, updatedAt: Date } }> };
+export type GetRoomMembersQuery = { __typename?: 'Query', getRoomMembers: Array<{ __typename?: 'RoomMember', id: string, roomId: string, userId: string, createdAt: Date, updatedAt: Date, room: { __typename?: 'Room', id: string, latestMessageId?: string | null, createdAt: Date, updatedAt: Date }, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, accessToken?: string | null, createdAt: Date, updatedAt: Date } }> };
 
 export type GetAllTagsQueryVariables = Exact<{
   sort?: InputMaybe<OrderByType>;
@@ -827,7 +841,7 @@ export type GetUserGroupRelationsQueryVariables = Exact<{
 }>;
 
 
-export type GetUserGroupRelationsQuery = { __typename?: 'Query', GetUserGroupRelations: Array<{ __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, accessToken?: string | null, createdAt: Date, updatedAt: Date }, group: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } }> };
+export type GetUserGroupRelationsQuery = { __typename?: 'Query', GetUserGroupRelations: Array<{ __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, accessToken?: string | null, createdAt: Date, updatedAt: Date }, group: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, roomId: string, createdAt: Date, updatedAt: Date } }> };
 
 export type CreateUserGroupRelationMutationVariables = Exact<{
   userId: Scalars['String'];
@@ -835,7 +849,7 @@ export type CreateUserGroupRelationMutationVariables = Exact<{
 }>;
 
 
-export type CreateUserGroupRelationMutation = { __typename?: 'Mutation', createUserGroupRelation: { __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, accessToken?: string | null, createdAt: Date, updatedAt: Date }, group: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } } };
+export type CreateUserGroupRelationMutation = { __typename?: 'Mutation', createUserGroupRelation: { __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, accessToken?: string | null, createdAt: Date, updatedAt: Date }, group: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, roomId: string, createdAt: Date, updatedAt: Date } } };
 
 export type DeleteUserGroupRelationMutationVariables = Exact<{
   userId: Scalars['String'];
@@ -843,7 +857,7 @@ export type DeleteUserGroupRelationMutationVariables = Exact<{
 }>;
 
 
-export type DeleteUserGroupRelationMutation = { __typename?: 'Mutation', DeleteUserGroupRelation: { __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, accessToken?: string | null, createdAt: Date, updatedAt: Date }, group: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, createdAt: Date, updatedAt: Date } } };
+export type DeleteUserGroupRelationMutation = { __typename?: 'Mutation', DeleteUserGroupRelation: { __typename?: 'UserGroupRelation', id: string, userId: string, groupId: string, createdAt: Date, updatedAt: Date, user: { __typename?: 'User', id: string, name: string, email: string, description?: string | null, image?: string | null, accessToken?: string | null, createdAt: Date, updatedAt: Date }, group: { __typename?: 'Group', id: string, name: string, description?: string | null, image: string, adminUserId: string, productId: string, roomId: string, createdAt: Date, updatedAt: Date } } };
 
 export type GetCurrentUserQueryVariables = Exact<{
   accessToken: Scalars['String'];
@@ -1078,6 +1092,7 @@ export const GetGroupDocument = gql`
     image
     adminUserId
     productId
+    roomId
     createdAt
     updatedAt
   }
@@ -1111,6 +1126,49 @@ export function useGetGroupLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetGroupQueryHookResult = ReturnType<typeof useGetGroupQuery>;
 export type GetGroupLazyQueryHookResult = ReturnType<typeof useGetGroupLazyQuery>;
 export type GetGroupQueryResult = Apollo.QueryResult<GetGroupQuery, GetGroupQueryVariables>;
+export const GetGroupByRoomIdDocument = gql`
+    query GetGroupByRoomId($roomId: String!) {
+  getGroupByRoomId(roomId: $roomId) {
+    id
+    name
+    description
+    image
+    adminUserId
+    productId
+    roomId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetGroupByRoomIdQuery__
+ *
+ * To run a query within a React component, call `useGetGroupByRoomIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetGroupByRoomIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetGroupByRoomIdQuery({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useGetGroupByRoomIdQuery(baseOptions: Apollo.QueryHookOptions<GetGroupByRoomIdQuery, GetGroupByRoomIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetGroupByRoomIdQuery, GetGroupByRoomIdQueryVariables>(GetGroupByRoomIdDocument, options);
+      }
+export function useGetGroupByRoomIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetGroupByRoomIdQuery, GetGroupByRoomIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetGroupByRoomIdQuery, GetGroupByRoomIdQueryVariables>(GetGroupByRoomIdDocument, options);
+        }
+export type GetGroupByRoomIdQueryHookResult = ReturnType<typeof useGetGroupByRoomIdQuery>;
+export type GetGroupByRoomIdLazyQueryHookResult = ReturnType<typeof useGetGroupByRoomIdLazyQuery>;
+export type GetGroupByRoomIdQueryResult = Apollo.QueryResult<GetGroupByRoomIdQuery, GetGroupByRoomIdQueryVariables>;
 export const CreateGroupDocument = gql`
     mutation CreateGroup($name: String!, $image: String!, $productId: String!, $description: String) {
   createGroup(
@@ -1125,6 +1183,7 @@ export const CreateGroupDocument = gql`
     image
     adminUserId
     productId
+    roomId
     createdAt
     updatedAt
   }
@@ -1168,6 +1227,7 @@ export const DeleteGroupDocument = gql`
     image
     adminUserId
     productId
+    roomId
     createdAt
     updatedAt
   }
@@ -1214,6 +1274,7 @@ export const UpdateGroupDocument = gql`
     image
     adminUserId
     productId
+    roomId
     createdAt
     updatedAt
   }
@@ -1268,18 +1329,7 @@ export const GetMessageDocument = gql`
     }
     room {
       id
-      groupId
       latestMessageId
-      group {
-        id
-        name
-        description
-        image
-        adminUserId
-        productId
-        createdAt
-        updatedAt
-      }
       createdAt
       updatedAt
     }
@@ -1335,7 +1385,6 @@ export const GetMessagesDocument = gql`
     }
     room {
       id
-      groupId
       latestMessageId
       createdAt
       updatedAt
@@ -1393,7 +1442,6 @@ export const CreateMessageDocument = gql`
     }
     room {
       id
-      groupId
       latestMessageId
       createdAt
       updatedAt
@@ -1450,7 +1498,6 @@ export const DeleteMessageDocument = gql`
     }
     room {
       id
-      groupId
       latestMessageId
       createdAt
       updatedAt
@@ -1911,8 +1958,8 @@ export type GetReadManagementQueryHookResult = ReturnType<typeof useGetReadManag
 export type GetReadManagementLazyQueryHookResult = ReturnType<typeof useGetReadManagementLazyQuery>;
 export type GetReadManagementQueryResult = Apollo.QueryResult<GetReadManagementQuery, GetReadManagementQueryVariables>;
 export const GetReadManagementsDocument = gql`
-    query GetReadManagements($messageId: String!) {
-  GetReadManagements(messageId: $messageId) {
+    query GetReadManagements($targetUserId: String, $messageId: String) {
+  GetReadManagements(targetUserId: $targetUserId, messageId: $messageId) {
     id
     targetUserId
     messageId
@@ -1935,11 +1982,12 @@ export const GetReadManagementsDocument = gql`
  * @example
  * const { data, loading, error } = useGetReadManagementsQuery({
  *   variables: {
+ *      targetUserId: // value for 'targetUserId'
  *      messageId: // value for 'messageId'
  *   },
  * });
  */
-export function useGetReadManagementsQuery(baseOptions: Apollo.QueryHookOptions<GetReadManagementsQuery, GetReadManagementsQueryVariables>) {
+export function useGetReadManagementsQuery(baseOptions?: Apollo.QueryHookOptions<GetReadManagementsQuery, GetReadManagementsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetReadManagementsQuery, GetReadManagementsQueryVariables>(GetReadManagementsDocument, options);
       }
@@ -1993,18 +2041,7 @@ export const GetRoomDocument = gql`
     query GetRoom($getRoomId: String!) {
   GetRoom(id: $getRoomId) {
     id
-    groupId
     latestMessageId
-    group {
-      id
-      name
-      description
-      image
-      adminUserId
-      productId
-      createdAt
-      updatedAt
-    }
     createdAt
     updatedAt
   }
@@ -2042,18 +2079,7 @@ export const GetOneOnOneRoomDocument = gql`
     query GetOneOnOneRoom($memberId: String!) {
   GetOneOnOneRoom(memberId: $memberId) {
     id
-    groupId
     latestMessageId
-    group {
-      id
-      name
-      description
-      image
-      adminUserId
-      productId
-      createdAt
-      updatedAt
-    }
     createdAt
     updatedAt
   }
@@ -2091,18 +2117,7 @@ export const GetRoomsByLoginUserIdDocument = gql`
     query GetRoomsByLoginUserId($getRoomType: GetRoomType!) {
   GetRoomsByLoginUserId(getRoomType: $getRoomType) {
     id
-    groupId
     latestMessageId
-    group {
-      id
-      name
-      description
-      image
-      adminUserId
-      productId
-      createdAt
-      updatedAt
-    }
     createdAt
     updatedAt
   }
@@ -2140,18 +2155,7 @@ export const CreateRoomDocument = gql`
     mutation CreateRoom($memberId: String!) {
   CreateRoom(memberId: $memberId) {
     id
-    groupId
     latestMessageId
-    group {
-      id
-      name
-      description
-      image
-      adminUserId
-      productId
-      createdAt
-      updatedAt
-    }
     createdAt
     updatedAt
   }
@@ -2187,18 +2191,7 @@ export const DeleteRoomDocument = gql`
     mutation DeleteRoom($deleteRoomId: String!) {
   DeleteRoom(id: $deleteRoomId) {
     id
-    groupId
     latestMessageId
-    group {
-      id
-      name
-      description
-      image
-      adminUserId
-      productId
-      createdAt
-      updatedAt
-    }
     createdAt
     updatedAt
   }
@@ -2240,7 +2233,6 @@ export const GetTargetRoomMemberDocument = gql`
     updatedAt
     room {
       id
-      groupId
       latestMessageId
       createdAt
       updatedAt
@@ -2296,7 +2288,6 @@ export const GetRoomMembersDocument = gql`
     updatedAt
     room {
       id
-      groupId
       latestMessageId
       createdAt
       updatedAt
@@ -2762,6 +2753,7 @@ export const GetUserGroupRelationsDocument = gql`
       image
       adminUserId
       productId
+      roomId
       createdAt
       updatedAt
     }
@@ -2822,6 +2814,7 @@ export const CreateUserGroupRelationDocument = gql`
       image
       adminUserId
       productId
+      roomId
       createdAt
       updatedAt
     }
@@ -2880,6 +2873,7 @@ export const DeleteUserGroupRelationDocument = gql`
       image
       adminUserId
       productId
+      roomId
       createdAt
       updatedAt
     }

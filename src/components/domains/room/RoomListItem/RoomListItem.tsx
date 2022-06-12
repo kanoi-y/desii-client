@@ -1,13 +1,11 @@
-import { Avatar, Box, SkeletonText } from '@chakra-ui/react'
+import { Box, SkeletonText } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { useMemo, VFC } from 'react'
-import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
-import { Link, Text } from '~/components/parts/commons'
-import {
-  Room,
-  useGetMessageQuery,
-  useGetTargetRoomMemberQuery,
-} from '~/types/generated/graphql'
+import { RoomIcon } from '~/components/domains/room/RoomIcon'
+import { RoomName } from '~/components/domains/room/RoomName'
+import { GuestUserIcon } from '~/components/domains/user/UserIcon'
+import { Text } from '~/components/parts/commons'
+import { Room, useGetMessageQuery } from '~/types/generated/graphql'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 
 type Props = {
@@ -41,74 +39,11 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
   const router = useRouter()
   const displayDate = formatDistanceToNow(new Date(room.updatedAt))
 
-  const { data: targetRoomMemberData } = useGetTargetRoomMemberQuery({
-    variables: {
-      roomId: room.id,
-      userId: currentUserId,
-    },
-    fetchPolicy: 'cache-and-network',
-  })
-
   const { data: latestMessageData } = useGetMessageQuery({
     variables: {
       getMessageId: room.latestMessageId || '',
     },
-    fetchPolicy: 'cache-and-network',
   })
-
-  const RoomListItemIcon = useMemo(() => {
-    if (room.group) {
-      return (
-        <Link href={`/${room.group.productId}`}>
-          <Avatar
-            name={room.group.name}
-            size="md"
-            src={room.group.image}
-            bg="white.main"
-            _hover={{
-              background: 'secondary.light',
-            }}
-          />
-        </Link>
-      )
-    }
-
-    if (targetRoomMemberData?.getTargetRoomMember) {
-      return (
-        <UserIcon
-          user={targetRoomMemberData.getTargetRoomMember.user}
-          size="md"
-          isLink
-        />
-      )
-    }
-
-    return <GuestUserIcon />
-  }, [room.group, targetRoomMemberData?.getTargetRoomMember])
-
-  const RoomListItemName = useMemo(() => {
-    if (room.group) {
-      return (
-        <Link href={`/${room.group.productId}`}>
-          <Text fontSize="md" isBold color="primary.main">
-            {room.group.name}
-          </Text>
-        </Link>
-      )
-    }
-
-    if (targetRoomMemberData?.getTargetRoomMember) {
-      return (
-        <Link href={`/user/${targetRoomMemberData.getTargetRoomMember.userId}`}>
-          <Text fontSize="md" isBold color="primary.main">
-            {targetRoomMemberData.getTargetRoomMember.user.name}
-          </Text>
-        </Link>
-      )
-    }
-
-    return <SkeletonText w="80px" noOfLines={1} />
-  }, [room.group, targetRoomMemberData?.getTargetRoomMember])
 
   const LatestMessage = useMemo(() => {
     if (!latestMessageData?.getMessage) {
@@ -119,7 +54,7 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
 
     if (latestMessageData.getMessage.type === 'MEDIA') {
       return (
-        <Text fontSize="sm">
+        <Text fontSize="sm" color="text.light">
           {isCreatedUser
             ? 'あなたが画像を送信しました'
             : `${latestMessageData.getMessage.user.name}さんが画像を送信しました`}
@@ -129,7 +64,7 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
 
     if (latestMessageData.getMessage.type === 'POST') {
       return (
-        <Text fontSize="sm">
+        <Text fontSize="sm" color="text.light">
           {isCreatedUser
             ? 'あなたが投稿に応募しました'
             : `${latestMessageData.getMessage.user.name}さんが投稿に応募しました`}
@@ -137,7 +72,11 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
       )
     }
 
-    return <Text fontSize="sm">{latestMessageData.getMessage.body}</Text>
+    return (
+      <Text fontSize="sm" color="text.light" noOfLines={1}>
+        {latestMessageData.getMessage.body}
+      </Text>
+    )
   }, [latestMessageData, currentUserId])
 
   return (
@@ -145,7 +84,7 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
       display="flex"
       alignItems="flex-start"
       gap="16px"
-      padding="8px 16px"
+      padding="12px 16px"
       cursor="pointer"
       position="relative"
       _hover={{ bgColor: 'secondary.light' }}
@@ -159,12 +98,14 @@ export const RoomListItem: VFC<Props> = ({ room, currentUserId }) => {
         zIndex="1"
         onClick={() => router.push(`/dashboard/rooms/${room.id}`)}
       ></Box>
-      <Box zIndex="2">{RoomListItemIcon}</Box>
       <Box zIndex="2">
-        {RoomListItemName}
+        <RoomIcon room={room} currentUserId={currentUserId} />
+      </Box>
+      <Box>
+        <RoomName room={room} currentUserId={currentUserId} />
         {LatestMessage}
       </Box>
-      <Box ml="auto">
+      <Box ml="auto" minW="max-content">
         <Text fontSize="xs" isBold>
           {displayDate}
         </Text>

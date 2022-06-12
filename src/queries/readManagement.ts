@@ -14,8 +14,8 @@ export const GET_READ_MANAGEMENT = gql`
 `
 
 export const GET_READ_MANAGEMENTS = gql`
-  query GetReadManagements($messageId: String!) {
-    GetReadManagements(messageId: $messageId) {
+  query GetReadManagements($targetUserId: String, $messageId: String) {
+    GetReadManagements(targetUserId: $targetUserId, messageId: $messageId) {
       id
       targetUserId
       messageId

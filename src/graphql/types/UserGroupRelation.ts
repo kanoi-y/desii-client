@@ -51,12 +51,12 @@ export const GetUserGroupRelationsQuery = extendType({
 
 const createRoomMember = async (
   ctx: Context,
-  groupId: string,
+  roomId: string,
   userId: string
 ) => {
   const room = await ctx.prisma.room.findUnique({
     where: {
-      groupId,
+      id: roomId
     },
   })
 
@@ -106,7 +106,7 @@ export const CreateUserGroupRelationMutation = extendType({
           throw new Error('管理者ユーザーしかユーザーを追加できません')
         }
 
-        createRoomMember(ctx, args.groupId, args.userId)
+        createRoomMember(ctx, group.roomId, args.userId)
 
         return ctx.prisma.userGroupRelation.create({
           data: {
@@ -125,12 +125,12 @@ export const CreateUserGroupRelationMutation = extendType({
 
 const deleteRoomMember = async (
   ctx: Context,
-  groupId: string,
+  roomId: string,
   userId: string
 ) => {
   const room = await ctx.prisma.room.findUnique({
     where: {
-      groupId,
+      id: roomId,
     },
   })
 
@@ -202,7 +202,7 @@ export const DeleteUserGroupRelationMutation = extendType({
           )
         }
 
-        deleteRoomMember(ctx, args.groupId, args.userId);
+        deleteRoomMember(ctx, group.roomId, args.userId);
         return ctx.prisma.userGroupRelation.delete({
           where: {
             relationId: {

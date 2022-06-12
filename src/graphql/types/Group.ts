@@ -1,5 +1,4 @@
 import { extendType, nonNull, objectType, stringArg } from 'nexus'
-import { Context } from '../context'
 
 export const Group = objectType({
   name: 'Group',
@@ -10,6 +9,7 @@ export const Group = objectType({
     t.nonNull.string('image')
     t.nonNull.string('adminUserId')
     t.nonNull.string('productId')
+    t.nonNull.string('roomId')
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -38,20 +38,24 @@ export const GetGroupQuery = extendType({
   },
 })
 
-const createRoom = async (ctx: Context, groupId: string, userId: string) => {
-  const room = await ctx.prisma.room.create({
-    data: {
-      groupId,
-    },
-  })
-
-  await ctx.prisma.roomMember.create({
-    data: {
-      roomId: room.id,
-      userId: userId,
-    },
-  })
-}
+export const GetGroupByRoomIdQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.field('getGroupByRoomId', {
+      type: 'Group',
+      args: {
+        roomId: nonNull(stringArg()),
+      },
+      resolve(_parent, args, ctx) {
+        return ctx.prisma.group.findUnique({
+          where: {
+            roomId: args.roomId,
+          },
+        })
+      },
+    })
+  },
+})
 
 export const CreateGroupMutation = extendType({
   type: 'Mutation',
@@ -69,6 +73,18 @@ export const CreateGroupMutation = extendType({
           throw new Error('ログインユーザーが存在しません')
         }
 
+        // groupを作成する際に、room,roomMemberも作成する
+        const room = await ctx.prisma.room.create({
+          data: {},
+        })
+
+        await ctx.prisma.roomMember.create({
+          data: {
+            roomId: room.id,
+            userId: ctx.user.id,
+          },
+        })
+
         const group = await ctx.prisma.group.create({
           data: {
             name: args.name,
@@ -76,6 +92,7 @@ export const CreateGroupMutation = extendType({
             image: args.image,
             productId: args.productId,
             adminUserId: ctx.user.id,
+            roomId: room.id,
           },
         })
 
@@ -86,21 +103,11 @@ export const CreateGroupMutation = extendType({
           },
         })
 
-        createRoom(ctx, group.id, ctx.user.id)
-
         return group
       },
     })
   },
 })
-
-const deleteRoom = async (ctx: Context, groupId: string) => {
-  await ctx.prisma.room.delete({
-    where: {
-      groupId,
-    },
-  })
-}
 
 export const DeleteGroupMutation = extendType({
   type: 'Mutation',
@@ -129,12 +136,19 @@ export const DeleteGroupMutation = extendType({
           throw new Error('ユーザーがチームの管理者ではありません')
         }
 
-        deleteRoom(ctx, group.id)
-        return ctx.prisma.group.delete({
+        await ctx.prisma.group.delete({
           where: {
             id: args.id,
           },
         })
+
+        await ctx.prisma.room.delete({
+          where: {
+            id: group.roomId,
+          },
+        })
+
+        return group
       },
     })
   },

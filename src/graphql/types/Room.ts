@@ -1,4 +1,4 @@
-import { Room as RoomType, RoomMember } from '@prisma/client'
+import { Group, Room as RoomType, RoomMember } from '@prisma/client'
 import { enumType, extendType, nonNull, objectType, stringArg } from 'nexus'
 
 export const GetRoomType = enumType({
@@ -10,11 +10,7 @@ export const Room = objectType({
   name: 'Room',
   definition(t) {
     t.nonNull.string('id')
-    t.string('groupId')
     t.string('latestMessageId')
-    t.field('group', {
-      type: 'Group',
-    })
     t.nonNull.field('createdAt', {
       type: 'DateTime',
     })
@@ -36,9 +32,6 @@ export const GetRoomQuery = extendType({
         return ctx.prisma.room.findUnique({
           where: {
             id: args.id,
-          },
-          include: {
-            group: true,
           },
         })
       },
@@ -73,13 +66,27 @@ export const GetOneOnOneRoomQuery = extendType({
             ],
           },
           include: {
-            room: {
-              include: {
-                group: true,
-              },
-            },
+            room: true,
           },
         })
+
+        const roomIdRelatedByGroup = (
+          await ctx.prisma.group.findMany({
+            where: {
+              OR: roomMembers.map(
+                (
+                  roomMember: RoomMember & {
+                    room: RoomType
+                  }
+                ) => {
+                  return {
+                    roomId: roomMember.roomId,
+                  }
+                }
+              ),
+            },
+          })
+        ).map((group: Group) => group.roomId)
 
         return (
           roomMembers.find(
@@ -97,7 +104,10 @@ export const GetOneOnOneRoomQuery = extendType({
                   }
                 ) => dataElement.roomId === roomMember.roomId
               )
-              return selfIndex !== index && !roomMember.room.groupId
+              return (
+                selfIndex !== index &&
+                !roomIdRelatedByGroup.includes(roomMember.roomId)
+              )
             }
           )?.room || null
         )
@@ -124,13 +134,27 @@ export const GetRoomsByLoginUserIdQuery = extendType({
             userId: ctx.user.id,
           },
           include: {
-            room: {
-              include: {
-                group: true,
-              },
-            },
+            room: true,
           },
         })
+
+        const roomIdRelatedByGroup = (
+          await ctx.prisma.group.findMany({
+            where: {
+              OR: roomMembers.map(
+                (
+                  roomMember: RoomMember & {
+                    room: RoomType
+                  }
+                ) => {
+                  return {
+                    roomId: roomMember.roomId,
+                  }
+                }
+              ),
+            },
+          })
+        ).map((group: Group) => group.roomId)
 
         return roomMembers
           .map(
@@ -144,10 +168,10 @@ export const GetRoomsByLoginUserIdQuery = extendType({
           )
           .filter((room: RoomType) => {
             if (args.getRoomType === 'ONLY_ONE_ON_ONE') {
-              return !room.groupId
+              return !roomIdRelatedByGroup.includes(room.id)
             }
             if (args.getRoomType === 'ONLY_GROUP') {
-              return room.groupId
+              return roomIdRelatedByGroup.includes(room.id)
             }
             return true
           })
@@ -224,7 +248,13 @@ export const DeleteRoomMutation = extendType({
           throw new Error('ルームが存在しません')
         }
 
-        if (room.groupId) {
+        const group = await ctx.prisma.group.findUnique({
+          where: {
+            roomId: room.id,
+          },
+        })
+
+        if (group) {
           throw new Error(
             'グループに紐づいているルームはルームだけ削除することは出来ません'
           )
@@ -247,9 +277,6 @@ export const DeleteRoomMutation = extendType({
         return ctx.prisma.room.delete({
           where: {
             id: args.id,
-          },
-          include: {
-            group: true,
           },
         })
       },

@@ -10,7 +10,6 @@ export const GET_TARGET_ROOM_MEMBER = gql`
       updatedAt
       room {
         id
-        groupId
         latestMessageId
         createdAt
         updatedAt
@@ -38,7 +37,6 @@ export const GET_ROOM_MEMBERS = gql`
       updatedAt
       room {
         id
-        groupId
         latestMessageId
         createdAt
         updatedAt

@@ -9,6 +9,23 @@ export const GET_GROUP_BY_ID = gql`
       image
       adminUserId
       productId
+      roomId
+      createdAt
+      updatedAt
+    }
+  }
+`
+
+export const GET_GROUP_BY_ROOM_ID = gql`
+  query GetGroupByRoomId($roomId: String!) {
+    getGroupByRoomId(roomId: $roomId) {
+      id
+      name
+      description
+      image
+      adminUserId
+      productId
+      roomId
       createdAt
       updatedAt
     }
@@ -34,6 +51,7 @@ export const CREATE_GROUP = gql`
       image
       adminUserId
       productId
+      roomId
       createdAt
       updatedAt
     }
@@ -48,6 +66,7 @@ export const DELETE_GROUP = gql`
       image
       adminUserId
       productId
+      roomId
       createdAt
       updatedAt
     }
@@ -75,6 +94,7 @@ export const UPDATE_GROUP = gql`
       image
       adminUserId
       productId
+      roomId
       createdAt
       updatedAt
     }

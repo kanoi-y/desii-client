@@ -66,12 +66,13 @@ model Group {
   image              String
   adminUserId        String
   productId          String              @unique
+  roomId             String             @unique
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   adminUser          User                @relation(fields: [adminUserId], references: [id], onDelete: Restrict)
   userGroupRelations UserGroupRelation[]
   posts              Post[]
-  room               Room?
+  room               Room  @relation(fields: [roomId], references: [id], onDelete: Cascade)
 }
 
 model UserGroupRelation {
@@ -152,13 +153,12 @@ model Notification {
 
 model Room {
   id              String   @id @default(cuid())
-  groupId         String?  @unique
   latestMessageId String?  @unique
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   latestMessage Message?     @relation(name: "latestMessage", fields: [latestMessageId], references: [id], onDelete: Restrict)
-  group         Group?       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  group         Group?
   messages      Message[]
   roomMember    RoomMember[]
 }

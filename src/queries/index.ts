@@ -32,7 +32,7 @@ export {
   GET_ROOM,
   GET_ROOMS_BY_LOGIN_USER_ID,
 } from './room'
-export { GET_ROOM_MEMBERS } from './roomMember'
+export { GET_ROOM_MEMBERS, GET_TARGET_ROOM_MEMBER } from './roomMember'
 export { CREATE_TAG, GET_TAG_BY_NAME } from './tag'
 export {
   CREATE_TAG_POST_RELATION,

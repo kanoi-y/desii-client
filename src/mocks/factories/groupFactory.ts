@@ -10,6 +10,7 @@ export const groupFactory = (options?: Partial<Group>): Group => {
     description: 'description',
     adminUserId: 'adminUserId',
     productId: 'productId',
+    roomId: 'roomId',
     createdAt: new Date(),
     updatedAt: new Date(),
     ...options,

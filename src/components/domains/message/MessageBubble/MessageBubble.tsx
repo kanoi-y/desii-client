@@ -4,6 +4,7 @@ import { GuestUserIcon, UserIcon } from '~/components/domains/user/UserIcon'
 import { Text } from '~/components/parts/commons'
 import {
   Message,
+  useGetGroupByRoomIdQuery,
   useGetPostQuery,
   useGetReadManagementsQuery,
   useGetUserQuery,
@@ -33,6 +34,12 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
   const { data: postData } = useGetPostQuery({
     variables: {
       getPostId: message.body,
+    },
+  })
+
+  const { data: groupData } = useGetGroupByRoomIdQuery({
+    variables: {
+      roomId: message.roomId,
     },
   })
 
@@ -68,11 +75,13 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
         <Box>
           {readManagementsCount > 0 && (
             <Text fontSize="xs" color="text.light">
-              {`既読 ${message.room.groupId ? readManagementsCount : ''}`}
+              {`既読 ${groupData?.getGroupByRoomId ? readManagementsCount : ''}`}
             </Text>
           )}
           <Text fontSize="xs" color="text.light">
-            {`${message.createdAt.getHours()}:${message.createdAt.getMinutes()}`}
+            {`${new Date(message.createdAt).getHours()}:${new Date(
+              message.createdAt
+            ).getMinutes()}`}
           </Text>
         </Box>
         <Box
@@ -107,7 +116,7 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
         <GuestUserIcon size="sm" />
       )}
       <Box maxW="65%">
-        {message.room.groupId && (
+        {groupData?.getGroupByRoomId && (
           <Box pl="8px">
             <Text fontSize="xs" color="text.light">
               {message.user.name}
@@ -128,7 +137,9 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
         </Box>
       </Box>
       <Text fontSize="xs" color="text.light">
-        {`${message.createdAt.getHours()}:${message.createdAt.getMinutes()}`}
+        {`${new Date(message.createdAt).getHours()}:${new Date(
+          message.createdAt
+        ).getMinutes()}`}
       </Text>
     </Box>
   )

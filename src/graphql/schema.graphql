@@ -31,6 +31,7 @@ type Group {
   image: String!
   name: String!
   productId: String!
+  roomId: String!
   updatedAt: DateTime!
 }
 
@@ -127,7 +128,7 @@ type Query {
   GetOneOnOneRoom(memberId: String!): Room
   GetPosts(groupId: String, isPrivate: Boolean, limit: Int, page: Int, sort: postOrderByType = asc, userId: String): [Post!]!
   GetReadManagement(messageId: String!, targetUserId: String!): ReadManagement
-  GetReadManagements(messageId: String!): [ReadManagement!]!
+  GetReadManagements(messageId: String, targetUserId: String): [ReadManagement!]!
   GetRoom(id: String!): Room
   GetRoomsByLoginUserId(getRoomType: GetRoomType!): [Room!]!
   GetTagByName(name: String!): Tag
@@ -136,6 +137,7 @@ type Query {
   getAllTags(searchText: String, sort: orderByType = asc): [Tag!]!
   getCurrentUser(accessToken: String!): User
   getGroup(id: String!): Group
+  getGroupByRoomId(roomId: String!): Group
   getMessage(id: String!): Message
   getPost(id: String!): Post
   getRoomMembers(roomId: String, userId: String): [RoomMember!]!
@@ -154,8 +156,6 @@ type ReadManagement {
 
 type Room {
   createdAt: DateTime!
-  group: Group
-  groupId: String
   id: String!
   latestMessageId: String
   updatedAt: DateTime!

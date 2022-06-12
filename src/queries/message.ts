@@ -19,18 +19,7 @@ export const GET_MESSAGE = gql`
       }
       room {
         id
-        groupId
         latestMessageId
-        group {
-          id
-          name
-          description
-          image
-          adminUserId
-          productId
-          createdAt
-          updatedAt
-        }
         createdAt
         updatedAt
       }
@@ -59,7 +48,6 @@ export const GET_MESSAGES = gql`
       }
       room {
         id
-        groupId
         latestMessageId
         createdAt
         updatedAt
@@ -93,7 +81,6 @@ export const CREATE_MESSAGE = gql`
       }
       room {
         id
-        groupId
         latestMessageId
         createdAt
         updatedAt
@@ -123,7 +110,6 @@ export const DELETE_MESSAGE = gql`
       }
       room {
         id
-        groupId
         latestMessageId
         createdAt
         updatedAt
