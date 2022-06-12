@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client'
 
+// TODO: roomに紐づいてるgroupを削除する
 export const GET_MESSAGE = gql`
   query GetMessage($getMessageId: String!) {
     getMessage(id: $getMessageId) {
@@ -20,17 +21,6 @@ export const GET_MESSAGE = gql`
       room {
         id
         latestMessageId
-        group {
-          id
-          name
-          description
-          image
-          adminUserId
-          productId
-          roomId
-          createdAt
-          updatedAt
-        }
         createdAt
         updatedAt
       }
@@ -60,17 +50,6 @@ export const GET_MESSAGES = gql`
       room {
         id
         latestMessageId
-        group {
-          id
-          name
-          description
-          image
-          adminUserId
-          productId
-          roomId
-          createdAt
-          updatedAt
-        }
         createdAt
         updatedAt
       }
@@ -104,17 +83,6 @@ export const CREATE_MESSAGE = gql`
       room {
         id
         latestMessageId
-        group {
-          id
-          name
-          description
-          image
-          adminUserId
-          productId
-          roomId
-          createdAt
-          updatedAt
-        }
         createdAt
         updatedAt
       }
@@ -144,17 +112,6 @@ export const DELETE_MESSAGE = gql`
       room {
         id
         latestMessageId
-        group {
-          id
-          name
-          description
-          image
-          adminUserId
-          productId
-          roomId
-          createdAt
-          updatedAt
-        }
         createdAt
         updatedAt
       }

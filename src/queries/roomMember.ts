@@ -11,17 +11,6 @@ export const GET_TARGET_ROOM_MEMBER = gql`
       room {
         id
         latestMessageId
-        group {
-          id
-          name
-          description
-          image
-          adminUserId
-          productId
-          roomId
-          createdAt
-          updatedAt
-        }
         createdAt
         updatedAt
       }
@@ -49,17 +38,6 @@ export const GET_ROOM_MEMBERS = gql`
       room {
         id
         latestMessageId
-        group {
-          id
-          name
-          description
-          image
-          adminUserId
-          productId
-          roomId
-          createdAt
-          updatedAt
-        }
         createdAt
         updatedAt
       }
