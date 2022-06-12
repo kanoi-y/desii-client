@@ -1,4 +1,4 @@
-import { Room as RoomType, RoomMember } from '@prisma/client'
+import { Group, Room as RoomType, RoomMember } from '@prisma/client'
 import { enumType, extendType, nonNull, objectType, stringArg } from 'nexus'
 
 export const GetRoomType = enumType({
@@ -70,8 +70,6 @@ export const GetOneOnOneRoomQuery = extendType({
           },
         })
 
-        console.log(roomMembers)
-
         const roomIdRelatedByGroup = (
           await ctx.prisma.group.findMany({
             where: {
@@ -82,7 +80,7 @@ export const GetOneOnOneRoomQuery = extendType({
               }),
             },
           })
-        ).map((group) => group.roomId)
+        ).map((group: Group) => group.roomId)
 
         return (
           roomMembers.find(
@@ -144,7 +142,7 @@ export const GetRoomsByLoginUserIdQuery = extendType({
               }),
             },
           })
-        ).map((group) => group.roomId)
+        ).map((group: Group) => group.roomId)
 
         return roomMembers
           .map(
