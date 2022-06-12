@@ -1,4 +1,5 @@
 export { createFavorite, deleteFavorite, getFavorites } from './favorite'
+export { getGroupByRoomId } from './group'
 export { getMessage } from './message'
 export { getNotifications } from './notification'
 export { getPost } from './post'

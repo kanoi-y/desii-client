@@ -1,10 +1,10 @@
 import { roomFactory } from '../factories'
 
 const db = [
-  roomFactory({ group: null }),
-  roomFactory({ group: null }),
   roomFactory(),
   roomFactory(),
+  roomFactory({ id: 'roomIdRelatedByGroup' }),
+  roomFactory({ id: 'roomIdRelatedByGroup' }),
 ]
 
 export const getRoomsByLoginUserId = (req: any, res: any, ctx: any) => {
@@ -12,11 +12,11 @@ export const getRoomsByLoginUserId = (req: any, res: any, ctx: any) => {
 
   const roomsByLoginUserId = db.filter((room) => {
     if (getRoomType === 'ONLY_ONE_ON_ONE') {
-      return !room.group
+      return room.id !== 'roomIdRelatedByGroup'
     }
 
     if (getRoomType === 'ONLY_GROUP') {
-      return !!room.group
+      return room.id === 'roomIdRelatedByGroup'
     }
 
     return true
