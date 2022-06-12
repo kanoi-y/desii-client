@@ -73,11 +73,17 @@ export const GetOneOnOneRoomQuery = extendType({
         const roomIdRelatedByGroup = (
           await ctx.prisma.group.findMany({
             where: {
-              OR: roomMembers.map((roomMember) => {
-                return {
-                  roomId: roomMember.roomId,
+              OR: roomMembers.map(
+                (
+                  roomMember: RoomMember & {
+                    room: RoomType
+                  }
+                ) => {
+                  return {
+                    roomId: roomMember.roomId,
+                  }
                 }
-              }),
+              ),
             },
           })
         ).map((group: Group) => group.roomId)
@@ -135,11 +141,17 @@ export const GetRoomsByLoginUserIdQuery = extendType({
         const roomIdRelatedByGroup = (
           await ctx.prisma.group.findMany({
             where: {
-              OR: roomMembers.map((roomMember) => {
-                return {
-                  roomId: roomMember.roomId,
+              OR: roomMembers.map(
+                (
+                  roomMember: RoomMember & {
+                    room: RoomType
+                  }
+                ) => {
+                  return {
+                    roomId: roomMember.roomId,
+                  }
                 }
-              }),
+              ),
             },
           })
         ).map((group: Group) => group.roomId)
