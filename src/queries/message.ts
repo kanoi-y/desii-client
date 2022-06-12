@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client'
 
-// TODO: roomに紐づいてるgroupを削除する
 export const GET_MESSAGE = gql`
   query GetMessage($getMessageId: String!) {
     getMessage(id: $getMessageId) {
