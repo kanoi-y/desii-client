@@ -14,9 +14,14 @@ import { PostCard, SkeletonPostCard } from '../../post/PostCard'
 type Props = {
   message: Message
   currentUserId: string
+  existIcon?: boolean
 }
 
-export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
+export const MessageBubble: VFC<Props> = ({
+  message,
+  currentUserId,
+  existIcon = true,
+}) => {
   const isCreatedUser = message.userId === currentUserId
 
   const { data: userData } = useGetUserQuery({
@@ -75,7 +80,9 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
         <Box>
           {readManagementsCount > 0 && (
             <Text fontSize="xs" color="text.light">
-              {`既読 ${groupData?.getGroupByRoomId ? readManagementsCount : ''}`}
+              {`既読 ${
+                groupData?.getGroupByRoomId ? readManagementsCount : ''
+              }`}
             </Text>
           )}
           <Text fontSize="xs" color="text.light">
@@ -111,9 +118,13 @@ export const MessageBubble: VFC<Props> = ({ message, currentUserId }) => {
       w="100%"
     >
       {userData?.getUser ? (
-        <UserIcon size="sm" user={userData.getUser} />
+        <Box visibility={existIcon ? 'visible' : 'hidden'}>
+          <UserIcon size="sm" user={userData.getUser} />
+        </Box>
       ) : (
-        <GuestUserIcon size="sm" />
+        <Box visibility={existIcon ? 'visible' : 'hidden'}>
+          <GuestUserIcon size="sm" />
+        </Box>
       )}
       <Box maxW="65%">
         {groupData?.getGroupByRoomId && (
