@@ -1,11 +1,11 @@
 import { Box, Spinner, Textarea } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { MessageBubble } from '~/components/domains/message/MessageBubble'
 import { RoomIcon } from '~/components/domains/room/RoomIcon'
 import { RoomName } from '~/components/domains/room/RoomName'
-import { SolidIcon } from '~/components/parts/commons'
+import { SolidIcon, Text } from '~/components/parts/commons'
 import { RoomSidebar } from '~/components/parts/layout/RoomSidebar'
 import { SIZING } from '~/constants'
 import { useToast } from '~/hooks'
@@ -38,12 +38,31 @@ type Props = {
 const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
   const { toast } = useToast()
   const [messageText, setMessageText] = useState('')
+  const [messageDateIndexes, setMessageDateIndexes] = useState<number[]>([])
+
   const { data: messagesData } = useGetMessagesQuery({
     variables: {
       roomId: room.id,
     },
     fetchPolicy: 'cache-and-network',
   })
+
+  useEffect(() => {
+    if (!messagesData?.GetMessages) return
+    setMessageDateIndexes([])
+
+    messagesData.GetMessages.forEach((message, i) => {
+      const messageDate = new Date(message.createdAt).toLocaleDateString()
+
+      const messagesDataIndex = messagesData.GetMessages.findIndex((ms) => {
+        return messageDate === new Date(ms.createdAt).toLocaleDateString()
+      })
+
+      if (messagesDataIndex === i) {
+        setMessageDateIndexes((prev) => [...prev, i])
+      }
+    })
+  }, [messagesData, setMessageDateIndexes])
 
   const { data: readManagementsData } = useGetReadManagementsQuery({
     variables: {
@@ -148,9 +167,16 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
         </Box>
         <Box flex="1" overflowY="auto" p="76px 16px 24px">
           {messagesData?.GetMessages ? (
-            messagesData.GetMessages.map((message) => {
+            messagesData.GetMessages.map((message, i) => {
               return (
-                <Box mb="12px" key={message.id}>
+                <Box mb="8px" key={message.id}>
+                  {messageDateIndexes.includes(i) && (
+                    <Box textAlign="center" py="12px">
+                      <Text fontSize="sm" color="text.light" isBold>
+                        {new Date(message.createdAt).toLocaleDateString()}
+                      </Text>
+                    </Box>
+                  )}
                   <MessageBubble
                     currentUserId={currentUser.id}
                     message={message}
