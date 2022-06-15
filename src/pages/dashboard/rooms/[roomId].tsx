@@ -35,6 +35,7 @@ type Props = {
   room: Room
 }
 
+// TODO: Textareaの高さを内容にあわせて自動で調整されるように実装する
 const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
   const { toast } = useToast()
   const [messageText, setMessageText] = useState('')
@@ -208,6 +209,7 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
             bgColor="white.main"
             boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
             rows={1}
+            resize="none"
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
           />
