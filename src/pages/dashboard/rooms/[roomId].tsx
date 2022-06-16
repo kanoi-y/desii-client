@@ -1,7 +1,7 @@
 import { Box, Spinner, Textarea } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { MessageBubble } from '~/components/domains/message/MessageBubble'
 import { RoomIcon } from '~/components/domains/room/RoomIcon'
 import { RoomName } from '~/components/domains/room/RoomName'
@@ -35,11 +35,31 @@ type Props = {
   room: Room
 }
 
+const useAutoResizeTextArea = (value: string | undefined) => {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) {
+      return;
+    }
+
+    const { borderTopWidth, borderBottomWidth, paddingTop, paddingBottom } =
+      getComputedStyle(element);
+
+    element.style.height = "auto";
+    element.style.height = `calc(${element.scrollHeight}px`;
+  }, [value]);
+
+  return ref;
+}
+
 // TODO: Textareaの高さを内容にあわせて自動で調整されるように実装する
 const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
   const { toast } = useToast()
   const [messageText, setMessageText] = useState('')
   const [messageDateIndexes, setMessageDateIndexes] = useState<number[]>([])
+  const textAreaRef = useAutoResizeTextArea(messageText);
 
   const { data: messagesData } = useGetMessagesQuery({
     variables: {
@@ -136,6 +156,7 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
       setMessageText('')
     }
   }
+
   return (
     <Box display="flex" alignItems="center" justifyContent="center">
       <Box display={{ base: 'none', md: 'block' }}>
@@ -208,10 +229,11 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
           <Textarea
             bgColor="white.main"
             boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-            rows={1}
+            boxSizing="border-box"
             resize="none"
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
+            ref={textAreaRef}
           />
           <Box
             transform="rotate(90deg)"
