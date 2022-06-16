@@ -35,23 +35,21 @@ type Props = {
   room: Room
 }
 
+// TODO: hookに分ける？
 const useAutoResizeTextArea = (value: string | undefined) => {
-  const ref = useRef<HTMLTextAreaElement>(null);
+  const ref = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    const element = ref.current;
+    const element = ref.current
     if (!element) {
-      return;
+      return
     }
 
-    const { borderTopWidth, borderBottomWidth, paddingTop, paddingBottom } =
-      getComputedStyle(element);
+    element.style.height = 'auto'
+    element.style.height = `calc(${element.scrollHeight}px)`
+  }, [value])
 
-    element.style.height = "auto";
-    element.style.height = `calc(${element.scrollHeight}px`;
-  }, [value]);
-
-  return ref;
+  return ref
 }
 
 // TODO: Textareaの高さを内容にあわせて自動で調整されるように実装する
@@ -59,7 +57,7 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
   const { toast } = useToast()
   const [messageText, setMessageText] = useState('')
   const [messageDateIndexes, setMessageDateIndexes] = useState<number[]>([])
-  const textAreaRef = useAutoResizeTextArea(messageText);
+  const textAreaRef = useAutoResizeTextArea(messageText)
 
   const { data: messagesData } = useGetMessagesQuery({
     variables: {
@@ -229,8 +227,9 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
           <Textarea
             bgColor="white.main"
             boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
-            boxSizing="border-box"
+            overflow="hidden"
             resize="none"
+            rows={1}
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             ref={textAreaRef}
