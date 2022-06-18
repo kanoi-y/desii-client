@@ -1,7 +1,7 @@
 import { Box, Spinner, Textarea } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { MessageBubble } from '~/components/domains/message/MessageBubble'
 import { RoomIcon } from '~/components/domains/room/RoomIcon'
 import { RoomName } from '~/components/domains/room/RoomName'
@@ -9,6 +9,7 @@ import { SolidIcon, Text } from '~/components/parts/commons'
 import { RoomSidebar } from '~/components/parts/layout/RoomSidebar'
 import { SIZING } from '~/constants'
 import { useToast } from '~/hooks'
+import { useAutoResizeTextArea } from '~/hooks/useAutoResizeTextArea'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER, GET_ROOM, GET_ROOM_MEMBERS } from '~/queries'
 import {
@@ -35,24 +36,6 @@ type Props = {
   room: Room
 }
 
-// TODO: hookに分ける？
-const useAutoResizeTextArea = (value: string | undefined) => {
-  const ref = useRef<HTMLTextAreaElement>(null)
-
-  useEffect(() => {
-    const element = ref.current
-    if (!element) {
-      return
-    }
-
-    element.style.height = 'auto'
-    element.style.height = `calc(${element.scrollHeight}px)`
-  }, [value])
-
-  return ref
-}
-
-// TODO: Textareaの高さを内容にあわせて自動で調整されるように実装する
 const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
   const { toast } = useToast()
   const [messageText, setMessageText] = useState('')
