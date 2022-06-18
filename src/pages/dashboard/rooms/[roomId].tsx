@@ -1,7 +1,13 @@
 import { Box, Spinner, Textarea } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
-import { useCallback, useEffect, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { MessageBubble } from '~/components/domains/message/MessageBubble'
 import { RoomIcon } from '~/components/domains/room/RoomIcon'
 import { RoomName } from '~/components/domains/room/RoomName'
@@ -36,7 +42,9 @@ type Props = {
   room: Room
 }
 
+// TODO: messageを新しい順に取得して、下から配置するようにする。flex-direction:column-reverse
 const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
+  const scrollBottomRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
   const [messageText, setMessageText] = useState('')
   const [messageDateIndexes, setMessageDateIndexes] = useState<number[]>([])
@@ -48,6 +56,10 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
     },
     fetchPolicy: 'cache-and-network',
   })
+
+  useLayoutEffect(() => {
+    scrollBottomRef?.current?.scrollIntoView()
+  }, [messagesData?.GetMessages])
 
   useEffect(() => {
     if (!messagesData?.GetMessages) return
@@ -198,6 +210,7 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
               <Spinner size="md" />
             </Box>
           )}
+          <Box ref={scrollBottomRef}></Box>
         </Box>
         <Box
           p="12px 24px"
