@@ -26,6 +26,7 @@ import {
   GetRoomQuery,
   GetRoomQueryVariables,
   MessageType,
+  OrderByType,
   ReadManagement,
   Room,
   useCreateMessageMutation,
@@ -42,7 +43,6 @@ type Props = {
   room: Room
 }
 
-// TODO: messageを新しい順に取得して、下から配置するようにする。flex-direction:column-reverse
 const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
   const scrollBottomRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
@@ -53,6 +53,7 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
   const { data: messagesData } = useGetMessagesQuery({
     variables: {
       roomId: room.id,
+      sort: OrderByType.Desc,
     },
     fetchPolicy: 'cache-and-network',
   })
@@ -68,11 +69,13 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
     messagesData.GetMessages.forEach((message, i) => {
       const messageDate = new Date(message.createdAt).toLocaleDateString()
 
-      const messagesDataIndex = messagesData.GetMessages.findIndex((ms) => {
-        return messageDate === new Date(ms.createdAt).toLocaleDateString()
-      })
+      const messagesDataIndex = messagesData.GetMessages.slice()
+        .reverse()
+        .findIndex((ms) => {
+          return messageDate === new Date(ms.createdAt).toLocaleDateString()
+        })
 
-      if (messagesDataIndex === i) {
+      if (messagesData.GetMessages.length - messagesDataIndex - 1 === i) {
         setMessageDateIndexes((prev) => [...prev, i])
       }
     })
@@ -180,7 +183,14 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
           <RoomIcon room={room} currentUserId={currentUser.id} size="sm" />
           <RoomName room={room} currentUserId={currentUser.id} size="lg" />
         </Box>
-        <Box flex="1" overflowY="auto" p="76px 16px 24px">
+        <Box
+          flex="1"
+          overflowY="auto"
+          p="76px 16px 24px"
+          display="flex"
+          flexDirection="column-reverse"
+        >
+          <Box ref={scrollBottomRef}></Box>
           {messagesData?.GetMessages ? (
             messagesData.GetMessages.map((message, i) => {
               return (
@@ -210,7 +220,6 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
               <Spinner size="md" />
             </Box>
           )}
-          <Box ref={scrollBottomRef}></Box>
         </Box>
         <Box
           p="12px 24px"
