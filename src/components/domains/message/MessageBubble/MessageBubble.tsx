@@ -17,6 +17,7 @@ type Props = {
   existIcon?: boolean
 }
 
+// TODO: 改行が表示されるようにする。Text component white-space: pre-wrap
 export const MessageBubble: VFC<Props> = ({
   message,
   currentUserId,
