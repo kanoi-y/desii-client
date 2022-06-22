@@ -37,7 +37,7 @@ export const Text: VFC<Props> = ({
         color={color}
         fontSize={fontSize}
         noOfLines={noOfLines}
-        whiteSpace={noWrap ? 'nowrap' : 'unset'}
+        whiteSpace={noWrap ? 'nowrap' : 'pre-wrap'}
         fontWeight={isBold ? 'bold' : ''}
       >
         {children}
@@ -48,7 +48,7 @@ export const Text: VFC<Props> = ({
       color={color}
       fontSize={fontSize}
       noOfLines={noOfLines}
-      whiteSpace={noWrap ? 'nowrap' : 'unset'}
+      whiteSpace={noWrap ? 'nowrap' : 'pre-wrap'}
       fontWeight={isBold ? 'bold' : ''}
     >
       {children}
