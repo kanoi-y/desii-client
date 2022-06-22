@@ -133,6 +133,8 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
   }, [readManagementsData, updateReadManagement])
 
   const sendMessageText = async () => {
+    if (messageText.trim().length === 0) return
+
     try {
       await createMessageMutation({
         variables: {
@@ -194,9 +196,9 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
           {messagesData?.GetMessages ? (
             messagesData.GetMessages.map((message, i) => {
               return (
-                <Box mb="8px" key={message.id}>
+                <Box mb="12px" key={message.id}>
                   {messageDateIndexes.includes(i) && (
-                    <Box textAlign="center" py="12px">
+                    <Box textAlign="center" py="20px">
                       <Text fontSize="sm" color="text.light" isBold>
                         {new Date(message.createdAt).toLocaleDateString()}
                       </Text>
@@ -244,10 +246,16 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
             w="fit-content"
             cursor="pointer"
             position="relative"
-            _hover={{ opacity: 0.7 }}
+            _hover={{ opacity: messageText.trim().length === 0 ? 1 : 0.7 }}
             onClick={sendMessageText}
           >
-            <SolidIcon icon="SOLID_PAPER_AIRPLANE" size={24} />
+            <SolidIcon
+              icon="SOLID_PAPER_AIRPLANE"
+              size={24}
+              color={
+                messageText.trim().length === 0 ? 'text.light' : 'primary.main'
+              }
+            />
           </Box>
         </Box>
       </Box>
