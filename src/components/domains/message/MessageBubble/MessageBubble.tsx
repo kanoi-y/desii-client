@@ -119,7 +119,7 @@ export const MessageBubble: VFC<Props> = ({
     >
       {userData?.getUser ? (
         <Box visibility={existIcon ? 'visible' : 'hidden'}>
-          <UserIcon size="sm" user={userData.getUser} />
+          <UserIcon size="sm" user={userData.getUser} isLink />
         </Box>
       ) : (
         <Box visibility={existIcon ? 'visible' : 'hidden'}>
