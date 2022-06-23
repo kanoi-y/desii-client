@@ -1,14 +1,21 @@
 import { Box, Spinner, Textarea } from '@chakra-ui/react'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
-import React, { useCallback, useEffect, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { MessageBubble } from '~/components/domains/message/MessageBubble'
 import { RoomIcon } from '~/components/domains/room/RoomIcon'
 import { RoomName } from '~/components/domains/room/RoomName'
-import { SolidIcon } from '~/components/parts/commons'
+import { SolidIcon, Text } from '~/components/parts/commons'
 import { RoomSidebar } from '~/components/parts/layout/RoomSidebar'
 import { SIZING } from '~/constants'
 import { useToast } from '~/hooks'
+import { useAutoResizeTextArea } from '~/hooks/useAutoResizeTextArea'
 import { initializeApollo } from '~/lib/apolloClient'
 import { GET_CURRENT_USER, GET_ROOM, GET_ROOM_MEMBERS } from '~/queries'
 import {
@@ -19,6 +26,7 @@ import {
   GetRoomQuery,
   GetRoomQueryVariables,
   MessageType,
+  OrderByType,
   ReadManagement,
   Room,
   useCreateMessageMutation,
@@ -36,14 +44,42 @@ type Props = {
 }
 
 const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
+  const scrollBottomRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
   const [messageText, setMessageText] = useState('')
+  const [messageDateIndexes, setMessageDateIndexes] = useState<number[]>([])
+  const textAreaRef = useAutoResizeTextArea(messageText)
+
   const { data: messagesData } = useGetMessagesQuery({
     variables: {
       roomId: room.id,
+      sort: OrderByType.Desc,
     },
     fetchPolicy: 'cache-and-network',
   })
+
+  useLayoutEffect(() => {
+    scrollBottomRef?.current?.scrollIntoView()
+  }, [messagesData?.GetMessages])
+
+  useEffect(() => {
+    if (!messagesData?.GetMessages) return
+    setMessageDateIndexes([])
+
+    messagesData.GetMessages.forEach((message, i) => {
+      const messageDate = new Date(message.createdAt).toLocaleDateString()
+
+      const messagesDataIndex = messagesData.GetMessages.slice()
+        .reverse()
+        .findIndex((ms) => {
+          return messageDate === new Date(ms.createdAt).toLocaleDateString()
+        })
+
+      if (messagesData.GetMessages.length - messagesDataIndex - 1 === i) {
+        setMessageDateIndexes((prev) => [...prev, i])
+      }
+    })
+  }, [messagesData, setMessageDateIndexes])
 
   const { data: readManagementsData } = useGetReadManagementsQuery({
     variables: {
@@ -97,6 +133,8 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
   }, [readManagementsData, updateReadManagement])
 
   const sendMessageText = async () => {
+    if (messageText.trim().length === 0) return
+
     try {
       await createMessageMutation({
         variables: {
@@ -116,6 +154,7 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
       setMessageText('')
     }
   }
+
   return (
     <Box display="flex" alignItems="center" justifyContent="center">
       <Box display={{ base: 'none', md: 'block' }}>
@@ -146,11 +185,25 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
           <RoomIcon room={room} currentUserId={currentUser.id} size="sm" />
           <RoomName room={room} currentUserId={currentUser.id} size="lg" />
         </Box>
-        <Box flex="1" overflowY="auto" p="76px 16px 24px">
+        <Box
+          flex="1"
+          overflowY="auto"
+          p="76px 16px 24px"
+          display="flex"
+          flexDirection="column-reverse"
+        >
+          <Box ref={scrollBottomRef}></Box>
           {messagesData?.GetMessages ? (
-            messagesData.GetMessages.map((message) => {
+            messagesData.GetMessages.map((message, i) => {
               return (
                 <Box mb="12px" key={message.id}>
+                  {messageDateIndexes.includes(i) && (
+                    <Box textAlign="center" py="20px">
+                      <Text fontSize="sm" color="text.light" isBold>
+                        {new Date(message.createdAt).toLocaleDateString()}
+                      </Text>
+                    </Box>
+                  )}
                   <MessageBubble
                     currentUserId={currentUser.id}
                     message={message}
@@ -181,19 +234,28 @@ const RoomPage: NextPage<Props> = ({ currentUser, room }) => {
           <Textarea
             bgColor="white.main"
             boxShadow="0 3px 6px rgba(0, 0, 0, 0.16)"
+            overflow="hidden"
+            resize="none"
             rows={1}
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
+            ref={textAreaRef}
           />
           <Box
             transform="rotate(90deg)"
             w="fit-content"
             cursor="pointer"
             position="relative"
-            _hover={{ opacity: 0.7 }}
+            _hover={{ opacity: messageText.trim().length === 0 ? 1 : 0.7 }}
             onClick={sendMessageText}
           >
-            <SolidIcon icon="SOLID_PAPER_AIRPLANE" size={24} />
+            <SolidIcon
+              icon="SOLID_PAPER_AIRPLANE"
+              size={24}
+              color={
+                messageText.trim().length === 0 ? 'text.light' : 'primary.main'
+              }
+            />
           </Box>
         </Box>
       </Box>

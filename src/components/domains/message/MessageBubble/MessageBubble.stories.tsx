@@ -43,6 +43,7 @@ export const TargetUserMessageBubble = Template.bind({})
 TargetUserMessageBubble.args = {
   message: mockMessage,
   currentUserId: 'currentUserId',
+  existIcon: true,
 }
 
 const mockMessageByRoomRelatedGroup = messageFactory({
@@ -53,6 +54,7 @@ export const TargetUserByRoomRelatedGroupMessageBubble = Template.bind({})
 TargetUserByRoomRelatedGroupMessageBubble.args = {
   message: mockMessageByRoomRelatedGroup,
   currentUserId: 'currentUserId',
+  existIcon: true,
 }
 
 const mockMediaMessage = messageFactory({
