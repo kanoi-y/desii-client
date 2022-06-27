@@ -32,13 +32,13 @@ export const Component: VFC<Props> = ({
     if (!currentUser) return <GuestUserIcon size="sm" />
 
     return (
-      <Box display="flex" alignItems="center" gap="20px">
+      <>
         <Box
           cursor="pointer"
           _hover={{ opacity: 0.7 }}
           onClick={() => router.push('/dashboard/rooms')}
         >
-          <SolidIcon icon="SOLID_CHAT" size={30} />
+          <SolidIcon icon="SOLID_CHAT" size={28} />
         </Box>
         <Box
           cursor="pointer"
@@ -46,7 +46,7 @@ export const Component: VFC<Props> = ({
           _hover={{ opacity: 0.7 }}
           onClick={() => router.push('/dashboard/notifications')}
         >
-          <SolidIcon icon="SOLID_BELL" size={30} />
+          <SolidIcon icon="SOLID_BELL" size={28} />
           {uncheckCount > 0 && (
             <Box
               position="absolute"
@@ -98,7 +98,7 @@ export const Component: VFC<Props> = ({
             },
           ]}
         />
-      </Box>
+      </>
     )
   }, [router, currentUser, isLoading, onClickButton, uncheckCount])
 
@@ -122,7 +122,16 @@ export const Component: VFC<Props> = ({
           />
         </Box>
       </Link>
-      <Box>{iconContent}</Box>
+      <Box display="flex" alignItems="center" gap="20px">
+        <Box
+          cursor="pointer"
+          _hover={{ opacity: 0.7 }}
+          onClick={() => router.push('/search')}
+        >
+          <SolidIcon icon="SOLID_SEARCH" size={26} />
+        </Box>
+        {iconContent}
+      </Box>
     </Box>
   )
 }
