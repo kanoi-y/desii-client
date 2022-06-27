@@ -125,6 +125,14 @@ const OutlinePaperAirplane: VFC = () => (
   />
 )
 
+const OutlineSearch: VFC = () => (
+  <path
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+  />
+)
+
 const SolidHeart: VFC = () => (
   <path
     fillRule="evenodd"
@@ -236,6 +244,14 @@ const SolidPaperAirplane: VFC = () => (
   <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
 )
 
+const SolidSearch: VFC = () => (
+  <path
+    fillRule="evenodd"
+    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+    clipRule="evenodd"
+  />
+)
+
 export const OutlineIconMap = {
   OUTLINE_HEART: <OutlineHeart />,
   OUTLINE_BELL: <OutlineBell />,
@@ -252,6 +268,7 @@ export const OutlineIconMap = {
   OUTLINE_REFRESH: <OutlineRefresh />,
   OUTLINE_CHAT: <OutlineChat />,
   OUTLINE_PAPER_AIRPLANE: <OutlinePaperAirplane />,
+  OUTLINE_SEARCH: <OutlineSearch />,
 }
 
 export const SolidIconMap = {
@@ -270,6 +287,7 @@ export const SolidIconMap = {
   SOLID_REFRESH: <SolidRefresh />,
   SOLID_CHAT: <SolidChat />,
   SOLID_PAPER_AIRPLANE: <SolidPaperAirplane />,
+  SOLID_SEARCH: <SolidSearch />
 }
 
 export const OutlineIcon: VFC<OutlineIconProps> = ({
