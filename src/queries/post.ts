@@ -25,6 +25,7 @@ export const GET_POSTS = gql`
     $sort: postOrderByType
     $limit: Int
     $page: Int
+    $searchText: String
   ) {
     GetPosts(
       userId: $userId
@@ -33,6 +34,7 @@ export const GET_POSTS = gql`
       sort: $sort
       limit: $limit
       page: $page
+      searchText: $searchText
     ) {
       id
       title

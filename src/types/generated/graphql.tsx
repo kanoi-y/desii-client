@@ -351,6 +351,7 @@ export type QueryGetPostsArgs = {
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   limit?: InputMaybe<Scalars['Int']>;
   page?: InputMaybe<Scalars['Int']>;
+  searchText?: InputMaybe<Scalars['String']>;
   sort?: InputMaybe<PostOrderByType>;
   userId?: InputMaybe<Scalars['String']>;
 };
@@ -656,6 +657,7 @@ export type GetPostsQueryVariables = Exact<{
   sort?: InputMaybe<PostOrderByType>;
   limit?: InputMaybe<Scalars['Int']>;
   page?: InputMaybe<Scalars['Int']>;
+  searchText?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -1664,7 +1666,7 @@ export type GetPostQueryHookResult = ReturnType<typeof useGetPostQuery>;
 export type GetPostLazyQueryHookResult = ReturnType<typeof useGetPostLazyQuery>;
 export type GetPostQueryResult = Apollo.QueryResult<GetPostQuery, GetPostQueryVariables>;
 export const GetPostsDocument = gql`
-    query GetPosts($userId: String, $groupId: String, $isPrivate: Boolean, $sort: postOrderByType, $limit: Int, $page: Int) {
+    query GetPosts($userId: String, $groupId: String, $isPrivate: Boolean, $sort: postOrderByType, $limit: Int, $page: Int, $searchText: String) {
   GetPosts(
     userId: $userId
     groupId: $groupId
@@ -1672,6 +1674,7 @@ export const GetPostsDocument = gql`
     sort: $sort
     limit: $limit
     page: $page
+    searchText: $searchText
   ) {
     id
     title
@@ -1705,6 +1708,7 @@ export const GetPostsDocument = gql`
  *      sort: // value for 'sort'
  *      limit: // value for 'limit'
  *      page: // value for 'page'
+ *      searchText: // value for 'searchText'
  *   },
  * });
  */
