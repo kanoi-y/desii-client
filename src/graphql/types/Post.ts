@@ -92,6 +92,7 @@ export const GetPostsQuery = extendType({
         }),
         limit: intArg(),
         page: intArg(),
+        searchText: stringArg(),
       },
       async resolve(_parent, args, ctx) {
         const query: Partial<PostType> = {}
@@ -103,7 +104,21 @@ export const GetPostsQuery = extendType({
 
         if (args.sort !== 'favorite') {
           return ctx.prisma.post.findMany({
-            where: query,
+            where: {
+              ...query,
+              OR: [
+                {
+                  title: {
+                   contains: args.searchText || '',
+                 }
+                },
+                {
+                  content: {
+                   contains: args.searchText || '',
+                 }
+                },
+             ]
+            },
             skip: args.page || undefined,
             take: args.limit || undefined,
             orderBy: {

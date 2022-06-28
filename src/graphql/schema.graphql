@@ -126,7 +126,7 @@ type Query {
   GetMessages(roomId: String!, sort: orderByType = asc): [Message!]!
   GetNotifications(sort: orderByType = asc, targetUserId: String!): [Notification!]!
   GetOneOnOneRoom(memberId: String!): Room
-  GetPosts(groupId: String, isPrivate: Boolean, limit: Int, page: Int, sort: postOrderByType = asc, userId: String): [Post!]!
+  GetPosts(groupId: String, isPrivate: Boolean, limit: Int, page: Int, searchText: String, sort: postOrderByType = asc, userId: String): [Post!]!
   GetReadManagement(messageId: String!, targetUserId: String!): ReadManagement
   GetReadManagements(messageId: String, targetUserId: String): [ReadManagement!]!
   GetRoom(id: String!): Room
