@@ -1,5 +1,5 @@
 import { Box, Spinner } from '@chakra-ui/react'
-import styled from '@emotion/styled'
+import styled from 'styled-components'
 import React, { useContext } from 'react'
 import { Pagination } from 'swiper'
 import 'swiper/css'

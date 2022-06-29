@@ -6,13 +6,13 @@ import {
   Textarea,
   useDisclosure,
 } from '@chakra-ui/react'
-import styled from '@emotion/styled'
 import axios from 'axios'
 import cuid from 'cuid'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import styled from 'styled-components'
 import { TagModal } from '~/components/domains/tag/TagModal'
 import {
   Button,
@@ -410,7 +410,7 @@ const UpdatePostPage: NextPage<Props> = () => {
   )
 }
 
-const StyledLabel = styled('label')`
+const StyledLabel = styled.label`
   cursor: pointer;
 `
 

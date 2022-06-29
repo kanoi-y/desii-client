@@ -6,7 +6,7 @@ import {
   Textarea,
   useDisclosure,
 } from '@chakra-ui/react'
-import styled from '@emotion/styled'
+import styled from 'styled-components'
 import axios from 'axios'
 import cuid from 'cuid'
 import { GetServerSideProps, NextPage } from 'next'
@@ -338,7 +338,7 @@ const NewPostPage: NextPage = () => {
   )
 }
 
-const StyledLabel = styled('label')`
+const StyledLabel = styled.label`
   cursor: pointer;
 `
 
