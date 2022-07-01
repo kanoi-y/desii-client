@@ -31,6 +31,7 @@ type Props = {
   user?: User
 }
 
+// TODO: タブレットサイズ以下は投稿が一列になるようにする
 const UserPage: NextPage<Props> = ({ user }) => {
   const router = useRouter()
   const { currentUser } = useContext(CurrentUserContext)
@@ -102,8 +103,6 @@ const UserPage: NextPage<Props> = ({ user }) => {
                   display="flex"
                   flexWrap="wrap"
                   gap="20px"
-                  alignItems="center"
-                  justifyContent="center"
                 >
                   {data ? (
                     data.GetPosts.filter(
