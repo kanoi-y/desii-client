@@ -9,7 +9,8 @@ import {
   Tabs,
 } from '@chakra-ui/react'
 import { NextPage } from 'next'
-import { FormEvent, useContext, useState } from 'react'
+import { useRouter } from 'next/router'
+import { FormEvent, useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { PostCard, SkeletonPostCard } from '~/components/domains/post/PostCard'
 import { SolidIcon, Text } from '~/components/parts/commons'
@@ -18,15 +19,28 @@ import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 import { PostOrderByType, useGetPostsQuery } from '~/types/generated/graphql'
 
 const SearchPage: NextPage = () => {
+  const router = useRouter()
   const { currentUser, isLoading } = useContext(CurrentUserContext)
   const [value, setValue] = useState('')
-  const [postsPage, setPostsPage] = useState(1)
+
+  const [searchText, setSearchText] = useState('')
+  const [postsPage, setPostsPage] = useState(0)
+
+  useEffect(() => {
+    setSearchText(typeof router.query.q === 'string' ? router.query.q : '')
+    setPostsPage(
+      typeof router.query.page === 'string' &&
+        Number.parseInt(router.query.page) > 0
+        ? Number.parseInt(router.query.page) - 1
+        : 0
+    )
+  }, [router.query])
 
   const { data: postsData } = useGetPostsQuery({
     variables: {
       isPrivate: false,
       sort: PostOrderByType.Desc,
-      searchText: value,
+      searchText,
       limit: 50,
       page: postsPage,
     },
@@ -35,7 +49,8 @@ const SearchPage: NextPage = () => {
 
   const searchByKeyword = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(e)
+
+    router.push(`/search?q=${value}`)
   }
 
   if (isLoading) {
