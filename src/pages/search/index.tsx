@@ -102,6 +102,7 @@ const SearchPage: NextPage = () => {
                   flexDirection={['column', 'row']}
                   alignItems="center"
                   gap="32px 24px"
+                  mb="36px"
                 >
                   {postsData ? (
                     postsData.GetPosts.map((post) => (

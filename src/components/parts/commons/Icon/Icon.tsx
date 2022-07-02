@@ -93,6 +93,14 @@ const OutlineChevronDown: VFC = () => (
   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
 )
 
+const OutlineChevronLeft: VFC = () => (
+  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+)
+
+const OutlineChevronRight: VFC = () => (
+  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+)
+
 const OutlineTrash: VFC = () => (
   <path
     strokeLinecap="round"
@@ -216,6 +224,22 @@ const SolidChevronDown: VFC = () => (
   />
 )
 
+const SolidChevronLeft: VFC = () => (
+  <path
+    fillRule="evenodd"
+    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+    clipRule="evenodd"
+  />
+)
+
+const SolidChevronRight: VFC = () => (
+  <path
+    fillRule="evenodd"
+    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+    clipRule="evenodd"
+  />
+)
+
 const SolidTrash: VFC = () => (
   <path
     fillRule="evenodd"
@@ -264,6 +288,8 @@ export const OutlineIconMap = {
   OUTLINE_USER: <OutlineUser />,
   OUTLINE_DOCUMENT_TEXT: <OutlineDocumentText />,
   OUTLINE_CHEVRON_DOWN: <OutlineChevronDown />,
+  OUTLINE_OUTLINE_LEFT: <OutlineChevronLeft />,
+  OUTLINE_OUTLINE_RIGHT: <OutlineChevronRight />,
   OUTLINE_TRASH: <OutlineTrash />,
   OUTLINE_REFRESH: <OutlineRefresh />,
   OUTLINE_CHAT: <OutlineChat />,
@@ -283,11 +309,13 @@ export const SolidIconMap = {
   SOLID_USER: <SolidUser />,
   SOLID_DOCUMENT_TEXT: <SolidDocumentText />,
   SOLID_CHEVRON_DOWN: <SolidChevronDown />,
+  SOLID_CHEVRON_LEFT: <SolidChevronLeft />,
+  SOLID_CHEVRON_RIGHT: <SolidChevronRight />,
   SOLID_TRASH: <SolidTrash />,
   SOLID_REFRESH: <SolidRefresh />,
   SOLID_CHAT: <SolidChat />,
   SOLID_PAPER_AIRPLANE: <SolidPaperAirplane />,
-  SOLID_SEARCH: <SolidSearch />
+  SOLID_SEARCH: <SolidSearch />,
 }
 
 export const OutlineIcon: VFC<OutlineIconProps> = ({
