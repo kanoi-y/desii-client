@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react'
 import { GetStaticPropsContext, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { PostCard, SkeletonPostCard } from '~/components/domains/post/PostCard'
 import { UserIcon } from '~/components/domains/user/UserIcon'
 import { Button, Link, Text } from '~/components/parts/commons'
@@ -31,7 +31,6 @@ type Props = {
   user?: User
 }
 
-// TODO: タブレットサイズ以下は投稿が一列になるようにする
 const UserPage: NextPage<Props> = ({ user }) => {
   const router = useRouter()
   const { currentUser } = useContext(CurrentUserContext)
@@ -102,7 +101,9 @@ const UserPage: NextPage<Props> = ({ user }) => {
                 <Box
                   display="flex"
                   flexWrap="wrap"
-                  gap="20px"
+                  flexDirection={['column', 'row']}
+                  alignItems="center"
+                  gap="32px 24px"
                 >
                   {data ? (
                     data.GetPosts.filter(
@@ -117,9 +118,14 @@ const UserPage: NextPage<Props> = ({ user }) => {
                       </Box>
                     ))
                   ) : (
-                    <Box w="100%" maxW="360px">
-                      <SkeletonPostCard />
-                    </Box>
+                    <>
+                      <Box w="360px" maxW="100%">
+                        <SkeletonPostCard />
+                      </Box>
+                      <Box w="360px" maxW="100%">
+                        <SkeletonPostCard />
+                      </Box>
+                    </>
                   )}
                 </Box>
               </TabPanel>
@@ -127,15 +133,15 @@ const UserPage: NextPage<Props> = ({ user }) => {
                 <Box
                   display="flex"
                   flexWrap="wrap"
-                  gap="20px"
+                  flexDirection={['column', 'row']}
                   alignItems="center"
-                  justifyContent="center"
+                  gap="32px 24px"
                 >
                   {data ? (
                     data.GetPosts.filter(
                       (post) => post.category === PostCategory.GiveMe
                     ).map((post) => (
-                      <Box key={post.id} w="100%" maxW="360px">
+                      <Box key={post.id} w="360px" maxW="100%">
                         <PostCard
                           currentUserId={currentUser?.id}
                           post={post}
@@ -144,9 +150,11 @@ const UserPage: NextPage<Props> = ({ user }) => {
                       </Box>
                     ))
                   ) : (
-                    <Box w="100%" maxW="360px">
+                    <>
                       <SkeletonPostCard />
-                    </Box>
+                      <SkeletonPostCard />
+                      <SkeletonPostCard />
+                    </>
                   )}
                 </Box>
               </TabPanel>

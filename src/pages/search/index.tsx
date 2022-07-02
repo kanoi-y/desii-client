@@ -17,7 +17,6 @@ import { FooterLayout } from '~/components/parts/layout/FooterLayout'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 import { PostOrderByType, useGetPostsQuery } from '~/types/generated/graphql'
 
-// TODO: タブレットサイズ以下は投稿が一列になるようにする
 const SearchPage: NextPage = () => {
   const { currentUser, isLoading } = useContext(CurrentUserContext)
   const [value, setValue] = useState('')
@@ -85,7 +84,9 @@ const SearchPage: NextPage = () => {
                 <Box
                   display="flex"
                   flexWrap="wrap"
-                  gap="20px"
+                  flexDirection={['column', 'row']}
+                  alignItems="center"
+                  gap="32px 24px"
                 >
                   {postsData ? (
                     postsData.GetPosts.map((post) => (
@@ -98,11 +99,14 @@ const SearchPage: NextPage = () => {
                       </Box>
                     ))
                   ) : (
-                    <Box w="100%" maxW="360px">
-                      <SkeletonPostCard />
-                      <SkeletonPostCard />
-                      <SkeletonPostCard />
-                    </Box>
+                    <>
+                      <Box w="360px" maxW="100%">
+                        <SkeletonPostCard />
+                      </Box>
+                      <Box w="360px" maxW="100%">
+                        <SkeletonPostCard />
+                      </Box>
+                    </>
                   )}
                 </Box>
               </TabPanel>
