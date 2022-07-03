@@ -18,8 +18,8 @@ export default function Home() {
     variables: {
       isPrivate: false,
       sort: PostOrderByType.Desc,
-      limit: 10,
-      page: 0,
+      take: 10,
+      skip: 0,
     },
     fetchPolicy: 'cache-and-network',
   })
@@ -28,8 +28,8 @@ export default function Home() {
     variables: {
       isPrivate: false,
       sort: PostOrderByType.Favorite,
-      limit: 10,
-      page: 0,
+      take: 10,
+      skip: 0,
     },
     fetchPolicy: 'cache-and-network',
   })

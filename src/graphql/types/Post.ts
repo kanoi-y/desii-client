@@ -90,8 +90,8 @@ export const GetPostsQuery = extendType({
           type: PostOrderByType,
           default: 'asc',
         }),
-        limit: intArg(),
-        page: intArg(),
+        take: intArg(),
+        skip: intArg(),
         searchText: stringArg(),
       },
       async resolve(_parent, args, ctx) {
@@ -119,8 +119,8 @@ export const GetPostsQuery = extendType({
                 },
              ]
             },
-            skip: args.page || undefined,
-            take: args.limit || undefined,
+            skip: args.skip || undefined,
+            take: args.take || undefined,
             orderBy: {
               createdAt: args.sort || 'asc',
             },
@@ -129,8 +129,8 @@ export const GetPostsQuery = extendType({
 
         const posts = await ctx.prisma.post.findMany({
           where: query,
-          skip: args.page || undefined,
-          take: args.limit || undefined,
+          skip: args.skip || undefined,
+          take: args.take || undefined,
           orderBy: {
             createdAt: 'desc',
           },

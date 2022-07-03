@@ -23,8 +23,8 @@ export const GET_POSTS = gql`
     $groupId: String
     $isPrivate: Boolean
     $sort: postOrderByType
-    $limit: Int
-    $page: Int
+    $take: Int
+    $skip: Int
     $searchText: String
   ) {
     GetPosts(
@@ -32,8 +32,8 @@ export const GET_POSTS = gql`
       groupId: $groupId
       isPrivate: $isPrivate
       sort: $sort
-      limit: $limit
-      page: $page
+      take: $take
+      skip: $skip
       searchText: $searchText
     ) {
       id

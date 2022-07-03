@@ -349,10 +349,10 @@ export type QueryGetOneOnOneRoomArgs = {
 export type QueryGetPostsArgs = {
   groupId?: InputMaybe<Scalars['String']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
-  limit?: InputMaybe<Scalars['Int']>;
-  page?: InputMaybe<Scalars['Int']>;
   searchText?: InputMaybe<Scalars['String']>;
+  skip?: InputMaybe<Scalars['Int']>;
   sort?: InputMaybe<PostOrderByType>;
+  take?: InputMaybe<Scalars['Int']>;
   userId?: InputMaybe<Scalars['String']>;
 };
 
@@ -655,8 +655,8 @@ export type GetPostsQueryVariables = Exact<{
   groupId?: InputMaybe<Scalars['String']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   sort?: InputMaybe<PostOrderByType>;
-  limit?: InputMaybe<Scalars['Int']>;
-  page?: InputMaybe<Scalars['Int']>;
+  take?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']>;
   searchText?: InputMaybe<Scalars['String']>;
 }>;
 
@@ -1666,14 +1666,14 @@ export type GetPostQueryHookResult = ReturnType<typeof useGetPostQuery>;
 export type GetPostLazyQueryHookResult = ReturnType<typeof useGetPostLazyQuery>;
 export type GetPostQueryResult = Apollo.QueryResult<GetPostQuery, GetPostQueryVariables>;
 export const GetPostsDocument = gql`
-    query GetPosts($userId: String, $groupId: String, $isPrivate: Boolean, $sort: postOrderByType, $limit: Int, $page: Int, $searchText: String) {
+    query GetPosts($userId: String, $groupId: String, $isPrivate: Boolean, $sort: postOrderByType, $take: Int, $skip: Int, $searchText: String) {
   GetPosts(
     userId: $userId
     groupId: $groupId
     isPrivate: $isPrivate
     sort: $sort
-    limit: $limit
-    page: $page
+    take: $take
+    skip: $skip
     searchText: $searchText
   ) {
     id
@@ -1706,8 +1706,8 @@ export const GetPostsDocument = gql`
  *      groupId: // value for 'groupId'
  *      isPrivate: // value for 'isPrivate'
  *      sort: // value for 'sort'
- *      limit: // value for 'limit'
- *      page: // value for 'page'
+ *      take: // value for 'take'
+ *      skip: // value for 'skip'
  *      searchText: // value for 'searchText'
  *   },
  * });
