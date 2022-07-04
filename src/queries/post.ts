@@ -36,16 +36,19 @@ export const GET_POSTS = gql`
       skip: $skip
       searchText: $searchText
     ) {
-      id
-      title
-      content
-      category
-      createdUserId
-      isPrivate
-      groupId
-      bgImage
-      createdAt
-      updatedAt
+      count
+      posts {
+        id
+        title
+        content
+        category
+        createdUserId
+        isPrivate
+        groupId
+        bgImage
+        createdAt
+        updatedAt
+      }
     }
   }
 `

@@ -13,11 +13,14 @@ import { useRouter } from 'next/router'
 import { FormEvent, useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { PostCard, SkeletonPostCard } from '~/components/domains/post/PostCard'
-import { SolidIcon, Text } from '~/components/parts/commons'
+import { Link, SolidIcon, Text } from '~/components/parts/commons'
 import { FooterLayout } from '~/components/parts/layout/FooterLayout'
 import { CurrentUserContext } from '~/hooks/CurrentUserProvider'
 import { PostOrderByType, useGetPostsQuery } from '~/types/generated/graphql'
 
+const POSTS_LIMIT = 50
+
+// TODO: ページネーション部分を実装
 const SearchPage: NextPage = () => {
   const router = useRouter()
   const { currentUser, isLoading } = useContext(CurrentUserContext)
@@ -41,8 +44,8 @@ const SearchPage: NextPage = () => {
       isPrivate: false,
       sort: PostOrderByType.Desc,
       searchText,
-      limit: 50,
-      page: postsPage,
+      take: POSTS_LIMIT,
+      skip: postsPage * POSTS_LIMIT,
     },
     fetchPolicy: 'cache-and-network',
   })
@@ -102,7 +105,7 @@ const SearchPage: NextPage = () => {
                   flexDirection={['column', 'row']}
                   alignItems="center"
                   gap="32px 24px"
-                  mb="36px"
+                  mb="48px"
                 >
                   {postsData ? (
                     postsData.GetPosts.map((post) => (
@@ -124,6 +127,57 @@ const SearchPage: NextPage = () => {
                       </Box>
                     </>
                   )}
+                </Box>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  w="100%"
+                  gap="24px"
+                  visibility={
+                    postsData && postsData.GetPosts.length > POSTS_LIMIT
+                      ? 'visible'
+                      : 'hidden'
+                  }
+                >
+                  <Link
+                    href={
+                      (process.env.NEXT_PUBLIC_ROOT_URL ||
+                        'http://localhost:3000') +
+                      `/search?q=${value}&page=${postsPage}`
+                    }
+                  >
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      gap="4px"
+                      _hover={{ opacity: 0.7 }}
+                    >
+                      <SolidIcon icon="SOLID_CHEVRON_LEFT" />
+                      <Text fontSize="md" isBold>
+                        前のページへ
+                      </Text>
+                    </Box>
+                  </Link>
+                  <Link
+                    href={
+                      (process.env.NEXT_PUBLIC_ROOT_URL ||
+                        'http://localhost:3000') +
+                      `/search?q=${value}&page=${postsPage + 2}`
+                    }
+                  >
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      gap="4px"
+                      _hover={{ opacity: 0.7 }}
+                    >
+                      <Text fontSize="md" isBold>
+                        次のページへ
+                      </Text>
+                      <SolidIcon icon="SOLID_CHEVRON_RIGHT" />
+                    </Box>
+                  </Link>
                 </Box>
               </TabPanel>
             </TabPanels>

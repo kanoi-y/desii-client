@@ -290,6 +290,12 @@ export enum PostCategory {
   GiveYou = 'GIVE_YOU'
 }
 
+export type PostsWithCountType = {
+  __typename?: 'PostsWithCountType';
+  count: Scalars['Int'];
+  posts: Array<Post>;
+};
+
 export type Query = {
   __typename?: 'Query';
   GetFavorites: Array<Favorite>;
@@ -297,7 +303,7 @@ export type Query = {
   GetMessages: Array<Message>;
   GetNotifications: Array<Notification>;
   GetOneOnOneRoom?: Maybe<Room>;
-  GetPosts: Array<Post>;
+  GetPosts?: Maybe<PostsWithCountType>;
   GetReadManagement?: Maybe<ReadManagement>;
   GetReadManagements: Array<ReadManagement>;
   GetRoom?: Maybe<Room>;
@@ -661,7 +667,7 @@ export type GetPostsQueryVariables = Exact<{
 }>;
 
 
-export type GetPostsQuery = { __typename?: 'Query', GetPosts: Array<{ __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date }> };
+export type GetPostsQuery = { __typename?: 'Query', GetPosts?: { __typename?: 'PostsWithCountType', count: number, posts: Array<{ __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date }> } | null };
 
 export type GetMatchingPostsQueryVariables = Exact<{
   postId: Scalars['String'];
@@ -1676,16 +1682,19 @@ export const GetPostsDocument = gql`
     skip: $skip
     searchText: $searchText
   ) {
-    id
-    title
-    content
-    category
-    createdUserId
-    isPrivate
-    groupId
-    bgImage
-    createdAt
-    updatedAt
+    count
+    posts {
+      id
+      title
+      content
+      category
+      createdUserId
+      isPrivate
+      groupId
+      bgImage
+      createdAt
+      updatedAt
+    }
   }
 }
     `;

@@ -120,13 +120,18 @@ enum PostCategory {
   GIVE_YOU
 }
 
+type PostsWithCountType {
+  count: Int!
+  posts: [Post!]!
+}
+
 type Query {
   GetFavorites(createdUserId: String, postId: String, sort: orderByType = asc): [Favorite!]!
   GetMatchingPosts(postId: String!): [MatchingPostInfoType!]!
   GetMessages(roomId: String!, sort: orderByType = asc): [Message!]!
   GetNotifications(sort: orderByType = asc, targetUserId: String!): [Notification!]!
   GetOneOnOneRoom(memberId: String!): Room
-  GetPosts(groupId: String, isPrivate: Boolean, searchText: String, skip: Int, sort: postOrderByType = asc, take: Int, userId: String): [Post!]!
+  GetPosts(groupId: String, isPrivate: Boolean, searchText: String, skip: Int, sort: postOrderByType = asc, take: Int, userId: String): PostsWithCountType
   GetReadManagement(messageId: String!, targetUserId: String!): ReadManagement
   GetReadManagements(messageId: String, targetUserId: String): [ReadManagement!]!
   GetRoom(id: String!): Room
