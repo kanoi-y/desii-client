@@ -87,7 +87,6 @@ export const GetPostQuery = extendType({
   },
 })
 
-// TODO: 返り値に投稿の合計数を追加する
 export const GetPostsQuery = extendType({
   type: 'Query',
   definition(t) {

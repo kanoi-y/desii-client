@@ -56,8 +56,8 @@ const PostsPage: NextPage<Props> = ({ currentUser }) => {
             </Text>
           </Box>
           <Box w="100%" display="flex" flexDirection="column" gap="16px">
-            {data ? (
-              data.GetPosts.map((post) => (
+            {data?.GetPosts ? (
+              data.GetPosts.posts.map((post) => (
                 <PostListItem
                   key={post.id}
                   currentUserId={currentUser.id}

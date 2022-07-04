@@ -76,8 +76,8 @@ export default function Home() {
             }}
             loop={true}
           >
-            {data ? (
-              data.GetPosts.map((post) => (
+            {data?.GetPosts ? (
+              data.GetPosts.posts.map((post) => (
                 <SwiperSlide key={post.id}>
                   <Box w="100%" maxW="360px">
                     <PostCard
@@ -119,8 +119,8 @@ export default function Home() {
           }}
           loop={true}
         >
-          {favoritesData ? (
-            favoritesData.GetPosts.map((post) => (
+          {favoritesData?.GetPosts ? (
+            favoritesData.GetPosts.posts.map((post) => (
               <SwiperSlide key={post.id}>
                 <Box w="100%" maxW="360px">
                   <PostCard

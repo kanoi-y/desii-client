@@ -105,8 +105,8 @@ const UserPage: NextPage<Props> = ({ user }) => {
                   alignItems="center"
                   gap="32px 24px"
                 >
-                  {data ? (
-                    data.GetPosts.filter(
+                  {data?.GetPosts ? (
+                    data.GetPosts.posts.filter(
                       (post) => post.category === PostCategory.GiveYou
                     ).map((post) => (
                       <Box key={post.id} w="100%" maxW="360px">
@@ -137,8 +137,8 @@ const UserPage: NextPage<Props> = ({ user }) => {
                   alignItems="center"
                   gap="32px 24px"
                 >
-                  {data ? (
-                    data.GetPosts.filter(
+                  {data?.GetPosts ? (
+                    data.GetPosts.posts.filter(
                       (post) => post.category === PostCategory.GiveMe
                     ).map((post) => (
                       <Box key={post.id} w="360px" maxW="100%">
