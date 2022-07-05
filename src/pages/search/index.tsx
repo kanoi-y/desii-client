@@ -20,7 +20,6 @@ import { PostOrderByType, useGetPostsQuery } from '~/types/generated/graphql'
 
 const POSTS_LIMIT = 50
 
-// TODO: ページネーション部分を実装
 const SearchPage: NextPage = () => {
   const router = useRouter()
   const { currentUser, isLoading } = useContext(CurrentUserContext)
@@ -107,8 +106,8 @@ const SearchPage: NextPage = () => {
                   gap="32px 24px"
                   mb="48px"
                 >
-                  {postsData ? (
-                    postsData.GetPosts.map((post) => (
+                  {postsData?.GetPosts ? (
+                    postsData.GetPosts.posts.map((post) => (
                       <Box key={post.id} w="360px" maxW="100%">
                         <PostCard
                           post={post}
@@ -128,57 +127,59 @@ const SearchPage: NextPage = () => {
                     </>
                   )}
                 </Box>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  w="100%"
-                  gap="24px"
-                  visibility={
-                    postsData && postsData.GetPosts.length > POSTS_LIMIT
-                      ? 'visible'
-                      : 'hidden'
-                  }
-                >
-                  <Link
-                    href={
-                      (process.env.NEXT_PUBLIC_ROOT_URL ||
-                        'http://localhost:3000') +
-                      `/search?q=${value}&page=${postsPage}`
-                    }
+                {postsData?.GetPosts && postsData.GetPosts.count > POSTS_LIMIT && (
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    w="100%"
+                    gap="24px"
                   >
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      gap="4px"
-                      _hover={{ opacity: 0.7 }}
-                    >
-                      <SolidIcon icon="SOLID_CHEVRON_LEFT" />
-                      <Text fontSize="md" isBold>
-                        前のページへ
-                      </Text>
-                    </Box>
-                  </Link>
-                  <Link
-                    href={
-                      (process.env.NEXT_PUBLIC_ROOT_URL ||
-                        'http://localhost:3000') +
-                      `/search?q=${value}&page=${postsPage + 2}`
-                    }
-                  >
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      gap="4px"
-                      _hover={{ opacity: 0.7 }}
-                    >
-                      <Text fontSize="md" isBold>
-                        次のページへ
-                      </Text>
-                      <SolidIcon icon="SOLID_CHEVRON_RIGHT" />
-                    </Box>
-                  </Link>
-                </Box>
+                    {postsPage > 0 && (
+                      <Link
+                        href={
+                          (process.env.NEXT_PUBLIC_ROOT_URL ||
+                            'http://localhost:3000') +
+                          `/search?q=${value}&page=${postsPage}`
+                        }
+                      >
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          gap="4px"
+                          _hover={{ opacity: 0.7 }}
+                        >
+                          <SolidIcon icon="SOLID_CHEVRON_LEFT" />
+                          <Text fontSize="md" isBold>
+                            前のページへ
+                          </Text>
+                        </Box>
+                      </Link>
+                    )}
+                    {postsData.GetPosts.count >
+                      POSTS_LIMIT * (postsPage + 1) && (
+                      <Link
+                        href={
+                          (process.env.NEXT_PUBLIC_ROOT_URL ||
+                            'http://localhost:3000') +
+                          `/search?q=${value}&page=${postsPage + 2}`
+                        }
+                      >
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          gap="4px"
+                          _hover={{ opacity: 0.7 }}
+                        >
+                          <Text fontSize="md" isBold>
+                            次のページへ
+                          </Text>
+                          <SolidIcon icon="SOLID_CHEVRON_RIGHT" />
+                        </Box>
+                      </Link>
+                    )}
+                  </Box>
+                )}
               </TabPanel>
             </TabPanels>
           </Tabs>
