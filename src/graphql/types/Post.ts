@@ -95,6 +95,9 @@ export const GetPostsQuery = extendType({
       args: {
         userId: stringArg(),
         groupId: stringArg(),
+        category: arg({
+          type: PostCategory,
+        }),
         isPrivate: booleanArg(),
         sort: arg({
           type: PostOrderByType,
@@ -108,6 +111,7 @@ export const GetPostsQuery = extendType({
         const query: Partial<PostType> = {}
         if (args.userId) query.createdUserId = args.userId
         if (args.groupId) query.groupId = args.groupId
+        if (args.category) query.category = args.category
         if (typeof args.isPrivate === 'boolean') {
           query.isPrivate = args.isPrivate
         }

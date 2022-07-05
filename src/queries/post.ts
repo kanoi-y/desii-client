@@ -21,6 +21,7 @@ export const GET_POSTS = gql`
   query GetPosts(
     $userId: String
     $groupId: String
+    $category: PostCategory
     $isPrivate: Boolean
     $sort: postOrderByType
     $take: Int
@@ -30,6 +31,7 @@ export const GET_POSTS = gql`
     GetPosts(
       userId: $userId
       groupId: $groupId
+      category: $category
       isPrivate: $isPrivate
       sort: $sort
       take: $take

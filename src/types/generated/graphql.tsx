@@ -353,6 +353,7 @@ export type QueryGetOneOnOneRoomArgs = {
 
 
 export type QueryGetPostsArgs = {
+  category?: InputMaybe<PostCategory>;
   groupId?: InputMaybe<Scalars['String']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   searchText?: InputMaybe<Scalars['String']>;
@@ -659,6 +660,7 @@ export type GetPostQuery = { __typename?: 'Query', getPost?: { __typename?: 'Pos
 export type GetPostsQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['String']>;
   groupId?: InputMaybe<Scalars['String']>;
+  category?: InputMaybe<PostCategory>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   sort?: InputMaybe<PostOrderByType>;
   take?: InputMaybe<Scalars['Int']>;
@@ -1672,10 +1674,11 @@ export type GetPostQueryHookResult = ReturnType<typeof useGetPostQuery>;
 export type GetPostLazyQueryHookResult = ReturnType<typeof useGetPostLazyQuery>;
 export type GetPostQueryResult = Apollo.QueryResult<GetPostQuery, GetPostQueryVariables>;
 export const GetPostsDocument = gql`
-    query GetPosts($userId: String, $groupId: String, $isPrivate: Boolean, $sort: postOrderByType, $take: Int, $skip: Int, $searchText: String) {
+    query GetPosts($userId: String, $groupId: String, $category: PostCategory, $isPrivate: Boolean, $sort: postOrderByType, $take: Int, $skip: Int, $searchText: String) {
   GetPosts(
     userId: $userId
     groupId: $groupId
+    category: $category
     isPrivate: $isPrivate
     sort: $sort
     take: $take
@@ -1713,6 +1716,7 @@ export const GetPostsDocument = gql`
  *   variables: {
  *      userId: // value for 'userId'
  *      groupId: // value for 'groupId'
+ *      category: // value for 'category'
  *      isPrivate: // value for 'isPrivate'
  *      sort: // value for 'sort'
  *      take: // value for 'take'
