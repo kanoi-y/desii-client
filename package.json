@@ -25,7 +25,7 @@
     "@chakra-ui/react": "1.8.8",
     "@emotion/react": "11.9.3",
     "@emotion/styled": "11.8.1",
-    "@google-cloud/storage": "5.19.4",
+    "@google-cloud/storage": "5.20.5",
     "@next-auth/prisma-adapter": "1.0.3",
     "@prisma/client": "3.10.0",
     "apollo-server-micro": "3.6.8",
