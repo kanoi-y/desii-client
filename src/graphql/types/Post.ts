@@ -36,6 +36,16 @@ export const MatchingPostInfoType = objectType({
   },
 })
 
+export const PostsWithCountType = objectType({
+  name: 'PostsWithCountType',
+  definition(t) {
+    t.nonNull.int('count')
+    t.nonNull.list.nonNull.field('posts', {
+      type: 'Post',
+    })
+  },
+})
+
 export const Post = objectType({
   name: 'Post',
   definition(t) {
@@ -80,48 +90,76 @@ export const GetPostQuery = extendType({
 export const GetPostsQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.nonNull.list.nonNull.field('GetPosts', {
-      type: 'Post',
+    t.field('GetPosts', {
+      type: 'PostsWithCountType',
       args: {
         userId: stringArg(),
         groupId: stringArg(),
+        category: arg({
+          type: PostCategory,
+        }),
         isPrivate: booleanArg(),
         sort: arg({
           type: PostOrderByType,
           default: 'asc',
         }),
-        limit: intArg(),
-        page: intArg(),
+        take: intArg(),
+        skip: intArg(),
+        searchText: stringArg(),
       },
       async resolve(_parent, args, ctx) {
         const query: Partial<PostType> = {}
         if (args.userId) query.createdUserId = args.userId
         if (args.groupId) query.groupId = args.groupId
+        if (args.category) query.category = args.category
         if (typeof args.isPrivate === 'boolean') {
           query.isPrivate = args.isPrivate
         }
 
-        if (args.sort !== 'favorite') {
-          return ctx.prisma.post.findMany({
-            where: query,
-            skip: args.page || undefined,
-            take: args.limit || undefined,
-            orderBy: {
-              createdAt: args.sort || 'asc',
-            },
-          })
-        }
-
-        const posts = await ctx.prisma.post.findMany({
-          where: query,
-          skip: args.page || undefined,
-          take: args.limit || undefined,
-          orderBy: {
-            createdAt: 'desc',
+        const postsCount = await ctx.prisma.post.count({
+          where: {
+            ...query,
+            OR: [
+              {
+                title: {
+                  contains: args.searchText || '',
+                },
+              },
+              {
+                content: {
+                  contains: args.searchText || '',
+                },
+              },
+            ],
           },
         })
 
-        return (
+        const posts = await ctx.prisma.post.findMany({
+          where: {
+            ...query,
+            OR: [
+              {
+                title: {
+                  contains: args.searchText || '',
+                },
+              },
+              {
+                content: {
+                  contains: args.searchText || '',
+                },
+              },
+            ],
+          },
+          skip: args.skip || undefined,
+          take: args.take || undefined,
+          orderBy: {
+            createdAt: args.sort === 'favorite' ? 'desc' : args.sort || 'asc',
+          },
+        })
+
+        if (args.sort !== 'favorite') return { count: postsCount, posts }
+
+        const favoritePosts = (
           await Promise.all(
             posts.map(async (post: PostType) => {
               const favorites = await ctx.prisma.favorite.findMany({
@@ -139,6 +177,8 @@ export const GetPostsQuery = extendType({
             const { count, ...post } = postWithCount
             return post
           })
+
+        return { count: postsCount, posts: favoritePosts }
       },
     })
   },

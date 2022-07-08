@@ -21,29 +21,36 @@ export const GET_POSTS = gql`
   query GetPosts(
     $userId: String
     $groupId: String
+    $category: PostCategory
     $isPrivate: Boolean
     $sort: postOrderByType
-    $limit: Int
-    $page: Int
+    $take: Int
+    $skip: Int
+    $searchText: String
   ) {
     GetPosts(
       userId: $userId
       groupId: $groupId
+      category: $category
       isPrivate: $isPrivate
       sort: $sort
-      limit: $limit
-      page: $page
+      take: $take
+      skip: $skip
+      searchText: $searchText
     ) {
-      id
-      title
-      content
-      category
-      createdUserId
-      isPrivate
-      groupId
-      bgImage
-      createdAt
-      updatedAt
+      count
+      posts {
+        id
+        title
+        content
+        category
+        createdUserId
+        isPrivate
+        groupId
+        bgImage
+        createdAt
+        updatedAt
+      }
     }
   }
 `

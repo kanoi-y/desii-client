@@ -290,6 +290,12 @@ export enum PostCategory {
   GiveYou = 'GIVE_YOU'
 }
 
+export type PostsWithCountType = {
+  __typename?: 'PostsWithCountType';
+  count: Scalars['Int'];
+  posts: Array<Post>;
+};
+
 export type Query = {
   __typename?: 'Query';
   GetFavorites: Array<Favorite>;
@@ -297,7 +303,7 @@ export type Query = {
   GetMessages: Array<Message>;
   GetNotifications: Array<Notification>;
   GetOneOnOneRoom?: Maybe<Room>;
-  GetPosts: Array<Post>;
+  GetPosts?: Maybe<PostsWithCountType>;
   GetReadManagement?: Maybe<ReadManagement>;
   GetReadManagements: Array<ReadManagement>;
   GetRoom?: Maybe<Room>;
@@ -347,11 +353,13 @@ export type QueryGetOneOnOneRoomArgs = {
 
 
 export type QueryGetPostsArgs = {
+  category?: InputMaybe<PostCategory>;
   groupId?: InputMaybe<Scalars['String']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
-  limit?: InputMaybe<Scalars['Int']>;
-  page?: InputMaybe<Scalars['Int']>;
+  searchText?: InputMaybe<Scalars['String']>;
+  skip?: InputMaybe<Scalars['Int']>;
   sort?: InputMaybe<PostOrderByType>;
+  take?: InputMaybe<Scalars['Int']>;
   userId?: InputMaybe<Scalars['String']>;
 };
 
@@ -652,14 +660,16 @@ export type GetPostQuery = { __typename?: 'Query', getPost?: { __typename?: 'Pos
 export type GetPostsQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['String']>;
   groupId?: InputMaybe<Scalars['String']>;
+  category?: InputMaybe<PostCategory>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   sort?: InputMaybe<PostOrderByType>;
-  limit?: InputMaybe<Scalars['Int']>;
-  page?: InputMaybe<Scalars['Int']>;
+  take?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']>;
+  searchText?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type GetPostsQuery = { __typename?: 'Query', GetPosts: Array<{ __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date }> };
+export type GetPostsQuery = { __typename?: 'Query', GetPosts?: { __typename?: 'PostsWithCountType', count: number, posts: Array<{ __typename?: 'Post', id: string, title: string, content: string, category: PostCategory, createdUserId: string, isPrivate: boolean, groupId?: string | null, bgImage?: string | null, createdAt: Date, updatedAt: Date }> } | null };
 
 export type GetMatchingPostsQueryVariables = Exact<{
   postId: Scalars['String'];
@@ -1664,25 +1674,30 @@ export type GetPostQueryHookResult = ReturnType<typeof useGetPostQuery>;
 export type GetPostLazyQueryHookResult = ReturnType<typeof useGetPostLazyQuery>;
 export type GetPostQueryResult = Apollo.QueryResult<GetPostQuery, GetPostQueryVariables>;
 export const GetPostsDocument = gql`
-    query GetPosts($userId: String, $groupId: String, $isPrivate: Boolean, $sort: postOrderByType, $limit: Int, $page: Int) {
+    query GetPosts($userId: String, $groupId: String, $category: PostCategory, $isPrivate: Boolean, $sort: postOrderByType, $take: Int, $skip: Int, $searchText: String) {
   GetPosts(
     userId: $userId
     groupId: $groupId
+    category: $category
     isPrivate: $isPrivate
     sort: $sort
-    limit: $limit
-    page: $page
+    take: $take
+    skip: $skip
+    searchText: $searchText
   ) {
-    id
-    title
-    content
-    category
-    createdUserId
-    isPrivate
-    groupId
-    bgImage
-    createdAt
-    updatedAt
+    count
+    posts {
+      id
+      title
+      content
+      category
+      createdUserId
+      isPrivate
+      groupId
+      bgImage
+      createdAt
+      updatedAt
+    }
   }
 }
     `;
@@ -1701,10 +1716,12 @@ export const GetPostsDocument = gql`
  *   variables: {
  *      userId: // value for 'userId'
  *      groupId: // value for 'groupId'
+ *      category: // value for 'category'
  *      isPrivate: // value for 'isPrivate'
  *      sort: // value for 'sort'
- *      limit: // value for 'limit'
- *      page: // value for 'page'
+ *      take: // value for 'take'
+ *      skip: // value for 'skip'
+ *      searchText: // value for 'searchText'
  *   },
  * });
  */

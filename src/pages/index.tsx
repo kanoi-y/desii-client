@@ -1,5 +1,5 @@
 import { Box, Spinner } from '@chakra-ui/react'
-import styled from '@emotion/styled'
+import styled from 'styled-components'
 import React, { useContext } from 'react'
 import { Pagination } from 'swiper'
 import 'swiper/css'
@@ -18,8 +18,8 @@ export default function Home() {
     variables: {
       isPrivate: false,
       sort: PostOrderByType.Desc,
-      limit: 10,
-      page: 0,
+      take: 10,
+      skip: 0,
     },
     fetchPolicy: 'cache-and-network',
   })
@@ -28,8 +28,8 @@ export default function Home() {
     variables: {
       isPrivate: false,
       sort: PostOrderByType.Favorite,
-      limit: 10,
-      page: 0,
+      take: 10,
+      skip: 0,
     },
     fetchPolicy: 'cache-and-network',
   })
@@ -76,8 +76,8 @@ export default function Home() {
             }}
             loop={true}
           >
-            {data ? (
-              data.GetPosts.map((post) => (
+            {data?.GetPosts ? (
+              data.GetPosts.posts.map((post) => (
                 <SwiperSlide key={post.id}>
                   <Box w="100%" maxW="360px">
                     <PostCard
@@ -119,8 +119,8 @@ export default function Home() {
           }}
           loop={true}
         >
-          {favoritesData ? (
-            favoritesData.GetPosts.map((post) => (
+          {favoritesData?.GetPosts ? (
+            favoritesData.GetPosts.posts.map((post) => (
               <SwiperSlide key={post.id}>
                 <Box w="100%" maxW="360px">
                   <PostCard
