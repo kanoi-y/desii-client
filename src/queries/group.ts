@@ -32,6 +32,22 @@ export const GET_GROUP_BY_ROOM_ID = gql`
   }
 `
 
+export const GET_GROUP_BY_PRODUCT_ID = gql`
+query GetGroupByProductId($productId: String!) {
+  getGroupByProductId(productId: $productId) {
+    id
+    name
+    description
+    image
+    adminUserId
+    productId
+    roomId
+    createdAt
+    updatedAt
+  }
+}
+`
+
 export const CREATE_GROUP = gql`
   mutation CreateGroup(
     $name: String!
