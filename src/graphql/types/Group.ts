@@ -57,6 +57,25 @@ export const GetGroupByRoomIdQuery = extendType({
   },
 })
 
+export const GetGroupByProductIdQuery = extendType({
+  type: 'Query',
+  definition(t) {
+    t.field('getGroupByProductId', {
+      type: 'Group',
+      args: {
+        productId: nonNull(stringArg()),
+      },
+      resolve(_parent, args, ctx) {
+        return ctx.prisma.group.findUnique({
+          where: {
+            productId: args.productId,
+          },
+        })
+      },
+    })
+  },
+})
+
 export const CreateGroupMutation = extendType({
   type: 'Mutation',
   definition(t) {
