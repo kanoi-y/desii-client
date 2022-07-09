@@ -3,6 +3,8 @@ export {
   CREATE_GROUP,
   DELETE_GROUP,
   GET_GROUP_BY_ID,
+  GET_GROUP_BY_PRODUCT_ID,
+  GET_GROUP_BY_ROOM_ID,
   UPDATE_GROUP,
 } from './group'
 export {
