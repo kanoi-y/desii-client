@@ -3,6 +3,7 @@ import { arg, extendType, nonNull, objectType, stringArg } from 'nexus'
 import { Context } from '../context'
 import { OrderByType } from './Post'
 
+// TODO: resolveのtestを実装
 export const Favorite = objectType({
   name: 'Favorite',
   definition(t) {
