@@ -1,11 +1,22 @@
 import { PrismaClient } from '@prisma/client'
 import { MicroRequest } from 'apollo-server-micro/dist/types'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { User } from '~/types/generated/graphql'
 import { prisma } from '../lib/prisma'
 
 export type Context = {
   prisma: PrismaClient
   user: User | null
+}
+
+export type MockContext = {
+  prisma: DeepMockProxy<PrismaClient>
+}
+
+export const createMockContext = (): MockContext => {
+  return {
+    prisma: mockDeep<PrismaClient>(),
+  }
 }
 
 export async function createContext({
