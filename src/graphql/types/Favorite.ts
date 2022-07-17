@@ -4,6 +4,7 @@ import { Context } from '../context'
 import { OrderByType } from './Post'
 
 // TODO: resolveのtestを実装
+
 export const Favorite = objectType({
   name: 'Favorite',
   definition(t) {
@@ -25,6 +26,31 @@ export const Favorite = objectType({
   },
 })
 
+const getFavoritesResolver = async (
+  _parent: {},
+  args: {
+    createdUserId?: string | null | undefined
+    postId?: string | null | undefined
+    sort: 'asc' | 'desc' | null
+  },
+  ctx: Context
+) => {
+  const query: Partial<FavoriteType> = {}
+  if (args.createdUserId) query.createdUserId = args.createdUserId
+  if (args.postId) query.postId = args.postId
+
+  return ctx.prisma.favorite.findMany({
+    where: query,
+    orderBy: {
+      createdAt: args.sort || 'asc',
+    },
+    include: {
+      createdUser: true,
+      post: true,
+    },
+  })
+}
+
 export const GetFavoritesQuery = extendType({
   type: 'Query',
   definition(t) {
@@ -38,22 +64,7 @@ export const GetFavoritesQuery = extendType({
           default: 'asc',
         }),
       },
-      resolve(_parent, args, ctx) {
-        const query: Partial<FavoriteType> = {}
-        if (args.createdUserId) query.createdUserId = args.createdUserId
-        if (args.postId) query.postId = args.postId
-
-        return ctx.prisma.favorite.findMany({
-          where: query,
-          orderBy: {
-            createdAt: args.sort || 'asc',
-          },
-          include: {
-            createdUser: true,
-            post: true,
-          },
-        })
-      },
+      resolve: getFavoritesResolver,
     })
   },
 })
