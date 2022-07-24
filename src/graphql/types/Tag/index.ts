@@ -1,5 +1,10 @@
 import { arg, extendType, nonNull, objectType, stringArg } from 'nexus'
-import { OrderByType } from './Post'
+import { OrderByType } from '../Post'
+import {
+  createTagResolver,
+  getAllTagsResolver,
+  getTagByNameResolver,
+} from './resolver'
 
 export const Tag = objectType({
   name: 'Tag',
@@ -27,18 +32,7 @@ export const GetAllTagsQuery = extendType({
         }),
         searchText: stringArg(),
       },
-      resolve(_parent, args, ctx) {
-        return ctx.prisma.tag.findMany({
-          where: {
-            name: {
-              contains: args.searchText || '',
-            },
-          },
-          orderBy: {
-            createdAt: args.sort || 'asc',
-          },
-        })
-      },
+      resolve: getAllTagsResolver,
     })
   },
 })
@@ -51,13 +45,7 @@ export const GetTagByNameQuery = extendType({
       args: {
         name: nonNull(stringArg()),
       },
-      resolve(_parent, args, ctx) {
-        return ctx.prisma.tag.findUnique({
-          where: {
-            name: args.name,
-          },
-        })
-      },
+      resolve: getTagByNameResolver,
     })
   },
 })
@@ -70,17 +58,7 @@ export const CreateTagMutation = extendType({
       args: {
         name: nonNull(stringArg()),
       },
-      async resolve(_parent, args, ctx) {
-        if (!ctx.user) {
-          throw new Error('ログインユーザーが存在しません')
-        }
-
-        return ctx.prisma.tag.create({
-          data: {
-            name: args.name,
-          },
-        })
-      },
+      resolve: createTagResolver,
     })
   },
 })
