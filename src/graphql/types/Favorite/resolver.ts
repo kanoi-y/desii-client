@@ -1,6 +1,7 @@
 import { Favorite, Post } from '@prisma/client'
 import { Context } from '../../context'
 
+// TODO: prismaをlibからインポートするようにして、引数を修正する。ログインuserは受け取る、argと同じ扱いにする
 const createNotification = async (ctx: Context, post: Post) => {
   await ctx.prisma.notification.create({
     data: {
