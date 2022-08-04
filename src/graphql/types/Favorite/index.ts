@@ -40,7 +40,13 @@ export const GetFavoritesQuery = extendType({
           default: 'asc',
         }),
       },
-      resolve: getFavoritesResolver,
+      resolve(_parent, args, _ctx) {
+        return getFavoritesResolver({
+          sort: args.sort,
+          createdUserId: args.createdUserId,
+          postId: args.postId,
+        })
+      },
     })
   },
 })
@@ -53,7 +59,12 @@ export const CreateFavoriteMutation = extendType({
       args: {
         postId: nonNull(stringArg()),
       },
-      resolve: createFavoriteResolver,
+      resolve(_parent, args, ctx) {
+        return createFavoriteResolver({
+          postId: args.postId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -66,7 +77,12 @@ export const DeleteFavoriteMutation = extendType({
       args: {
         postId: nonNull(stringArg()),
       },
-      resolve: deleteFavoriteResolver,
+      resolve(_parent, args, ctx) {
+        return deleteFavoriteResolver({
+          postId: args.postId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })

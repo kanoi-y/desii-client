@@ -1,37 +1,36 @@
-import { Favorite, Post } from '@prisma/client'
-import { Context } from '../../context'
+import { Favorite, Post, User } from '@prisma/client'
+import { prisma } from '../../../lib/prisma'
 
-// TODO: prismaをlibからインポートするようにして、引数を修正する。ログインuserは受け取る、argと同じ扱いにする
-const createNotification = async (ctx: Context, post: Post) => {
-  await ctx.prisma.notification.create({
+const createNotification = async (post: Post, user: User) => {
+  await prisma.notification.create({
     data: {
       type: 'FETCH_REACTION',
-      createdUserId: ctx.user?.id,
+      createdUserId: user?.id,
       targetUserId: post.createdUserId,
-      message: `${ctx.user?.name}さんが「${post.title}」にいいねしました`,
+      message: `${user?.name}さんが「${post.title}」にいいねしました`,
       url: `/post/${post.id}`,
       isChecked: false,
     },
   })
 }
 
-export const getFavoritesResolver = async (
-  _parent: {},
-  args: {
-    createdUserId?: string | null | undefined
-    postId?: string | null | undefined
-    sort: 'asc' | 'desc' | null
-  },
-  ctx: Context
-) => {
+export const getFavoritesResolver = async ({
+  sort,
+  createdUserId,
+  postId,
+}: {
+  sort: 'asc' | 'desc' | null
+  createdUserId?: string | null
+  postId?: string | null
+}) => {
   const query: Partial<Favorite> = {}
-  if (args.createdUserId) query.createdUserId = args.createdUserId
-  if (args.postId) query.postId = args.postId
+  if (createdUserId) query.createdUserId = createdUserId
+  if (postId) query.postId = postId
 
-  return ctx.prisma.favorite.findMany({
+  return prisma.favorite.findMany({
     where: query,
     orderBy: {
-      createdAt: args.sort || 'asc',
+      createdAt: sort || 'asc',
     },
     include: {
       createdUser: true,
@@ -40,20 +39,20 @@ export const getFavoritesResolver = async (
   })
 }
 
-export const createFavoriteResolver = async (
-  _parent: {},
-  args: {
-    postId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const createFavoriteResolver = async ({
+  postId,
+  user,
+}: {
+  postId: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const post = await ctx.prisma.post.findUnique({
+  const post = await prisma.post.findUnique({
     where: {
-      id: args.postId,
+      id: postId,
     },
   })
 
@@ -62,14 +61,14 @@ export const createFavoriteResolver = async (
   }
 
   // バックグラウンドで通知を作成
-  if (ctx.user.id !== post.createdUserId) {
-    createNotification(ctx, post)
+  if (user.id !== post.createdUserId) {
+    createNotification(post, user)
   }
 
-  return ctx.prisma.favorite.create({
+  return prisma.favorite.create({
     data: {
-      createdUserId: ctx.user.id,
-      postId: args.postId,
+      createdUserId: user.id,
+      postId,
     },
     include: {
       createdUser: true,
@@ -78,22 +77,22 @@ export const createFavoriteResolver = async (
   })
 }
 
-export const deleteFavoriteResolver = async (
-  _parent: {},
-  args: {
-    postId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const deleteFavoriteResolver = async ({
+  postId,
+  user,
+}: {
+  postId: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const favorite = await ctx.prisma.favorite.findUnique({
+  const favorite = await prisma.favorite.findUnique({
     where: {
       favoriteId: {
-        createdUserId: ctx.user.id,
-        postId: args.postId,
+        createdUserId: user.id,
+        postId,
       },
     },
   })
@@ -102,11 +101,11 @@ export const deleteFavoriteResolver = async (
     throw new Error('favoriteが存在しません')
   }
 
-  return ctx.prisma.favorite.delete({
+  return prisma.favorite.delete({
     where: {
       favoriteId: {
-        createdUserId: ctx.user.id,
-        postId: args.postId,
+        createdUserId: user.id,
+        postId,
       },
     },
     include: {
