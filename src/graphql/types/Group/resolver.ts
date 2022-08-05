@@ -1,87 +1,77 @@
-import { Context } from '../../context'
+import { User } from '@prisma/client'
+import { prisma } from '../../../lib/prisma'
 
-export const getGroupResolver = (
-  _parent: {},
-  args: {
-    id: string
-  },
-  ctx: Context
-) => {
-  return ctx.prisma.group.findUnique({
+export const getGroupResolver = ({ id }: { id: string }) => {
+  return prisma.group.findUnique({
     where: {
-      id: args.id,
+      id,
     },
   })
 }
 
-export const getGroupByRoomIdResolver = (
-  _parent: {},
-  args: {
-    roomId: string
-  },
-  ctx: Context
-) => {
-  return ctx.prisma.group.findUnique({
+export const getGroupByRoomIdResolver = ({ roomId }: { roomId: string }) => {
+  return prisma.group.findUnique({
     where: {
-      roomId: args.roomId,
+      roomId,
     },
   })
 }
 
-export const getGroupByProductIdResolver = (
-  _parent: {},
-  args: {
-    productId: string
-  },
-  ctx: Context
-) => {
-  return ctx.prisma.group.findUnique({
+export const getGroupByProductIdResolver = ({
+  productId,
+}: {
+  productId: string
+}) => {
+  return prisma.group.findUnique({
     where: {
-      productId: args.productId,
+      productId,
     },
   })
 }
 
-export const createGroupResolver = async (
-  _parent: {},
-  args: {
-    description?: string | null | undefined
-    image: string
-    name: string
-    productId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const createGroupResolver = async ({
+  description,
+  image,
+  name,
+  productId,
+  user,
+}: {
+  description?: string | null
+  image: string
+  name: string
+  productId: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
   // groupを作成する際に、room,roomMemberも作成する
-  const room = await ctx.prisma.room.create({
+  const room = await prisma.room.create({
     data: {},
   })
 
-  await ctx.prisma.roomMember.create({
+  await prisma.roomMember.create({
     data: {
       roomId: room.id,
-      userId: ctx.user.id,
+      userId: user.id,
     },
   })
 
-  const group = await ctx.prisma.group.create({
+  const group = await prisma.group.create({
     data: {
-      name: args.name,
-      description: args.description,
-      image: args.image,
-      productId: args.productId,
-      adminUserId: ctx.user.id,
+      name,
+      description,
+      image,
+      productId,
+      adminUserId: user.id,
       roomId: room.id,
     },
   })
 
-  await ctx.prisma.userGroupRelation.create({
+  await prisma.userGroupRelation.create({
     data: {
-      userId: ctx.user.id,
+      userId: user.id,
       groupId: group.id,
     },
   })
@@ -89,20 +79,20 @@ export const createGroupResolver = async (
   return group
 }
 
-export const deleteGroupResolver = async (
-  _parent: {},
-  args: {
-    id: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const deleteGroupResolver = async ({
+  id,
+  user,
+}: {
+  id: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const group = await ctx.prisma.group.findUnique({
+  const group = await prisma.group.findUnique({
     where: {
-      id: args.id,
+      id,
     },
   })
 
@@ -110,17 +100,17 @@ export const deleteGroupResolver = async (
     throw new Error('グループが存在しません')
   }
 
-  if (ctx.user.id !== group.adminUserId) {
+  if (user.id !== group.adminUserId) {
     throw new Error('ユーザーがチームの管理者ではありません')
   }
 
-  await ctx.prisma.group.delete({
+  await prisma.group.delete({
     where: {
-      id: args.id,
+      id,
     },
   })
 
-  await ctx.prisma.room.delete({
+  await prisma.room.delete({
     where: {
       id: group.roomId,
     },
@@ -129,24 +119,28 @@ export const deleteGroupResolver = async (
   return group
 }
 
-export const updateGroupResolver = async (
-  _parent: {},
-  args: {
-    id: string
-    adminUserId?: string | null | undefined
-    description?: string | null | undefined
-    image?: string | null | undefined
-    name?: string | null | undefined
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const updateGroupResolver = async ({
+  id,
+  adminUserId,
+  description,
+  image,
+  name,
+  user,
+}: {
+  id: string
+  adminUserId?: string | null
+  description?: string | null
+  image?: string | null
+  name?: string | null
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const group = await ctx.prisma.group.findUnique({
+  const group = await prisma.group.findUnique({
     where: {
-      id: args.id,
+      id,
     },
   })
 
@@ -154,20 +148,20 @@ export const updateGroupResolver = async (
     throw new Error('グループが存在しません')
   }
 
-  if (ctx.user.id !== group.adminUserId) {
+  if (user.id !== group.adminUserId) {
     throw new Error('ユーザーがチームの管理者ではありません')
   }
 
   const updateGroup = {
-    name: args.name || group.name,
-    description: args.description || group.description,
-    image: args.image || group.image,
-    adminUserId: args.adminUserId || group.adminUserId,
+    name: name || group.name,
+    description: description || group.description,
+    image: image || group.image,
+    adminUserId: adminUserId || group.adminUserId,
   }
 
-  return ctx.prisma.group.update({
+  return prisma.group.update({
     where: {
-      id: args.id,
+      id,
     },
     data: updateGroup,
   })

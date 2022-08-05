@@ -35,7 +35,11 @@ export const GetGroupQuery = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: getGroupResolver,
+      resolve(_parent, args, _ctx) {
+        return getGroupResolver({
+          id: args.id,
+        })
+      },
     })
   },
 })
@@ -48,7 +52,11 @@ export const GetGroupByRoomIdQuery = extendType({
       args: {
         roomId: nonNull(stringArg()),
       },
-      resolve: getGroupByRoomIdResolver,
+      resolve(_parent, args, _ctx) {
+        return getGroupByRoomIdResolver({
+          roomId: args.roomId,
+        })
+      },
     })
   },
 })
@@ -61,7 +69,11 @@ export const GetGroupByProductIdQuery = extendType({
       args: {
         productId: nonNull(stringArg()),
       },
-      resolve: getGroupByProductIdResolver,
+      resolve(_parent, args, _ctx) {
+        return getGroupByProductIdResolver({
+          productId: args.productId,
+        })
+      },
     })
   },
 })
@@ -77,7 +89,15 @@ export const CreateGroupMutation = extendType({
         image: nonNull(stringArg()),
         productId: nonNull(stringArg()),
       },
-      resolve: createGroupResolver,
+      resolve(_parent, args, ctx) {
+        return createGroupResolver({
+          name: args.name,
+          description: args.description,
+          image: args.image,
+          productId: args.productId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -90,7 +110,12 @@ export const DeleteGroupMutation = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: deleteGroupResolver,
+      resolve(_parent, args, ctx) {
+        return deleteGroupResolver({
+          id: args.id,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -107,7 +132,16 @@ export const UpdateGroupMutation = extendType({
         image: stringArg(),
         adminUserId: stringArg(),
       },
-      resolve: updateGroupResolver,
+      resolve(_parent, args, ctx) {
+        return updateGroupResolver({
+          id: args.id,
+          user: ctx.user,
+          name: args.name,
+          description: args.description,
+          image: args.image,
+          adminUserId: args.adminUserId,
+        })
+      },
     })
   },
 })
