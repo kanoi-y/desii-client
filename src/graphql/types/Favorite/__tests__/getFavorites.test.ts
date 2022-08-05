@@ -3,7 +3,6 @@ import { prisma } from '../../../../lib/prisma'
 import { resetDatabase } from '../../../logics'
 import { getFavoritesResolver } from '../resolver'
 
-// TODO: DBに接続してテストする
 describe('getFavorites', () => {
   let user: User
   let post: Post
