@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"./src/**/*.{ts,tsx}\"",
-    "test": "DATABASE_URL='postgresql://desii-dev:password@localhost:5432/tests' npm run test:exec",
+    "test": "cross-env DATABASE_URL='postgresql://desii-dev:password@localhost:5432/tests' npm run test:exec",
     "test:exec": "prisma migrate deploy && jest --runInBand",
     "snapshot-update": "jest --updateSnapshot",
     "storybook": "start-storybook -p 6006 -s public",
