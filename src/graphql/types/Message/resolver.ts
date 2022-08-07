@@ -1,15 +1,15 @@
-import { RoomMember } from '@prisma/client'
-import { Context } from '../../context'
+import { RoomMember, User } from '@prisma/client'
+import { prisma } from '../../../lib/prisma'
 
 const createReadManagements = async (
-  ctx: Context,
   roomMembers: RoomMember[],
-  messageId: string
+  messageId: string,
+  userId: string
 ) => {
-  await ctx.prisma.readManagement.createMany({
+  await prisma.readManagement.createMany({
     data: [
       ...roomMembers
-        .filter((roomMember: RoomMember) => roomMember.userId !== ctx.user?.id)
+        .filter((roomMember: RoomMember) => roomMember.userId !== userId)
         .map((roomMember: RoomMember) => {
           return {
             targetUserId: roomMember.userId,
@@ -21,16 +21,10 @@ const createReadManagements = async (
   })
 }
 
-export const getMessageResolver = (
-  _parent: {},
-  args: {
-    id: string
-  },
-  ctx: Context
-) => {
-  return ctx.prisma.message.findUnique({
+export const getMessageResolver = ({ id }: { id: string }) => {
+  return prisma.message.findUnique({
     where: {
-      id: args.id,
+      id,
     },
     include: {
       user: true,
@@ -39,27 +33,28 @@ export const getMessageResolver = (
   })
 }
 
-export const getMessagesResolver = async (
-  _parent: {},
-  args: {
-    roomId: string
-    sort: 'asc' | 'desc' | null
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const getMessagesResolver = async ({
+  roomId,
+  sort,
+  user,
+}: {
+  roomId: string
+  sort: 'asc' | 'desc' | null
+  user: User
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const roomMembers = await ctx.prisma.roomMember.findMany({
+  const roomMembers = await prisma.roomMember.findMany({
     where: {
-      roomId: args.roomId,
+      roomId,
     },
   })
 
   if (
     roomMembers.every((roomMember: RoomMember) => {
-      roomMember.userId !== ctx.user?.id
+      roomMember.userId !== user?.id
     })
   ) {
     throw new Error(
@@ -67,12 +62,12 @@ export const getMessagesResolver = async (
     )
   }
 
-  return ctx.prisma.message.findMany({
+  return prisma.message.findMany({
     where: {
-      roomId: args.roomId,
+      roomId,
     },
     orderBy: {
-      createdAt: args.sort || 'asc',
+      createdAt: sort || 'asc',
     },
     include: {
       user: true,
@@ -81,22 +76,24 @@ export const getMessagesResolver = async (
   })
 }
 
-export const createMessageResolver = async (
-  _parent: {},
-  args: {
-    body: string
-    messageType: 'TEXT' | 'MEDIA' | 'POST'
-    roomId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const createMessageResolver = async ({
+  body,
+  messageType,
+  roomId,
+  user,
+}: {
+  body: string
+  messageType: 'TEXT' | 'MEDIA' | 'POST'
+  roomId: string
+  user: User
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const room = await ctx.prisma.room.findUnique({
+  const room = await prisma.room.findUnique({
     where: {
-      id: args.roomId,
+      id: roomId,
     },
   })
 
@@ -104,15 +101,15 @@ export const createMessageResolver = async (
     throw new Error('ルームが存在しません')
   }
 
-  const roomMembers = await ctx.prisma.roomMember.findMany({
+  const roomMembers = await prisma.roomMember.findMany({
     where: {
-      roomId: args.roomId,
+      roomId,
     },
   })
 
   if (
     roomMembers.every((roomMember: RoomMember) => {
-      roomMember.userId !== ctx.user?.id
+      roomMember.userId !== user?.id
     })
   ) {
     throw new Error(
@@ -120,12 +117,12 @@ export const createMessageResolver = async (
     )
   }
 
-  const message = await ctx.prisma.message.create({
+  const message = await prisma.message.create({
     data: {
-      type: args.messageType,
-      roomId: args.roomId,
-      userId: ctx.user.id,
-      body: args.body,
+      type: messageType,
+      roomId,
+      userId: user.id,
+      body,
     },
     include: {
       user: true,
@@ -133,9 +130,9 @@ export const createMessageResolver = async (
     },
   })
 
-  createReadManagements(ctx, roomMembers, message.id)
+  createReadManagements(roomMembers, message.id, user.id)
 
-  await ctx.prisma.room.update({
+  await prisma.room.update({
     where: {
       id: room.id,
     },
@@ -147,20 +144,20 @@ export const createMessageResolver = async (
   return message
 }
 
-export const deleteMessageResolver = async (
-  _parent: {},
-  args: {
-    id: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const deleteMessageResolver = async ({
+  id,
+  user,
+}: {
+  id: string
+  user: User
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const message = await ctx.prisma.message.findUnique({
+  const message = await prisma.message.findUnique({
     where: {
-      id: args.id,
+      id,
     },
   })
 
@@ -168,13 +165,13 @@ export const deleteMessageResolver = async (
     throw new Error('メッセージが存在しません')
   }
 
-  if (ctx.user.id !== message.userId) {
+  if (user.id !== message.userId) {
     throw new Error('メッセージの作成者しか削除することは出来ません')
   }
 
-  return ctx.prisma.message.delete({
+  return prisma.message.delete({
     where: {
-      id: args.id,
+      id,
     },
     include: {
       user: true,
