@@ -40,7 +40,7 @@ export const getMessagesResolver = async ({
 }: {
   roomId: string
   sort: 'asc' | 'desc' | null
-  user: User
+  user: User | null
 }) => {
   if (!user) {
     throw new Error('ログインユーザーが存在しません')
@@ -85,7 +85,7 @@ export const createMessageResolver = async ({
   body: string
   messageType: 'TEXT' | 'MEDIA' | 'POST'
   roomId: string
-  user: User
+  user: User | null
 }) => {
   if (!user) {
     throw new Error('ログインユーザーが存在しません')
@@ -149,7 +149,7 @@ export const deleteMessageResolver = async ({
   user,
 }: {
   id: string
-  user: User
+  user: User | null
 }) => {
   if (!user) {
     throw new Error('ログインユーザーが存在しません')

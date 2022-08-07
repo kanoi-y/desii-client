@@ -52,7 +52,11 @@ export const GetMessageQuery = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: getMessageResolver,
+      resolve(_parent, args, _ctx) {
+        return getMessageResolver({
+          id: args.id,
+        })
+      },
     })
   },
 })
@@ -69,7 +73,13 @@ export const GetMessagesQuery = extendType({
           default: 'asc',
         }),
       },
-      resolve: getMessagesResolver,
+      resolve(_parent, args, ctx) {
+        return getMessagesResolver({
+          roomId: args.roomId,
+          sort: args.sort,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -88,7 +98,14 @@ export const CreateMessageMutation = extendType({
         roomId: nonNull(stringArg()),
         body: nonNull(stringArg()),
       },
-      resolve: createMessageResolver,
+      resolve(_parent, args, ctx) {
+        return createMessageResolver({
+          body: args.body,
+          messageType: args.messageType,
+          roomId: args.roomId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -101,7 +118,12 @@ export const DeleteMessageMutation = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: deleteMessageResolver,
+      resolve(_parent, args, ctx) {
+        return deleteMessageResolver({
+          id: args.id,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
