@@ -54,7 +54,7 @@ export const getMessagesResolver = async ({
 
   if (
     roomMembers.every((roomMember: RoomMember) => {
-      roomMember.userId !== user?.id
+      return roomMember.userId !== user.id
     })
   ) {
     throw new Error(
@@ -109,7 +109,7 @@ export const createMessageResolver = async ({
 
   if (
     roomMembers.every((roomMember: RoomMember) => {
-      roomMember.userId !== user?.id
+      return roomMember.userId !== user.id
     })
   ) {
     throw new Error(
