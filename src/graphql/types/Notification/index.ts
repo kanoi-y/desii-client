@@ -51,7 +51,13 @@ export const GetNotificationsQuery = extendType({
           default: 'asc',
         }),
       },
-      resolve: getNotificationsResolver,
+      resolve(_parent, args, ctx) {
+        return getNotificationsResolver({
+          sort: args.sort,
+          targetUserId: args.targetUserId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -65,7 +71,13 @@ export const UpdateNotificationMutation = extendType({
         id: nonNull(stringArg()),
         isChecked: nonNull(booleanArg()),
       },
-      resolve: updateNotificationResolver,
+      resolve(_parent, args, ctx) {
+        return updateNotificationResolver({
+          id: args.id,
+          isChecked: args.isChecked,
+          user: ctx.user,
+        })
+      },
     })
   },
 })

@@ -1,42 +1,45 @@
-import { Context } from '../../context'
+import { User } from '@prisma/client'
+import { prisma } from '../../../lib/prisma'
 
-export const getNotificationsResolver = (
-  _parent: {},
-  args: {
-    sort: 'asc' | 'desc' | null
-    targetUserId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const getNotificationsResolver = ({
+  sort,
+  targetUserId,
+  user,
+}: {
+  sort: 'asc' | 'desc' | null
+  targetUserId: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  return ctx.prisma.notification.findMany({
+  return prisma.notification.findMany({
     where: {
-      targetUserId: args.targetUserId,
+      targetUserId,
     },
     orderBy: {
-      createdAt: args.sort || 'asc',
+      createdAt: sort || 'asc',
     },
   })
 }
 
-export const updateNotificationResolver = async (
-  _parent: {},
-  args: {
-    id: string
-    isChecked: boolean
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const updateNotificationResolver = async ({
+  id,
+  isChecked,
+  user,
+}: {
+  id: string
+  isChecked: boolean
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const notification = await ctx.prisma.notification.findUnique({
+  const notification = await prisma.notification.findUnique({
     where: {
-      id: args.id,
+      id,
     },
   })
 
@@ -44,16 +47,16 @@ export const updateNotificationResolver = async (
     throw new Error('更新する通知が存在しません')
   }
 
-  if (notification.targetUserId !== ctx.user.id) {
+  if (notification.targetUserId !== user.id) {
     throw new Error('ログインユーザーが通知の対象ユーザーではありません')
   }
 
-  return ctx.prisma.notification.update({
+  return prisma.notification.update({
     where: {
-      id: args.id,
+      id,
     },
     data: {
-      isChecked: args.isChecked,
+      isChecked,
     },
   })
 }
