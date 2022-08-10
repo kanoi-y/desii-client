@@ -44,7 +44,7 @@ export const updateNotificationResolver = async ({
   })
 
   if (!notification) {
-    throw new Error('更新する通知が存在しません')
+    throw new Error('通知が存在しません')
   }
 
   if (notification.targetUserId !== user.id) {
