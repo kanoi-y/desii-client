@@ -1,90 +1,89 @@
-import { Post as PostType, UserGroupRelation } from '@prisma/client'
+import { Post as PostType, User, UserGroupRelation } from '@prisma/client'
 import { matchPosts } from '~/graphql/logics'
-import { Context } from '../../context'
+import { prisma } from '../../../lib/prisma'
 
-export const getPostResolver = (
-  _parent: {},
-  args: {
-    id: string
-  },
-  ctx: Context
-) => {
-  return ctx.prisma.post.findUnique({
+export const getPostResolver = ({ id }: { id: string }) => {
+  return prisma.post.findUnique({
     where: {
-      id: args.id,
+      id,
     },
   })
 }
 
-export const getPostsResolver = async (
-  _parent: {},
-  args: {
-    category?: 'GIVE_ME' | 'GIVE_YOU' | null
-    groupId?: string | null
-    isPrivate?: boolean | null
-    searchText?: string | null
-    skip?: number | null
-    sort: 'asc' | 'desc' | 'favorite' | null
-    take?: number | null
-    userId?: string | null
-  },
-  ctx: Context
-) => {
+export const getPostsResolver = async ({
+  category,
+  groupId,
+  isPrivate,
+  searchText,
+  skip,
+  sort,
+  take,
+  userId,
+}: {
+  category?: 'GIVE_ME' | 'GIVE_YOU' | null
+  groupId?: string | null
+  isPrivate?: boolean | null
+  searchText?: string | null
+  skip?: number | null
+  sort: 'asc' | 'desc' | 'favorite' | null
+  take?: number | null
+  userId?: string | null
+}) => {
   const query: Partial<PostType> = {}
-  if (args.userId) query.createdUserId = args.userId
-  if (args.groupId) query.groupId = args.groupId
-  if (args.category) query.category = args.category
-  if (typeof args.isPrivate === 'boolean') {
-    query.isPrivate = args.isPrivate
+  if (userId) query.createdUserId = userId
+  if (groupId) query.groupId = groupId
+  if (category) query.category = category
+  if (typeof isPrivate === 'boolean') {
+    query.isPrivate = isPrivate
   }
 
-  const postsCount = await ctx.prisma.post.count({
+  const postsCount = await prisma.post.count({
     where: {
       ...query,
       OR: [
         {
           title: {
-            contains: args.searchText || '',
+            contains: searchText || '',
           },
         },
         {
           content: {
-            contains: args.searchText || '',
+            contains: searchText || '',
           },
         },
       ],
     },
   })
 
-  const posts = await ctx.prisma.post.findMany({
+  const posts = await prisma.post.findMany({
     where: {
       ...query,
       OR: [
         {
           title: {
-            contains: args.searchText || '',
+            contains: searchText || '',
           },
         },
         {
           content: {
-            contains: args.searchText || '',
+            contains: searchText || '',
           },
         },
       ],
     },
-    skip: args.skip || undefined,
-    take: args.take || undefined,
+    skip: skip || undefined,
+    take: take || undefined,
     orderBy: {
-      createdAt: args.sort === 'favorite' ? 'desc' : args.sort || 'asc',
+      createdAt: sort === 'favorite' ? 'desc' : sort || 'asc',
     },
   })
 
-  if (args.sort !== 'favorite') return { count: postsCount, posts }
+  if (sort !== 'favorite') return { count: postsCount, posts }
 
   const favoritePosts = (
     await Promise.all(
       posts.map(async (post: PostType) => {
-        const favorites = await ctx.prisma.favorite.findMany({
+        const favorites = await prisma.favorite.findMany({
           where: {
             postId: post.id,
           },
@@ -103,20 +102,20 @@ export const getPostsResolver = async (
   return { count: postsCount, posts: favoritePosts }
 }
 
-export const getMatchingPostsResolver = async (
-  _parent: {},
-  args: {
-    postId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const getMatchingPostsResolver = async ({
+  postId,
+  user,
+}: {
+  postId: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const targetPost = await ctx.prisma.post.findUnique({
+  const targetPost = await prisma.post.findUnique({
     where: {
-      id: args.postId,
+      id: postId,
     },
   })
 
@@ -124,9 +123,9 @@ export const getMatchingPostsResolver = async (
     throw new Error('対象の投稿が存在しません')
   }
 
-  const tagPostRelations = await ctx.prisma.tagPostRelation.findMany({
+  const tagPostRelations = await prisma.tagPostRelation.findMany({
     where: {
-      postId: args.postId,
+      postId,
     },
     include: {
       tag: true,
@@ -134,68 +133,73 @@ export const getMatchingPostsResolver = async (
     },
   })
 
-  const matchingPostsInfo = await matchPosts(ctx, tagPostRelations, targetPost)
+  const matchingPostsInfo = await matchPosts(tagPostRelations, targetPost, user)
 
   return matchingPostsInfo.sort((a, b) => b.count - a.count)
 }
 
-export const createPostResolver = async (
-  _parent: {},
-  args: {
-    bgImage?: string | null
-    category: 'GIVE_ME' | 'GIVE_YOU'
-    content: string
-    groupId?: string | null
-    isPrivate: boolean
-    title: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const createPostResolver = async ({
+  bgImage,
+  category,
+  content,
+  groupId,
+  isPrivate,
+  title,
+  user,
+}: {
+  bgImage?: string | null
+  category: 'GIVE_ME' | 'GIVE_YOU'
+  content: string
+  groupId?: string | null
+  isPrivate: boolean
+  title: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  if (args.groupId) {
-    const userGroupRelations = await ctx.prisma.userGroupRelation.findMany({
+  if (groupId) {
+    const userGroupRelations = await prisma.userGroupRelation.findMany({
       where: {
-        userId: ctx.user.id,
+        userId: user.id,
       },
     })
     const joinedGroupIds = userGroupRelations.map(
       (userGroupRelation: UserGroupRelation) => userGroupRelation.groupId
     )
-    if (!joinedGroupIds.includes(args.groupId)) {
+    if (!joinedGroupIds.includes(groupId)) {
       throw new Error('グループに所属していないユーザーは作成できません')
     }
   }
 
-  return ctx.prisma.post.create({
+  return prisma.post.create({
     data: {
-      title: args.title,
-      content: args.content,
-      category: args.category,
-      isPrivate: args.isPrivate,
-      createdUserId: ctx.user.id,
-      groupId: args.groupId,
-      bgImage: args.bgImage,
+      title,
+      content,
+      category,
+      isPrivate,
+      createdUserId: user.id,
+      groupId,
+      bgImage,
     },
   })
 }
 
-export const deletePostResolver = async (
-  _parent: {},
-  args: {
-    id: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const deletePostResolver = async ({
+  id,
+  user,
+}: {
+  id: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const post = await ctx.prisma.post.findUnique({
+  const post = await prisma.post.findUnique({
     where: {
-      id: args.id,
+      id,
     },
   })
 
@@ -203,35 +207,40 @@ export const deletePostResolver = async (
     throw new Error('投稿が存在しません')
   }
 
-  if (ctx.user.id !== post.createdUserId) {
+  if (user.id !== post.createdUserId) {
     throw new Error('投稿は作成者しか削除できません')
   }
-  return ctx.prisma.post.delete({
+  return prisma.post.delete({
     where: {
-      id: args.id,
+      id,
     },
   })
 }
 
-export const updatePostResolver = async (
-  _parent: {},
-  args: {
-    bgImage?: string | null
-    category?: 'GIVE_ME' | 'GIVE_YOU' | null
-    content?: string | null
-    id: string
-    isPrivate?: boolean | null
-    title?: string | null
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const updatePostResolver = async ({
+  bgImage,
+  category,
+  content,
+  id,
+  isPrivate,
+  title,
+  user,
+}: {
+  bgImage?: string | null
+  category?: 'GIVE_ME' | 'GIVE_YOU' | null
+  content?: string | null
+  id: string
+  isPrivate?: boolean | null
+  title?: string | null
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const post = await ctx.prisma.post.findUnique({
+  const post = await prisma.post.findUnique({
     where: {
-      id: args.id,
+      id,
     },
   })
 
@@ -239,21 +248,21 @@ export const updatePostResolver = async (
     throw new Error('投稿が存在しません')
   }
 
-  if (ctx.user.id !== post.createdUserId) {
+  if (user.id !== post.createdUserId) {
     throw new Error('投稿は作成者しか更新できません')
   }
 
   const updatePost = {
-    title: args.title || post.title,
-    content: args.content || post.content,
-    category: args.category || post.category,
-    isPrivate: args.isPrivate || post.isPrivate,
-    bgImage: args.bgImage || post.bgImage,
+    title: title || post.title,
+    content: content || post.content,
+    category: category || post.category,
+    isPrivate: isPrivate || post.isPrivate,
+    bgImage: bgImage || post.bgImage,
   }
 
-  return ctx.prisma.post.update({
+  return prisma.post.update({
     where: {
-      id: args.id,
+      id,
     },
     data: updatePost,
   })

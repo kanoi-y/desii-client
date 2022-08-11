@@ -82,7 +82,11 @@ export const GetPostQuery = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: getPostResolver,
+      resolve(_parent, args, _ctx) {
+        return getPostResolver({
+          id: args.id,
+        })
+      },
     })
   },
 })
@@ -107,7 +111,18 @@ export const GetPostsQuery = extendType({
         skip: intArg(),
         searchText: stringArg(),
       },
-      resolve: getPostsResolver,
+      resolve(_parent, args, _ctx) {
+        return getPostsResolver({
+          userId: args.userId,
+          groupId: args.groupId,
+          category: args.category,
+          isPrivate: args.isPrivate,
+          sort: args.sort,
+          take: args.take,
+          skip: args.skip,
+          searchText: args.searchText,
+        })
+      },
     })
   },
 })
@@ -120,7 +135,12 @@ export const GetMatchingPostsQuery = extendType({
       args: {
         postId: nonNull(stringArg()),
       },
-      resolve: getMatchingPostsResolver,
+      resolve(_parent, args, ctx) {
+        return getMatchingPostsResolver({
+          postId: args.postId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -138,7 +158,17 @@ export const CreatePostMutation = extendType({
         groupId: stringArg(),
         bgImage: stringArg(),
       },
-      resolve: createPostResolver,
+      resolve(_parent, args, ctx) {
+        return createPostResolver({
+          title: args.title,
+          content: args.content,
+          category: args.category,
+          isPrivate: args.isPrivate,
+          groupId: args.groupId,
+          bgImage: args.bgImage,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -151,7 +181,12 @@ export const DeletePostMutation = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: deletePostResolver,
+      resolve(_parent, args, ctx) {
+        return deletePostResolver({
+          id: args.id,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -169,7 +204,17 @@ export const UpdatePostMutation = extendType({
         isPrivate: booleanArg(),
         bgImage: stringArg(),
       },
-      resolve: updatePostResolver,
+      resolve(_parent, args, ctx) {
+        return updatePostResolver({
+          id: args.id,
+          title: args.title,
+          content: args.content,
+          category: args.category,
+          isPrivate: args.isPrivate,
+          bgImage: args.bgImage,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
