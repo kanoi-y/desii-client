@@ -1,5 +1,5 @@
 import { Post as PostType, User, UserGroupRelation } from '@prisma/client'
-import { matchPosts } from '~/graphql/logics'
+import { matchPosts } from '../../logics'
 import { prisma } from '../../../lib/prisma'
 
 export const getPostResolver = ({ id }: { id: string }) => {
