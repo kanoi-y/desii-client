@@ -1,4 +1,4 @@
-import { Favorite, Post, User } from '@prisma/client'
+import { Post, User } from '@prisma/client'
 import { prisma } from '../../../../lib/prisma'
 import { resetDatabase } from '../../../logics'
 import { getPostsResolver } from '../resolver'
