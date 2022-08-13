@@ -30,7 +30,13 @@ export const GetReadManagementQuery = extendType({
         targetUserId: nonNull(stringArg()),
         messageId: nonNull(stringArg()),
       },
-      resolve: getReadManagementResolver,
+      resolve(_parent, args, ctx) {
+        return getReadManagementResolver({
+          messageId: args.messageId,
+          targetUserId: args.targetUserId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -44,7 +50,13 @@ export const GetReadManagementsQuery = extendType({
         messageId: stringArg(),
         targetUserId: stringArg(),
       },
-      resolve: getReadManagementsResolver,
+      resolve(_parent, args, ctx) {
+        return getReadManagementsResolver({
+          messageId: args.messageId,
+          targetUserId: args.targetUserId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -58,7 +70,13 @@ export const UpdateReadManagementMutation = extendType({
         targetUserId: nonNull(stringArg()),
         messageId: nonNull(stringArg()),
       },
-      resolve: updateReadManagementResolver,
+      resolve(_parent, args, ctx) {
+        return updateReadManagementResolver({
+          messageId: args.messageId,
+          targetUserId: args.targetUserId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
