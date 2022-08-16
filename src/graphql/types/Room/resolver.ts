@@ -1,41 +1,35 @@
-import { Group, Room as RoomType, RoomMember } from '@prisma/client'
-import { Context } from '../../context'
+import { Group, Room as RoomType, RoomMember, User } from '@prisma/client'
+import { prisma } from '../../../lib/prisma'
 
-export const getRoomResolver = (
-  _parent: {},
-  args: {
-    id: string
-  },
-  ctx: Context
-) => {
-  return ctx.prisma.room.findUnique({
+export const getRoomResolver = ({ id }: { id: string }) => {
+  return prisma.room.findUnique({
     where: {
-      id: args.id,
+      id,
     },
   })
 }
 
-export const getOneOnOneRoomResolver = async (
-  _parent: {},
-  args: {
-    memberId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const getOneOnOneRoomResolver = async ({
+  memberId,
+  user,
+}: {
+  memberId: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
   const roomMembers: (RoomMember & {
     room: RoomType
-  })[] = await ctx.prisma.roomMember.findMany({
+  })[] = await prisma.roomMember.findMany({
     where: {
       OR: [
         {
-          userId: args.memberId,
+          userId: memberId,
         },
         {
-          userId: ctx.user.id,
+          userId: user.id,
         },
       ],
     },
@@ -45,7 +39,7 @@ export const getOneOnOneRoomResolver = async (
   })
 
   const roomIdRelatedByGroup = (
-    await ctx.prisma.group.findMany({
+    await prisma.group.findMany({
       where: {
         OR: roomMembers.map(
           (
@@ -87,20 +81,20 @@ export const getOneOnOneRoomResolver = async (
   )
 }
 
-export const getRoomsByLoginUserIdResolver = async (
-  _parent: {},
-  args: {
-    getRoomType: 'ALL' | 'ONLY_ONE_ON_ONE' | 'ONLY_GROUP'
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const getRoomsByLoginUserIdResolver = async ({
+  getRoomType,
+  user,
+}: {
+  getRoomType: 'ALL' | 'ONLY_ONE_ON_ONE' | 'ONLY_GROUP'
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const roomMembers = await ctx.prisma.roomMember.findMany({
+  const roomMembers = await prisma.roomMember.findMany({
     where: {
-      userId: ctx.user.id,
+      userId: user.id,
     },
     include: {
       room: true,
@@ -108,7 +102,7 @@ export const getRoomsByLoginUserIdResolver = async (
   })
 
   const roomIdRelatedByGroup = (
-    await ctx.prisma.group.findMany({
+    await prisma.group.findMany({
       where: {
         OR: roomMembers.map(
           (
@@ -136,10 +130,10 @@ export const getRoomsByLoginUserIdResolver = async (
       }
     )
     .filter((room: RoomType) => {
-      if (args.getRoomType === 'ONLY_ONE_ON_ONE') {
+      if (getRoomType === 'ONLY_ONE_ON_ONE') {
         return !roomIdRelatedByGroup.includes(room.id)
       }
-      if (args.getRoomType === 'ONLY_GROUP') {
+      if (getRoomType === 'ONLY_GROUP') {
         return roomIdRelatedByGroup.includes(room.id)
       }
       return true
@@ -149,34 +143,34 @@ export const getRoomsByLoginUserIdResolver = async (
     })
 }
 
-export const createRoomResolver = async (
-  _parent: {},
-  args: {
-    memberId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const createRoomResolver = async ({
+  memberId,
+  user,
+}: {
+  memberId: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  if (ctx.user.id === args.memberId) {
+  if (user.id === memberId) {
     throw new Error('自分とのルームは作成できません')
   }
 
-  const room = await ctx.prisma.room.create({
+  const room = await prisma.room.create({
     data: {},
   })
 
-  await ctx.prisma.roomMember.createMany({
+  await prisma.roomMember.createMany({
     data: [
       {
         roomId: room.id,
-        userId: ctx.user.id,
+        userId: user.id,
       },
       {
         roomId: room.id,
-        userId: args.memberId,
+        userId: memberId,
       },
     ],
   })
@@ -184,20 +178,20 @@ export const createRoomResolver = async (
   return room
 }
 
-export const deleteRoomResolver = async (
-  _parent: {},
-  args: {
-    id: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const deleteRoomResolver = async ({
+  id,
+  user,
+}: {
+  id: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const room = await ctx.prisma.room.findUnique({
+  const room = await prisma.room.findUnique({
     where: {
-      id: args.id,
+      id,
     },
   })
 
@@ -205,7 +199,7 @@ export const deleteRoomResolver = async (
     throw new Error('ルームが存在しません')
   }
 
-  const group = await ctx.prisma.group.findUnique({
+  const group = await prisma.group.findUnique({
     where: {
       roomId: room.id,
     },
@@ -217,7 +211,7 @@ export const deleteRoomResolver = async (
     )
   }
 
-  const roomMembers = await ctx.prisma.roomMember.findMany({
+  const roomMembers = await prisma.roomMember.findMany({
     where: {
       roomId: room.id,
     },
@@ -225,15 +219,15 @@ export const deleteRoomResolver = async (
 
   if (
     roomMembers.every((roomMember: RoomMember) => {
-      roomMember.userId !== ctx.user?.id
+      roomMember.userId !== user?.id
     })
   ) {
     throw new Error('メンバーしかルームを削除することは出来ません')
   }
 
-  return ctx.prisma.room.delete({
+  return prisma.room.delete({
     where: {
-      id: args.id,
+      id,
     },
   })
 }

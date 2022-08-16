@@ -34,7 +34,11 @@ export const GetRoomQuery = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: getRoomResolver,
+      resolve(_parent, args, _ctx) {
+        return getRoomResolver({
+          id: args.id,
+        })
+      },
     })
   },
 })
@@ -47,7 +51,12 @@ export const GetOneOnOneRoomQuery = extendType({
       args: {
         memberId: nonNull(stringArg()),
       },
-      resolve: getOneOnOneRoomResolver,
+      resolve(_parent, args, ctx) {
+        return getOneOnOneRoomResolver({
+          memberId: args.memberId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -60,7 +69,12 @@ export const GetRoomsByLoginUserIdQuery = extendType({
       args: {
         getRoomType: nonNull(GetRoomType),
       },
-      resolve: getRoomsByLoginUserIdResolver,
+      resolve(_parent, args, ctx) {
+        return getRoomsByLoginUserIdResolver({
+          getRoomType: args.getRoomType,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -74,7 +88,12 @@ export const CreateRoomMutation = extendType({
       args: {
         memberId: nonNull(stringArg()),
       },
-      resolve: createRoomResolver,
+      resolve(_parent, args, ctx) {
+        return createRoomResolver({
+          memberId: args.memberId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -88,7 +107,12 @@ export const DeleteRoomMutation = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: deleteRoomResolver,
+      resolve(_parent, args, ctx) {
+        return deleteRoomResolver({
+          id: args.id,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
