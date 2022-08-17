@@ -154,6 +154,16 @@ export const createRoomResolver = async ({
     throw new Error('ログインユーザーが存在しません')
   }
 
+  const member = await prisma.user.findUnique({
+    where: {
+      id: memberId,
+    },
+  })
+
+  if (!member) {
+    throw new Error('ルームのメンバーが存在しません')
+  }
+
   if (user.id === memberId) {
     throw new Error('自分とのルームは作成できません')
   }
