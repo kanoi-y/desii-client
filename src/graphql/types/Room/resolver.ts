@@ -229,7 +229,7 @@ export const deleteRoomResolver = async ({
 
   if (
     roomMembers.every((roomMember: RoomMember) => {
-      roomMember.userId !== user?.id
+      return roomMember.userId !== user.id
     })
   ) {
     throw new Error('メンバーしかルームを削除することは出来ません')
