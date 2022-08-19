@@ -1,21 +1,22 @@
-import { RoomMember as RoomMemberType } from '@prisma/client'
-import { Context } from '../../context'
+import { RoomMember as RoomMemberType, User } from '@prisma/client'
+import { prisma } from '../../../lib/prisma'
 
-export const getTargetRoomMemberResolver = async (
-  _parent: {},
-  args: {
-    roomId: string
-    userId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const getTargetRoomMemberResolver = async ({
+  roomId,
+  userId,
+  user,
+}: {
+  roomId: string
+  userId: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const room = await ctx.prisma.room.findUnique({
+  const room = await prisma.room.findUnique({
     where: {
-      id: args.roomId,
+      id: roomId,
     },
   })
 
@@ -23,9 +24,9 @@ export const getTargetRoomMemberResolver = async (
     throw new Error('ルームが存在しません')
   }
 
-  const group = await ctx.prisma.group.findUnique({
+  const group = await prisma.group.findUnique({
     where: {
-      roomId: args.roomId,
+      roomId,
     },
   })
 
@@ -33,11 +34,11 @@ export const getTargetRoomMemberResolver = async (
     throw new Error('ルームが一対一のルームではありません')
   }
 
-  return ctx.prisma.roomMember.findFirst({
+  return prisma.roomMember.findFirst({
     where: {
-      roomId: args.roomId,
+      roomId,
       NOT: {
-        userId: args.userId,
+        userId,
       },
     },
     include: {
@@ -47,19 +48,18 @@ export const getTargetRoomMemberResolver = async (
   })
 }
 
-export const getRoomMembersResolver = (
-  _parent: {},
-  args: {
-    roomId?: string | null
-    userId?: string | null
-  },
-  ctx: Context
-) => {
+export const getRoomMembersResolver = ({
+  roomId,
+  userId,
+}: {
+  roomId?: string | null
+  userId?: string | null
+}) => {
   const query: Partial<RoomMemberType> = {}
-  if (args.userId) query.userId = args.userId
-  if (args.roomId) query.roomId = args.roomId
+  if (userId) query.userId = userId
+  if (roomId) query.roomId = roomId
 
-  return ctx.prisma.roomMember.findMany({
+  return prisma.roomMember.findMany({
     where: query,
     include: {
       user: true,

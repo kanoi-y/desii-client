@@ -32,7 +32,13 @@ export const GetTargetRoomMemberQuery = extendType({
         roomId: nonNull(stringArg()),
         userId: nonNull(stringArg()),
       },
-      resolve: getTargetRoomMemberResolver,
+      resolve(_parent, args, ctx) {
+        return getTargetRoomMemberResolver({
+          roomId: args.roomId,
+          userId: args.userId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -46,7 +52,12 @@ export const GetRoomMembersQuery = extendType({
         userId: stringArg(),
         roomId: stringArg(),
       },
-      resolve: getRoomMembersResolver,
+      resolve(_parent, args, _ctx) {
+        return getRoomMembersResolver({
+          roomId: args.roomId,
+          userId: args.userId,
+        })
+      },
     })
   },
 })
