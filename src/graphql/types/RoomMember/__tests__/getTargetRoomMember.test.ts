@@ -6,9 +6,9 @@ import { getTargetRoomMemberResolver } from '../resolver'
 describe('getTargetRoomMember', () => {
   let user: User
   let anotherUser: User
+  let notRoomMemberUser: User
   let room: Room
   let roomRelatedByGroup: Room
-  let roomMember: RoomMember
   let anotherRoomMember: RoomMember
 
   beforeAll(async () => {
@@ -26,6 +26,13 @@ describe('getTargetRoomMember', () => {
         image: 'image2',
       },
     })
+    notRoomMemberUser = await prisma.user.create({
+      data: {
+        name: 'name3',
+        email: 'email3',
+        image: 'image3',
+      },
+    })
     room = await prisma.room.create({
       data: {},
     })
@@ -41,7 +48,7 @@ describe('getTargetRoomMember', () => {
         roomId: roomRelatedByGroup.id,
       },
     })
-    roomMember = await prisma.roomMember.create({
+    await prisma.roomMember.create({
       data: {
         roomId: room.id,
         userId: user.id,
@@ -70,6 +77,7 @@ describe('getTargetRoomMember', () => {
 
   const findRoomSpy = jest.spyOn(prisma.room, 'findUnique')
   const findGroupSpy = jest.spyOn(prisma.group, 'findUnique')
+  const findManyRoomMemberSpy = jest.spyOn(prisma.roomMember, 'findMany')
   const findRoomMemberSpy = jest.spyOn(prisma.roomMember, 'findFirst')
 
   test('ログインユーザーが存在しない', async () => {
@@ -85,6 +93,7 @@ describe('getTargetRoomMember', () => {
 
     expect(findRoomSpy).not.toHaveBeenCalled()
     expect(findGroupSpy).not.toHaveBeenCalled()
+    expect(findManyRoomMemberSpy).not.toHaveBeenCalled()
     expect(findRoomMemberSpy).not.toHaveBeenCalled()
   })
 
@@ -101,6 +110,7 @@ describe('getTargetRoomMember', () => {
 
     expect(findRoomSpy).toHaveBeenCalled()
     expect(findGroupSpy).not.toHaveBeenCalled()
+    expect(findManyRoomMemberSpy).not.toHaveBeenCalled()
     expect(findRoomMemberSpy).not.toHaveBeenCalled()
   })
 
@@ -117,6 +127,24 @@ describe('getTargetRoomMember', () => {
 
     expect(findRoomSpy).toHaveBeenCalled()
     expect(findGroupSpy).toHaveBeenCalled()
+    expect(findManyRoomMemberSpy).not.toHaveBeenCalled()
+    expect(findRoomMemberSpy).not.toHaveBeenCalled()
+  })
+
+  test('userIdがルームのメンバーのIDではない', async () => {
+    try {
+      await getTargetRoomMemberResolver({
+        roomId: room.id,
+        userId: notRoomMemberUser.id,
+        user,
+      })
+    } catch (e) {
+      expect(e).toEqual(new Error('userIdがルームのメンバーのIDではありません'))
+    }
+
+    expect(findRoomSpy).toHaveBeenCalled()
+    expect(findGroupSpy).toHaveBeenCalled()
+    expect(findManyRoomMemberSpy).toHaveBeenCalled()
     expect(findRoomMemberSpy).not.toHaveBeenCalled()
   })
 
@@ -130,6 +158,7 @@ describe('getTargetRoomMember', () => {
     expect(res).toEqual(anotherRoomMember)
     expect(findRoomSpy).toHaveBeenCalled()
     expect(findGroupSpy).toHaveBeenCalled()
+    expect(findManyRoomMemberSpy).toHaveBeenCalled()
     expect(findRoomMemberSpy).toHaveBeenCalled()
   })
 })

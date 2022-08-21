@@ -1,4 +1,4 @@
-import { RoomMember as RoomMemberType, User } from '@prisma/client'
+import { RoomMember, RoomMember as RoomMemberType, User } from '@prisma/client'
 import { prisma } from '../../../lib/prisma'
 
 export const getTargetRoomMemberResolver = async ({
@@ -32,6 +32,20 @@ export const getTargetRoomMemberResolver = async ({
 
   if (group) {
     throw new Error('ルームが一対一のルームではありません')
+  }
+
+  const roomMembers = await prisma.roomMember.findMany({
+    where: {
+      roomId,
+    },
+  })
+
+  if (
+    roomMembers.every((roomMember: RoomMember) => {
+      return roomMember.userId !== userId
+    })
+  ) {
+    throw new Error('userIdがルームのメンバーのIDではありません')
   }
 
   return prisma.roomMember.findFirst({
