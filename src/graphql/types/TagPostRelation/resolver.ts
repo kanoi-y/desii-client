@@ -3,21 +3,22 @@ import {
   Post,
   Tag,
   TagPostRelation as TagPostRelationType,
+  User,
 } from '@prisma/client'
-import { Context } from '../../context'
+import { prisma } from '../../../lib/prisma'
 import { matchPosts } from '../../logics'
 
 const createNotification = async (
-  ctx: Context,
   tagPostRelations: (TagPostRelationType & {
     post: Post
     tag: Tag
   })[],
-  post: Post
+  post: Post,
+  user: User
 ) => {
-  const matchingPostsInfo = await matchPosts(ctx, tagPostRelations, post)
+  const matchingPostsInfo = await matchPosts(tagPostRelations, post, user)
 
-  await ctx.prisma.notification.createMany({
+  await prisma.notification.createMany({
     data: [
       ...matchingPostsInfo.map((matchingPostInfo) => {
         return {
@@ -32,19 +33,18 @@ const createNotification = async (
   })
 }
 
-export const getTagPostRelationsResolver = (
-  _parent: {},
-  args: {
-    postId?: string | null
-    tagId?: string | null
-  },
-  ctx: Context
-) => {
+export const getTagPostRelationsResolver = ({
+  postId,
+  tagId,
+}: {
+  postId?: string | null
+  tagId?: string | null
+}) => {
   const query: Partial<TagPostRelationType> = {}
-  if (args.tagId) query.tagId = args.tagId
-  if (args.postId) query.postId = args.postId
+  if (tagId) query.tagId = tagId
+  if (postId) query.postId = postId
 
-  return ctx.prisma.tagPostRelation.findMany({
+  return prisma.tagPostRelation.findMany({
     where: query,
     include: {
       tag: true,
@@ -53,27 +53,28 @@ export const getTagPostRelationsResolver = (
   })
 }
 
-export const createTagPostRelationResolver = async (
-  _parent: {},
-  args: {
-    postId: string
-    tagId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const createTagPostRelationResolver = async ({
+  postId,
+  tagId,
+  user,
+}: {
+  postId: string
+  tagId: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const tag = await ctx.prisma.tag.findUnique({
+  const tag = await prisma.tag.findUnique({
     where: {
-      id: args.tagId,
+      id: tagId,
     },
   })
 
-  const post = await ctx.prisma.post.findUnique({
+  const post = await prisma.post.findUnique({
     where: {
-      id: args.postId,
+      id: postId,
     },
   })
 
@@ -81,14 +82,14 @@ export const createTagPostRelationResolver = async (
     throw new Error('タグ、または投稿が存在しません')
   }
 
-  if (ctx.user.id !== post.createdUserId) {
+  if (user.id !== post.createdUserId) {
     throw new Error('作成者しかタグを追加できません')
   }
 
-  return ctx.prisma.tagPostRelation.create({
+  return prisma.tagPostRelation.create({
     data: {
-      tagId: args.tagId,
-      postId: args.postId,
+      tagId,
+      postId,
     },
     include: {
       tag: true,
@@ -97,21 +98,22 @@ export const createTagPostRelationResolver = async (
   })
 }
 
-export const createTagPostRelationsResolver = async (
-  _parent: {},
-  args: {
-    postId: string
-    tagIds: string[]
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const createTagPostRelationsResolver = async ({
+  postId,
+  tagIds,
+  user,
+}: {
+  postId: string
+  tagIds: string[]
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const post = await ctx.prisma.post.findUnique({
+  const post = await prisma.post.findUnique({
     where: {
-      id: args.postId,
+      id: postId,
     },
   })
 
@@ -119,22 +121,22 @@ export const createTagPostRelationsResolver = async (
     throw new Error('投稿が存在しません')
   }
 
-  if (ctx.user.id !== post.createdUserId) {
+  if (user.id !== post.createdUserId) {
     throw new Error('投稿の作成者しかタグを追加できません')
   }
 
-  const tagPostTypes = args.tagIds.map((tagId: string) => {
+  const tagPostTypes = tagIds.map((tagId: string) => {
     return {
       tagId,
-      postId: args.postId,
+      postId,
     }
   })
 
-  await ctx.prisma.tagPostRelation.createMany({
+  await prisma.tagPostRelation.createMany({
     data: tagPostTypes,
   })
 
-  const tagPostRelations = await ctx.prisma.tagPostRelation.findMany({
+  const tagPostRelations = await prisma.tagPostRelation.findMany({
     where: {
       OR: tagPostTypes,
     },
@@ -145,28 +147,29 @@ export const createTagPostRelationsResolver = async (
   })
 
   // 非同期に処理
-  createNotification(ctx, tagPostRelations, post)
+  createNotification(tagPostRelations, post, user)
 
   return tagPostRelations
 }
 
-export const deleteTagPostRelationResolver = async (
-  _parent: {},
-  args: {
-    postId: string
-    tagId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const deleteTagPostRelationResolver = async ({
+  postId,
+  tagId,
+  user,
+}: {
+  postId: string
+  tagId: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const tagPostRelation = await ctx.prisma.tagPostRelation.findUnique({
+  const tagPostRelation = await prisma.tagPostRelation.findUnique({
     where: {
       tagPostRelationId: {
-        tagId: args.tagId,
-        postId: args.postId,
+        tagId,
+        postId,
       },
     },
     include: {
@@ -178,15 +181,15 @@ export const deleteTagPostRelationResolver = async (
     throw new Error('tagPostRelationが存在しません')
   }
 
-  if (ctx.user.id !== tagPostRelation.post.createdUserId) {
+  if (user.id !== tagPostRelation.post.createdUserId) {
     throw new Error('作成者しかタグを削除できません')
   }
 
-  return ctx.prisma.tagPostRelation.delete({
+  return prisma.tagPostRelation.delete({
     where: {
       tagPostRelationId: {
-        tagId: args.tagId,
-        postId: args.postId,
+        tagId,
+        postId,
       },
     },
     include: {
@@ -196,23 +199,23 @@ export const deleteTagPostRelationResolver = async (
   })
 }
 
-export const deleteTagPostRelationsResolver = async (
-  _parent: {},
-  args: {
-    tagPostTypes: {
-      postId: string
-      tagId: string
-    }[]
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const deleteTagPostRelationsResolver = async ({
+  tagPostTypes,
+  user,
+}: {
+  tagPostTypes: {
+    postId: string
+    tagId: string
+  }[]
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const tagPostRelations = await ctx.prisma.tagPostRelation.findMany({
+  const tagPostRelations = await prisma.tagPostRelation.findMany({
     where: {
-      OR: [...args.tagPostTypes],
+      OR: [...tagPostTypes],
     },
     include: {
       tag: true,
@@ -227,15 +230,15 @@ export const deleteTagPostRelationsResolver = async (
           post: Post
           tag: Tag
         }
-      ) => ctx.user?.id !== tagPostRelation.post.createdUserId
+      ) => user.id !== tagPostRelation.post.createdUserId
     )
   ) {
     throw new Error('作成者しかタグを削除できません')
   }
 
-  await ctx.prisma.tagPostRelation.deleteMany({
+  await prisma.tagPostRelation.deleteMany({
     where: {
-      OR: [...args.tagPostTypes],
+      OR: [...tagPostTypes],
     },
   })
 

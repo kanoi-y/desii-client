@@ -52,7 +52,12 @@ export const GetTagPostRelationsQuery = extendType({
         tagId: stringArg(),
         postId: stringArg(),
       },
-      resolve: getTagPostRelationsResolver,
+      resolve(_parent, args, _ctx) {
+        return getTagPostRelationsResolver({
+          postId: args.postId,
+          tagId: args.tagId,
+        })
+      },
     })
   },
 })
@@ -66,7 +71,13 @@ export const CreateTagPostRelationMutation = extendType({
         tagId: nonNull(stringArg()),
         postId: nonNull(stringArg()),
       },
-      resolve: createTagPostRelationResolver,
+      resolve(_parent, args, ctx) {
+        return createTagPostRelationResolver({
+          postId: args.postId,
+          tagId: args.tagId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -80,7 +91,13 @@ export const CreateTagPostRelationsMutation = extendType({
         tagIds: nonNull(list(nonNull(stringArg()))),
         postId: nonNull(stringArg()),
       },
-      resolve: createTagPostRelationsResolver,
+      resolve(_parent, args, ctx) {
+        return createTagPostRelationsResolver({
+          postId: args.postId,
+          tagIds: args.tagIds,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -94,7 +111,13 @@ export const DeleteTagPostRelationMutation = extendType({
         tagId: nonNull(stringArg()),
         postId: nonNull(stringArg()),
       },
-      resolve: deleteTagPostRelationResolver,
+      resolve(_parent, args, ctx) {
+        return deleteTagPostRelationResolver({
+          postId: args.postId,
+          tagId: args.tagId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -107,7 +130,12 @@ export const DeleteTagPostRelationsMutation = extendType({
       args: {
         tagPostTypes: nonNull(list(nonNull('TagPostInputType'))),
       },
-      resolve: deleteTagPostRelationsResolver,
+      resolve(_parent, args, ctx) {
+        return deleteTagPostRelationsResolver({
+          tagPostTypes: args.tagPostTypes,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
