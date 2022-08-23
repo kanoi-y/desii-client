@@ -1,53 +1,47 @@
-import { Context } from '../../context'
+import { User } from '@prisma/client'
+import { prisma } from '../../../lib/prisma'
 
-export const getAllTagsResolver = (
-  _parent: {},
-  args: {
-    searchText?: string | null
-    sort: 'asc' | 'desc' | null
-  },
-  ctx: Context
-) => {
-  return ctx.prisma.tag.findMany({
+export const getAllTagsResolver = ({
+  searchText,
+  sort,
+}: {
+  searchText?: string | null
+  sort: 'asc' | 'desc' | null
+}) => {
+  return prisma.tag.findMany({
     where: {
       name: {
-        contains: args.searchText || '',
+        contains: searchText || '',
       },
     },
     orderBy: {
-      createdAt: args.sort || 'asc',
+      createdAt: sort || 'asc',
     },
   })
 }
 
-export const getTagByNameResolver = (
-  _parent: {},
-  args: {
-    name: string
-  },
-  ctx: Context
-) => {
-  return ctx.prisma.tag.findUnique({
+export const getTagByNameResolver = ({ name }: { name: string }) => {
+  return prisma.tag.findUnique({
     where: {
-      name: args.name,
+      name,
     },
   })
 }
 
-export const createTagResolver = (
-  _parent: {},
-  args: {
-    name: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const createTagResolver = ({
+  name,
+  user,
+}: {
+  name: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  return ctx.prisma.tag.create({
+  return prisma.tag.create({
     data: {
-      name: args.name,
+      name,
     },
   })
 }

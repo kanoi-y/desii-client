@@ -32,7 +32,12 @@ export const GetAllTagsQuery = extendType({
         }),
         searchText: stringArg(),
       },
-      resolve: getAllTagsResolver,
+      resolve(_parent, args, _ctx) {
+        return getAllTagsResolver({
+          sort: args.sort,
+          searchText: args.searchText,
+        })
+      },
     })
   },
 })
@@ -45,7 +50,11 @@ export const GetTagByNameQuery = extendType({
       args: {
         name: nonNull(stringArg()),
       },
-      resolve: getTagByNameResolver,
+      resolve(_parent, args, _ctx) {
+        return getTagByNameResolver({
+          name: args.name,
+        })
+      },
     })
   },
 })
@@ -58,7 +67,12 @@ export const CreateTagMutation = extendType({
       args: {
         name: nonNull(stringArg()),
       },
-      resolve: createTagResolver,
+      resolve(_parent, args, ctx) {
+        return createTagResolver({
+          name: args.name,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
