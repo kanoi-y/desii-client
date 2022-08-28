@@ -8,6 +8,7 @@ describe('createTagPostRelations', () => {
   let anotherUser: User
   let post: Post
   let tag: Tag
+  let anotherTag: Tag
 
   beforeAll(async () => {
     user = await prisma.user.create({
@@ -39,6 +40,11 @@ describe('createTagPostRelations', () => {
         name: 'tag',
       },
     })
+    anotherTag = await prisma.tag.create({
+      data: {
+        name: 'anotherTag',
+      },
+    })
   })
 
   afterAll(async () => {
@@ -46,19 +52,70 @@ describe('createTagPostRelations', () => {
     await prisma.$disconnect()
   })
 
-  const findTagSpy = jest.spyOn(prisma.tag, 'findUnique')
   const findPostSpy = jest.spyOn(prisma.post, 'findUnique')
-  const createTagPostRelationSpy = jest.spyOn(prisma.tagPostRelation, 'create')
+  const createTagPostRelationsSpy = jest.spyOn(prisma.tagPostRelation, 'createMany')
+  const findTagPostRelationsSpy = jest.spyOn(prisma.tagPostRelation, 'findMany')
+
+  test('ログインユーザーが存在しない', async () => {
+    try {
+      await createTagPostRelationsResolver({
+        postId: post.id,
+        tagIds: [tag.id, anotherTag.id],
+        user: null,
+      })
+  
+    } catch (e) {
+      expect(e).toEqual(new Error('ログインユーザーが存在しません'))
+    }
+
+    expect(findPostSpy).not.toHaveBeenCalled()
+    expect(createTagPostRelationsSpy).not.toHaveBeenCalled()
+    expect(findTagPostRelationsSpy).not.toHaveBeenCalled()
+  })
+
+  test('投稿が存在しない', async () => {
+    try {
+      await createTagPostRelationsResolver({
+        postId: 'postId',
+        tagIds: [tag.id, anotherTag.id],
+        user,
+      })
+  
+    } catch (e) {
+      expect(e).toEqual(new Error('投稿が存在しません'))
+    }
+
+    expect(findPostSpy).toHaveBeenCalled()
+    expect(createTagPostRelationsSpy).not.toHaveBeenCalled()
+    expect(findTagPostRelationsSpy).not.toHaveBeenCalled()
+  })
+
+  test('投稿の作成者しかタグを追加できない', async () => {
+    try {
+      await createTagPostRelationsResolver({
+        postId: post.id,
+        tagIds: [tag.id, anotherTag.id],
+        user: anotherUser,
+      })
+  
+    } catch (e) {
+      expect(e).toEqual(new Error('投稿の作成者しかタグを追加できません'))
+    }
+
+    expect(findPostSpy).toHaveBeenCalled()
+    expect(createTagPostRelationsSpy).not.toHaveBeenCalled()
+    expect(findTagPostRelationsSpy).not.toHaveBeenCalled()
+  })
 
   test('成功', async () => {
     await createTagPostRelationsResolver({
       postId: post.id,
-      tagId: tag.id,
+      tagIds: [tag.id, anotherTag.id],
       user,
     })
 
-    expect(findTagSpy).toHaveBeenCalled()
     expect(findPostSpy).toHaveBeenCalled()
-    expect(createTagPostRelationSpy).toHaveBeenCalled()
+    expect(createTagPostRelationsSpy).toHaveBeenCalled()
+    expect(findTagPostRelationsSpy).toHaveBeenCalled()
   })
 })
