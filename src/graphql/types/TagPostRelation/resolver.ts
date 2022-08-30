@@ -223,6 +223,10 @@ export const deleteTagPostRelationsResolver = async ({
     },
   })
 
+  if (tagPostRelations.length === 0) {
+    throw new Error('tagPostRelationが存在しません')
+  }
+
   if (
     tagPostRelations.some(
       (
