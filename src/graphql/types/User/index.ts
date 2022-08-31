@@ -36,7 +36,11 @@ export const GetCurrentUserQuery = extendType({
       args: {
         accessToken: nonNull(stringArg()),
       },
-      resolve: getCurrentUserResolver,
+      resolve(_parent, args, _ctx) {
+        return getCurrentUserResolver({
+          accessToken: args.accessToken,
+        })
+      },
     })
   },
 })
@@ -49,7 +53,11 @@ export const GetUserQuery = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: getUserResolver,
+      resolve(_parent, args, _ctx) {
+        return getUserResolver({
+          id: args.id,
+        })
+      },
     })
   },
 })
@@ -65,7 +73,14 @@ export const CreateUserMutation = extendType({
         description: stringArg(),
         image: stringArg(),
       },
-      resolve: createUserResolver,
+      resolve(_parent, args, _ctx) {
+        return createUserResolver({
+          description: args.description,
+          email: args.email,
+          name: args.name,
+          image: args.image,
+        })
+      },
     })
   },
 })
@@ -78,7 +93,12 @@ export const DeleteUserMutation = extendType({
       args: {
         id: nonNull(stringArg()),
       },
-      resolve: deleteUserResolver,
+      resolve(_parent, args, ctx) {
+        return deleteUserResolver({
+          id: args.id,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -95,7 +115,16 @@ export const UpdateUserMutation = extendType({
         description: stringArg(),
         image: stringArg(),
       },
-      resolve: updateUserResolver,
+      resolve(_parent, args, ctx) {
+        return updateUserResolver({
+          id: args.id,
+          name: args.name,
+          email: args.email,
+          description: args.description,
+          image: args.image,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
