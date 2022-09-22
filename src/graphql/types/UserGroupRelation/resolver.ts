@@ -131,21 +131,16 @@ export const DeleteUserGroupRelationResolver = async ({
         groupId,
       },
     },
+    include: {
+      group: true,
+    },
   })
 
   if (!userGroupRelation) {
     throw new Error('userGroupRelationが存在しません')
   }
 
-  const group = await prisma.group.findUnique({
-    where: {
-      id: userGroupRelation.groupId,
-    },
-  })
-
-  if (!group) {
-    throw new Error('グループが存在しません')
-  }
+  const group = userGroupRelation.group
 
   if (user.id !== userGroupRelation.userId && user.id !== group.adminUserId) {
     throw new Error(
