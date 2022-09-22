@@ -1,12 +1,11 @@
-import { UserGroupRelation as UserGroupRelationType } from '@prisma/client'
-import { Context } from '../../context'
+import {
+  User,
+  UserGroupRelation as UserGroupRelationType,
+} from '@prisma/client'
+import { prisma } from '../../../lib/prisma'
 
-const createRoomMember = async (
-  ctx: Context,
-  roomId: string,
-  userId: string
-) => {
-  const room = await ctx.prisma.room.findUnique({
+const createRoomMember = async (roomId: string, userId: string) => {
+  const room = await prisma.room.findUnique({
     where: {
       id: roomId,
     },
@@ -16,7 +15,7 @@ const createRoomMember = async (
     throw new Error('ルームが存在しません')
   }
 
-  await ctx.prisma.roomMember.create({
+  await prisma.roomMember.create({
     data: {
       roomId: room.id,
       userId: userId,
@@ -24,12 +23,8 @@ const createRoomMember = async (
   })
 }
 
-const deleteRoomMember = async (
-  ctx: Context,
-  roomId: string,
-  userId: string
-) => {
-  const room = await ctx.prisma.room.findUnique({
+const deleteRoomMember = async (roomId: string, userId: string) => {
+  const room = await prisma.room.findUnique({
     where: {
       id: roomId,
     },
@@ -39,7 +34,7 @@ const deleteRoomMember = async (
     throw new Error('ルームが存在しません')
   }
 
-  await ctx.prisma.roomMember.delete({
+  await prisma.roomMember.delete({
     where: {
       RoomMemberId: {
         roomId: room.id,
@@ -49,19 +44,18 @@ const deleteRoomMember = async (
   })
 }
 
-export const getUserGroupRelationsResolver = (
-  _parent: {},
-  args: {
-    groupId?: string | null
-    userId?: string | null
-  },
-  ctx: Context
-) => {
+export const getUserGroupRelationsResolver = ({
+  groupId,
+  userId,
+}: {
+  groupId?: string | null
+  userId?: string | null
+}) => {
   const query: Partial<UserGroupRelationType> = {}
-  if (args.userId) query.userId = args.userId
-  if (args.groupId) query.groupId = args.groupId
+  if (userId) query.userId = userId
+  if (groupId) query.groupId = groupId
 
-  return ctx.prisma.userGroupRelation.findMany({
+  return prisma.userGroupRelation.findMany({
     where: query,
     include: {
       user: true,
@@ -70,44 +64,45 @@ export const getUserGroupRelationsResolver = (
   })
 }
 
-export const createUserGroupRelationResolver = async (
-  _parent: {},
-  args: {
-    groupId: string
-    userId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const createUserGroupRelationResolver = async ({
+  groupId,
+  userId,
+  user,
+}: {
+  groupId: string
+  userId: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const user = await ctx.prisma.user.findUnique({
+  const userById = await prisma.user.findUnique({
     where: {
-      id: args.userId,
+      id: userId,
     },
   })
 
-  const group = await ctx.prisma.group.findUnique({
+  const group = await prisma.group.findUnique({
     where: {
-      id: args.groupId,
+      id: groupId,
     },
   })
 
-  if (!user || !group) {
+  if (!userById || !group) {
     throw new Error('ユーザー、またはグループが存在しません')
   }
 
-  if (ctx.user.id !== group.adminUserId) {
+  if (user.id !== group.adminUserId) {
     throw new Error('管理者ユーザーしかユーザーを追加できません')
   }
 
-  createRoomMember(ctx, group.roomId, args.userId)
+  createRoomMember(group.roomId, userId)
 
-  return ctx.prisma.userGroupRelation.create({
+  return prisma.userGroupRelation.create({
     data: {
-      userId: args.userId,
-      groupId: args.groupId,
+      userId,
+      groupId,
     },
     include: {
       user: true,
@@ -116,23 +111,24 @@ export const createUserGroupRelationResolver = async (
   })
 }
 
-export const DeleteUserGroupRelationResolver = async (
-  _parent: {},
-  args: {
-    groupId: string
-    userId: string
-  },
-  ctx: Context
-) => {
-  if (!ctx.user) {
+export const DeleteUserGroupRelationResolver = async ({
+  groupId,
+  userId,
+  user,
+}: {
+  groupId: string
+  userId: string
+  user: User | null
+}) => {
+  if (!user) {
     throw new Error('ログインユーザーが存在しません')
   }
 
-  const userGroupRelation = await ctx.prisma.userGroupRelation.findUnique({
+  const userGroupRelation = await prisma.userGroupRelation.findUnique({
     where: {
       relationId: {
-        userId: args.userId,
-        groupId: args.groupId,
+        userId,
+        groupId,
       },
     },
   })
@@ -141,7 +137,7 @@ export const DeleteUserGroupRelationResolver = async (
     throw new Error('userGroupRelationが存在しません')
   }
 
-  const group = await ctx.prisma.group.findUnique({
+  const group = await prisma.group.findUnique({
     where: {
       id: userGroupRelation.groupId,
     },
@@ -151,10 +147,7 @@ export const DeleteUserGroupRelationResolver = async (
     throw new Error('グループが存在しません')
   }
 
-  if (
-    ctx.user.id !== userGroupRelation.userId &&
-    ctx.user.id !== group.adminUserId
-  ) {
+  if (user.id !== userGroupRelation.userId && user.id !== group.adminUserId) {
     throw new Error(
       '管理者ユーザー以外は、自分以外のユーザーを削除することは出来ません'
     )
@@ -164,12 +157,12 @@ export const DeleteUserGroupRelationResolver = async (
     throw new Error('グループからグループの管理者を削除することは出来ません')
   }
 
-  deleteRoomMember(ctx, group.roomId, args.userId)
-  return ctx.prisma.userGroupRelation.delete({
+  deleteRoomMember(group.roomId, userId)
+  return prisma.userGroupRelation.delete({
     where: {
       relationId: {
-        userId: args.userId,
-        groupId: args.groupId,
+        userId,
+        groupId,
       },
     },
     include: {

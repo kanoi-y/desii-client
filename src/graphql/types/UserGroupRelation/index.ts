@@ -35,7 +35,12 @@ export const GetUserGroupRelationsQuery = extendType({
         userId: stringArg(),
         groupId: stringArg(),
       },
-      resolve: getUserGroupRelationsResolver,
+      resolve(_parent, args, _ctx) {
+        return getUserGroupRelationsResolver({
+          groupId: args.groupId,
+          userId: args.userId,
+        })
+      },
     })
   },
 })
@@ -49,7 +54,13 @@ export const CreateUserGroupRelationMutation = extendType({
         userId: nonNull(stringArg()),
         groupId: nonNull(stringArg()),
       },
-      resolve: createUserGroupRelationResolver,
+      resolve(_parent, args, ctx) {
+        return createUserGroupRelationResolver({
+          groupId: args.groupId,
+          userId: args.userId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
@@ -63,7 +74,13 @@ export const DeleteUserGroupRelationMutation = extendType({
         userId: nonNull(stringArg()),
         groupId: nonNull(stringArg()),
       },
-      resolve: DeleteUserGroupRelationResolver,
+      resolve(_parent, args, ctx) {
+        return DeleteUserGroupRelationResolver({
+          groupId: args.groupId,
+          userId: args.userId,
+          user: ctx.user,
+        })
+      },
     })
   },
 })
