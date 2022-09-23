@@ -1,6 +1,5 @@
 import { User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
 import { deleteUserResolver } from '../resolver'
 
 describe('deleteUser', () => {
@@ -8,29 +7,32 @@ describe('deleteUser', () => {
   let anotherUser: User
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
-    anotherUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
-    })
+    user = {
+      id: 'userId',
+      name: 'name',
+      email: 'email',
+      description: 'description',
+      image: 'image',
+      emailVerified: null,
+      accessToken: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    anotherUser = {
+      id: 'anotherUserId',
+      name: 'name2',
+      email: 'email2',
+      description: 'description2',
+      image: 'image2',
+      emailVerified: null,
+      accessToken: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findUserSpy = jest.spyOn(prisma.user, 'findUnique')
-  const deleteUserSpy = jest.spyOn(prisma.user, 'delete')
+  const findUserSpy = jest.spyOn(prismaMock.user, 'findUnique')
+  const deleteUserSpy = jest.spyOn(prismaMock.user, 'delete')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -47,6 +49,7 @@ describe('deleteUser', () => {
   })
 
   test('ユーザーが存在しない', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(null)
     try {
       await deleteUserResolver({
         id: 'id',
@@ -61,6 +64,7 @@ describe('deleteUser', () => {
   })
 
   test('ユーザーとログインユーザーが異なっている', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(anotherUser)
     try {
       await deleteUserResolver({
         id: anotherUser.id,
@@ -75,6 +79,8 @@ describe('deleteUser', () => {
   })
 
   test('成功', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(user)
+    prismaMock.user.delete.mockResolvedValue(user)
     const res = await deleteUserResolver({
       id: user.id,
       user,
