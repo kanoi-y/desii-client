@@ -1,6 +1,5 @@
 import { User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
 import { updateUserResolver } from '../resolver'
 
 describe('updateUser', () => {
@@ -8,29 +7,32 @@ describe('updateUser', () => {
   let anotherUser: User
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
-    anotherUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
-    })
+    user = {
+      id: 'userId',
+      name: 'name',
+      email: 'email',
+      description: 'description',
+      image: 'image',
+      emailVerified: null,
+      accessToken: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    anotherUser = {
+      id: 'anotherUserId',
+      name: 'name2',
+      email: 'email2',
+      description: 'description2',
+      image: 'image2',
+      emailVerified: null,
+      accessToken: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findUserSpy = jest.spyOn(prisma.user, 'findUnique')
-  const updateUserSpy = jest.spyOn(prisma.user, 'update')
+  const findUserSpy = jest.spyOn(prismaMock.user, 'findUnique')
+  const updateUserSpy = jest.spyOn(prismaMock.user, 'update')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -48,6 +50,7 @@ describe('updateUser', () => {
   })
 
   test('ユーザーが存在しない', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(null)
     try {
       await updateUserResolver({
         id: 'userId',
@@ -63,6 +66,7 @@ describe('updateUser', () => {
   })
 
   test('ユーザーとログインユーザーが異なっている', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(anotherUser)
     try {
       await updateUserResolver({
         id: anotherUser.id,
@@ -78,6 +82,13 @@ describe('updateUser', () => {
   })
 
   test('成功', async () => {
+    const updateNameUser = {
+      ...user,
+      name: 'name update',
+    }
+    prismaMock.user.findUnique.mockResolvedValue(user)
+    prismaMock.user.update.mockResolvedValue(updateNameUser)
+
     const res = await updateUserResolver({
       id: user.id,
       user,
