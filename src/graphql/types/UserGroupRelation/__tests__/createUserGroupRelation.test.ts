@@ -38,7 +38,6 @@ describe('createUserGroupRelation', () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     }
-
     group = {
       id: 'groupId',
       description: 'description',

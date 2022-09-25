@@ -1,90 +1,114 @@
-import { Group, User, UserGroupRelation } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import {
+  Group,
+  Room,
+  RoomMember,
+  User,
+  UserGroupRelation,
+} from '@prisma/client'
+import { prismaMock } from 'singleton'
+import * as userGroupRelationResolver from '../resolver'
 import { DeleteUserGroupRelationResolver } from '../resolver'
 
 describe('deleteUserGroupRelation', () => {
   let user: User
   let adminUser: User
+  let room: Room
   let group: Group
   let userGroupRelation: UserGroupRelation & {
     user: User
     group: Group
   }
+  let adminUserGroupRelation: UserGroupRelation & {
+    user: User
+    group: Group
+  }
+  let roomMember: RoomMember
+  let adminRoomMember: RoomMember
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
-    adminUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
-    })
-    const room = await prisma.room.create({
-      data: {},
-    })
-    group = await prisma.group.create({
-      data: {
-        adminUserId: adminUser.id,
-        name: 'group',
-        image: 'image',
-        productId: 'productId',
-        roomId: room.id,
-      },
-    })
-    await prisma.userGroupRelation.create({
-      data: {
-        userId: adminUser.id,
-        groupId: group.id,
-      },
-      include: {
-        user: true,
-        group: true,
-      },
-    })
-    userGroupRelation = await prisma.userGroupRelation.create({
-      data: {
-        userId: user.id,
-        groupId: group.id,
-      },
-      include: {
-        user: true,
-        group: true,
-      },
-    })
-    await prisma.roomMember.create({
-      data: {
-        roomId: room.id,
-        userId: user.id,
-      },
-    })
-    await prisma.roomMember.create({
-      data: {
-        roomId: room.id,
-        userId: adminUser.id,
-      },
-    })
-  })
-
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
+    user = {
+      id: 'userId',
+      name: 'name',
+      email: 'email',
+      description: 'description',
+      image: 'image',
+      emailVerified: null,
+      accessToken: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    adminUser = {
+      id: 'adminUserId',
+      name: 'name2',
+      email: 'email2',
+      description: 'description2',
+      image: 'image2',
+      emailVerified: null,
+      accessToken: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    room = {
+      id: 'roomId',
+      latestMessageId: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    group = {
+      id: 'groupId',
+      description: 'description',
+      adminUserId: adminUser.id,
+      name: 'group',
+      image: 'image',
+      productId: 'productId',
+      roomId: room.id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    adminUserGroupRelation = {
+      id: 'adminUserGroupRelationId',
+      userId: adminUser.id,
+      groupId: group.id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      user: adminUser,
+      group,
+    }
+    userGroupRelation = {
+      id: 'userGroupRelationId',
+      userId: user.id,
+      groupId: group.id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      user,
+      group,
+    }
+    roomMember = {
+      id: 'roomMemberId',
+      userId: user.id,
+      roomId: room.id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    adminRoomMember = {
+      id: 'adminRoomMemberId',
+      userId: adminUser.id,
+      roomId: room.id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
   })
 
   const findUserGroupRelationSpy = jest.spyOn(
-    prisma.userGroupRelation,
+    prismaMock.userGroupRelation,
     'findUnique'
   )
-  const deleteRoomMemberSpy = jest.spyOn(prisma.roomMember, 'delete')
+  const deleteRoomMemberSpy = jest.spyOn(
+    userGroupRelationResolver,
+    'deleteRoomMember'
+  )
   const deleteUserGroupRelationSpy = jest.spyOn(
-    prisma.userGroupRelation,
+    prismaMock.userGroupRelation,
     'delete'
   )
 
@@ -105,6 +129,7 @@ describe('deleteUserGroupRelation', () => {
   })
 
   test('userGroupRelationが存在しない', async () => {
+    prismaMock.userGroupRelation.findUnique.mockResolvedValue(null)
     try {
       await DeleteUserGroupRelationResolver({
         groupId: 'groupId',
@@ -121,6 +146,7 @@ describe('deleteUserGroupRelation', () => {
   })
 
   test('管理者ユーザー以外は、自分以外のユーザーを削除することは出来ない', async () => {
+    prismaMock.userGroupRelation.findUnique.mockResolvedValue(adminUserGroupRelation)
     try {
       await DeleteUserGroupRelationResolver({
         groupId: group.id,
@@ -141,6 +167,7 @@ describe('deleteUserGroupRelation', () => {
   })
 
   test('グループからグループの管理者を削除することは出来ない', async () => {
+    prismaMock.userGroupRelation.findUnique.mockResolvedValue(adminUserGroupRelation)
     try {
       await DeleteUserGroupRelationResolver({
         groupId: group.id,
@@ -149,9 +176,7 @@ describe('deleteUserGroupRelation', () => {
       })
     } catch (e) {
       expect(e).toEqual(
-        new Error(
-          'グループからグループの管理者を削除することは出来ません'
-        )
+        new Error('グループからグループの管理者を削除することは出来ません')
       )
     }
 
@@ -161,6 +186,9 @@ describe('deleteUserGroupRelation', () => {
   })
 
   test('成功', async () => {
+    prismaMock.userGroupRelation.findUnique.mockResolvedValue(userGroupRelation)
+    prismaMock.userGroupRelation.delete.mockResolvedValue(userGroupRelation)
+    prismaMock.room.findUnique.mockResolvedValue(room)
     const res = await DeleteUserGroupRelationResolver({
       groupId: group.id,
       userId: user.id,
