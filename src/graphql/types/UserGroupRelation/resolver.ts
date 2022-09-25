@@ -4,7 +4,7 @@ import {
 } from '@prisma/client'
 import { prisma } from '../../../lib/prisma'
 
-const createRoomMember = async (roomId: string, userId: string) => {
+export const createRoomMember = async (roomId: string, userId: string) => {
   const room = await prisma.room.findUnique({
     where: {
       id: roomId,
@@ -23,7 +23,7 @@ const createRoomMember = async (roomId: string, userId: string) => {
   })
 }
 
-const deleteRoomMember = async (roomId: string, userId: string) => {
+export const deleteRoomMember = async (roomId: string, userId: string) => {
   const room = await prisma.room.findUnique({
     where: {
       id: roomId,

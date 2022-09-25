@@ -1,53 +1,65 @@
-import { Group, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { Group, Room, User } from '@prisma/client'
+import { prismaMock } from 'singleton'
+import * as userGroupRelationResolver from '../resolver'
 import { createUserGroupRelationResolver } from '../resolver'
 
 describe('createUserGroupRelation', () => {
   let user: User
   let adminUser: User
+  let room: Room
   let group: Group
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
-    adminUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
-    })
-    const room = await prisma.room.create({
-      data: {},
-    })
+    user = {
+      id: 'userId',
+      name: 'name',
+      email: 'email',
+      description: 'description',
+      image: 'image',
+      emailVerified: null,
+      accessToken: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    adminUser = {
+      id: 'adminUserId',
+      name: 'name2',
+      email: 'email2',
+      description: 'description2',
+      image: 'image2',
+      emailVerified: null,
+      accessToken: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    room = {
+      id: 'roomId',
+      latestMessageId: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
 
-    group = await prisma.group.create({
-      data: {
-        adminUserId: adminUser.id,
-        name: 'group',
-        image: 'image',
-        productId: 'productId',
-        roomId: room.id,
-      },
-    })
+    group = {
+      id: 'groupId',
+      description: 'description',
+      adminUserId: adminUser.id,
+      name: 'group',
+      image: 'image',
+      productId: 'productId',
+      roomId: room.id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findUserSpy = jest.spyOn(prisma.user, 'findUnique')
-  const findGroupSpy = jest.spyOn(prisma.group, 'findUnique')
-  const createRoomMemberSpy = jest.spyOn(prisma.roomMember, 'create')
+  const findUserSpy = jest.spyOn(prismaMock.user, 'findUnique')
+  const findGroupSpy = jest.spyOn(prismaMock.group, 'findUnique')
+  const createRoomMemberSpy = jest.spyOn(
+    userGroupRelationResolver,
+    'createRoomMember'
+  )
   const createUserGroupRelationSpy = jest.spyOn(
-    prisma.userGroupRelation,
+    prismaMock.userGroupRelation,
     'create'
   )
 
@@ -64,11 +76,12 @@ describe('createUserGroupRelation', () => {
 
     expect(findUserSpy).not.toHaveBeenCalled()
     expect(findGroupSpy).not.toHaveBeenCalled()
-    expect(createRoomMemberSpy).not.toHaveBeenCalled()
     expect(createUserGroupRelationSpy).not.toHaveBeenCalled()
   })
 
   test('ユーザー、またはグループが存在しない', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(user)
+    prismaMock.group.findUnique.mockResolvedValue(null)
     try {
       await createUserGroupRelationResolver({
         groupId: 'groupId',
@@ -81,11 +94,13 @@ describe('createUserGroupRelation', () => {
 
     expect(findUserSpy).toHaveBeenCalled()
     expect(findGroupSpy).toHaveBeenCalled()
-    expect(createRoomMemberSpy).not.toHaveBeenCalled()
     expect(createUserGroupRelationSpy).not.toHaveBeenCalled()
   })
 
   test('管理者ユーザーしかユーザーを追加できない', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(user)
+    prismaMock.group.findUnique.mockResolvedValue(group)
+
     try {
       await createUserGroupRelationResolver({
         groupId: group.id,
@@ -98,11 +113,14 @@ describe('createUserGroupRelation', () => {
 
     expect(findUserSpy).toHaveBeenCalled()
     expect(findGroupSpy).toHaveBeenCalled()
-    expect(createRoomMemberSpy).not.toHaveBeenCalled()
     expect(createUserGroupRelationSpy).not.toHaveBeenCalled()
   })
 
   test('成功', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(user)
+    prismaMock.group.findUnique.mockResolvedValue(group)
+    prismaMock.room.findUnique.mockResolvedValue(room)
+
     await createUserGroupRelationResolver({
       groupId: group.id,
       userId: user.id,
