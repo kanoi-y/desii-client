@@ -1,6 +1,6 @@
 import { Favorite, Post, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import { favoriteFactory, postFactory, userFactory } from '../../../factories'
 import { deleteFavoriteResolver } from '../resolver'
 
 describe('deleteFavorite', () => {
@@ -12,41 +12,20 @@ describe('deleteFavorite', () => {
   }
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
-    post = await prisma.post.create({
-      data: {
-        title: 'title',
-        content: 'content',
-        category: 'GIVE_ME',
-        isPrivate: false,
-        createdUserId: user.id,
-      },
-    })
-    favorite = await prisma.favorite.create({
-      data: {
+    user = userFactory()
+    post = postFactory({ createdUserId: user.id })
+    favorite = {
+      ...favoriteFactory({
         createdUserId: user.id,
         postId: post.id,
-      },
-      include: {
-        createdUser: true,
-        post: true,
-      },
-    })
+      }),
+      createdUser: user,
+      post,
+    }
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findFavoriteSpy = jest.spyOn(prisma.favorite, 'findUnique')
-  const deleteFavoriteSpy = jest.spyOn(prisma.favorite, 'delete')
+  const findFavoriteSpy = jest.spyOn(prismaMock.favorite, 'findUnique')
+  const deleteFavoriteSpy = jest.spyOn(prismaMock.favorite, 'delete')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -63,6 +42,7 @@ describe('deleteFavorite', () => {
   })
 
   test('favoriteが存在しない', async () => {
+    prismaMock.favorite.findUnique.mockResolvedValue(null)
     try {
       await deleteFavoriteResolver({
         postId: 'postId',
@@ -77,6 +57,8 @@ describe('deleteFavorite', () => {
   })
 
   test('成功', async () => {
+    prismaMock.favorite.findUnique.mockResolvedValue(favorite)
+    prismaMock.favorite.delete.mockResolvedValue(favorite)
     const res = await deleteFavoriteResolver({
       postId: post.id,
       user,
