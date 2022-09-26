@@ -1,5 +1,6 @@
 import { Group, Room, User } from '@prisma/client'
 import { prismaMock } from 'singleton'
+import { groupFactory, roomFactory, userFactory } from '../../../factories'
 import * as userGroupRelationResolver from '../resolver'
 import { createUserGroupRelationResolver } from '../resolver'
 
@@ -10,45 +11,10 @@ describe('createUserGroupRelation', () => {
   let group: Group
 
   beforeAll(async () => {
-    user = {
-      id: 'userId',
-      name: 'name',
-      email: 'email',
-      description: 'description',
-      image: 'image',
-      emailVerified: null,
-      accessToken: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    adminUser = {
-      id: 'adminUserId',
-      name: 'name2',
-      email: 'email2',
-      description: 'description2',
-      image: 'image2',
-      emailVerified: null,
-      accessToken: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    room = {
-      id: 'roomId',
-      latestMessageId: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    group = {
-      id: 'groupId',
-      description: 'description',
-      adminUserId: adminUser.id,
-      name: 'group',
-      image: 'image',
-      productId: 'productId',
-      roomId: room.id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
+    user = userFactory()
+    adminUser = userFactory()
+    room = roomFactory()
+    group = groupFactory({ adminUserId: adminUser.id, roomId: room.id })
   })
 
   const findUserSpy = jest.spyOn(prismaMock.user, 'findUnique')
