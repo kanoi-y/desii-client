@@ -1,31 +1,26 @@
 import { User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import {
+  groupFactory,
+  roomFactory,
+  roomMemberFactory,
+  userFactory,
+  userGroupRelationFactory,
+} from '../../../factories'
 import { createGroupResolver } from '../resolver'
 
 describe('createGroup', () => {
   let user: User
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
+    user = userFactory()
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const createGroupSpy = jest.spyOn(prisma.group, 'create')
-  const createRoomSpy = jest.spyOn(prisma.room, 'create')
-  const createRoomMemberSpy = jest.spyOn(prisma.roomMember, 'create')
+  const createGroupSpy = jest.spyOn(prismaMock.group, 'create')
+  const createRoomSpy = jest.spyOn(prismaMock.room, 'create')
+  const createRoomMemberSpy = jest.spyOn(prismaMock.roomMember, 'create')
   const createUserGroupRelationSpy = jest.spyOn(
-    prisma.userGroupRelation,
+    prismaMock.userGroupRelation,
     'create'
   )
 
@@ -48,6 +43,24 @@ describe('createGroup', () => {
   })
 
   test('成功', async () => {
+    const room = roomFactory()
+    const roomMember = roomMemberFactory({ roomId: room.id, userId: user.id })
+    const group = groupFactory({
+      name: 'group',
+      image: 'image',
+      productId: 'productId',
+      description: 'description',
+      adminUserId: user.id,
+      roomId: room.id,
+    })
+    const userGroupRelation = userGroupRelationFactory({
+      userId: user.id,
+      groupId: group.id,
+    })
+    prismaMock.room.create.mockResolvedValue(room)
+    prismaMock.roomMember.create.mockResolvedValue(roomMember)
+    prismaMock.group.create.mockResolvedValue(group)
+    prismaMock.userGroupRelation.create.mockResolvedValue(userGroupRelation)
     await createGroupResolver({
       user,
       name: 'group',
