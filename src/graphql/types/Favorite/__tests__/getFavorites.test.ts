@@ -1,6 +1,6 @@
 import { Favorite, Post, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import { favoriteFactory, postFactory, userFactory } from '../../../factories'
 import { getFavoritesResolver } from '../resolver'
 
 describe('getFavorites', () => {
@@ -12,42 +12,22 @@ describe('getFavorites', () => {
   }
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
-    post = await prisma.post.create({
-      data: {
-        title: 'title',
-        content: 'content',
-        category: 'GIVE_ME',
-        isPrivate: false,
-        createdUserId: user.id,
-      },
-    })
-    favorite = await prisma.favorite.create({
-      data: {
+    user = userFactory()
+    post = postFactory({ createdUserId: user.id })
+    favorite = {
+      ...favoriteFactory({
         createdUserId: user.id,
         postId: post.id,
-      },
-      include: {
-        createdUser: true,
-        post: true,
-      },
-    })
+      }),
+      createdUser: user,
+      post,
+    }
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const spy = jest.spyOn(prisma.favorite, 'findMany')
+  const spy = jest.spyOn(prismaMock.favorite, 'findMany')
 
   test('not found', async () => {
+    prismaMock.favorite.findMany.mockResolvedValue([])
     const res = await getFavoritesResolver({
       sort: null,
       createdUserId: 'createdUserId',
@@ -59,6 +39,7 @@ describe('getFavorites', () => {
   })
 
   test('成功', async () => {
+    prismaMock.favorite.findMany.mockResolvedValue([favorite])
     const res = await getFavoritesResolver({
       sort: null,
       createdUserId: user.id,
