@@ -1,6 +1,7 @@
 import { Post, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import { postFactory, userFactory } from '../../../factories'
+import * as favoriteResolver from '../resolver'
 import { createFavoriteResolver } from '../resolver'
 
 describe('createFavorite', () => {
@@ -9,39 +10,14 @@ describe('createFavorite', () => {
   let post: Post
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
-    createdPostUser = await prisma.user.create({
-      data: {
-        name: 'createdPostUserName',
-        email: 'createdPostUserEmail',
-        image: 'createdPostUserImage',
-      },
-    })
-    post = await prisma.post.create({
-      data: {
-        title: 'title',
-        content: 'content',
-        category: 'GIVE_ME',
-        isPrivate: false,
-        createdUserId: createdPostUser.id,
-      },
-    })
+    user = userFactory()
+    createdPostUser = userFactory()
+    post = postFactory({ createdUserId: createdPostUser.id })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const createFavoriteSpy = jest.spyOn(prisma.favorite, 'create')
-  const findPostSpy = jest.spyOn(prisma.post, 'findUnique')
-  const createNotificationSpy = jest.spyOn(prisma.notification, 'create')
+  const createFavoriteSpy = jest.spyOn(prismaMock.favorite, 'create')
+  const findPostSpy = jest.spyOn(prismaMock.post, 'findUnique')
+  const createNotificationSpy = jest.spyOn(favoriteResolver, 'createNotification')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -59,6 +35,7 @@ describe('createFavorite', () => {
   })
 
   test('投稿が存在しない', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(null)
     try {
       await createFavoriteResolver({
         postId: 'postId',
@@ -74,6 +51,7 @@ describe('createFavorite', () => {
   })
 
   test('ログインユーザーが投稿の作成者だった場合', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(post)
     await createFavoriteResolver({
       postId: post.id,
       user: createdPostUser,
@@ -85,6 +63,7 @@ describe('createFavorite', () => {
   })
 
   test('成功', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(post)
     await createFavoriteResolver({
       postId: post.id,
       user,

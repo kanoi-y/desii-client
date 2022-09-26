@@ -1,7 +1,7 @@
 import { Favorite, Post, User } from '@prisma/client'
 import { prisma } from '../../../lib/prisma'
 
-const createNotification = async (post: Post, user: User) => {
+export const createNotification = async (post: Post, user: User) => {
   await prisma.notification.create({
     data: {
       type: 'FETCH_REACTION',
