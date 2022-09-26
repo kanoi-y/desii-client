@@ -1,5 +1,6 @@
 import { User } from '@prisma/client'
 import { prismaMock } from 'singleton'
+import { userFactory } from '../../../factories'
 import { deleteUserResolver } from '../resolver'
 
 describe('deleteUser', () => {
@@ -7,28 +8,8 @@ describe('deleteUser', () => {
   let anotherUser: User
 
   beforeAll(async () => {
-    user = {
-      id: 'userId',
-      name: 'name',
-      email: 'email',
-      description: 'description',
-      image: 'image',
-      emailVerified: null,
-      accessToken: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    anotherUser = {
-      id: 'anotherUserId',
-      name: 'name2',
-      email: 'email2',
-      description: 'description2',
-      image: 'image2',
-      emailVerified: null,
-      accessToken: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
+    user = userFactory()
+    anotherUser = userFactory()
   })
 
   const findUserSpy = jest.spyOn(prismaMock.user, 'findUnique')
