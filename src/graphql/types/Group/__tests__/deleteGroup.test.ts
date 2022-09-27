@@ -1,6 +1,6 @@
 import { Group, Room, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import { groupFactory, roomFactory, userFactory } from '../../../factories'
 import { deleteGroupResolver } from '../resolver'
 
 describe('deleteGroup', () => {
@@ -10,45 +10,18 @@ describe('deleteGroup', () => {
   let group: Group
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
-
-    adminUser = await prisma.user.create({
-      data: {
-        name: 'adminUserName',
-        email: 'adminUserEmail',
-        image: 'adminUserImage',
-      },
-    })
-
-    room = await prisma.room.create({
-      data: {},
-    })
-
-    group = await prisma.group.create({
-      data: {
-        adminUserId: adminUser.id,
-        name: 'group',
-        image: 'image',
-        productId: 'productId',
-        roomId: room.id,
-      },
+    user = userFactory()
+    adminUser = userFactory()
+    room = roomFactory()
+    group = groupFactory({
+      adminUserId: adminUser.id,
+      roomId: room.id,
     })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findGroupSpy = jest.spyOn(prisma.group, 'findUnique')
-  const deleteGroupSpy = jest.spyOn(prisma.group, 'delete')
-  const deleteRoomSpy = jest.spyOn(prisma.room, 'delete')
+  const findGroupSpy = jest.spyOn(prismaMock.group, 'findUnique')
+  const deleteGroupSpy = jest.spyOn(prismaMock.group, 'delete')
+  const deleteRoomSpy = jest.spyOn(prismaMock.room, 'delete')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -66,6 +39,7 @@ describe('deleteGroup', () => {
   })
 
   test('グループが存在しない', async () => {
+    prismaMock.group.findUnique.mockResolvedValue(null)
     try {
       await deleteGroupResolver({
         user,
@@ -81,6 +55,7 @@ describe('deleteGroup', () => {
   })
 
   test('ユーザーがチームの管理者ではない', async () => {
+    prismaMock.group.findUnique.mockResolvedValue(group)
     try {
       await deleteGroupResolver({
         user,
@@ -96,6 +71,9 @@ describe('deleteGroup', () => {
   })
 
   test('成功', async () => {
+    prismaMock.group.findUnique.mockResolvedValue(group)
+    prismaMock.group.delete.mockResolvedValue(group)
+    prismaMock.room.delete.mockResolvedValue(room)
     const res = await deleteGroupResolver({
       user: adminUser,
       id: group.id,
