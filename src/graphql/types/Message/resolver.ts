@@ -1,7 +1,7 @@
 import { RoomMember, User } from '@prisma/client'
 import { prisma } from '../../../lib/prisma'
 
-const createReadManagements = async (
+export const createReadManagements = async (
   roomMembers: RoomMember[],
   messageId: string,
   userId: string
