@@ -1,6 +1,6 @@
 import { Group, Room, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import { groupFactory, roomFactory, userFactory } from '../../../factories'
 import { updateGroupResolver } from '../resolver'
 
 describe('updateGroup', () => {
@@ -10,44 +10,18 @@ describe('updateGroup', () => {
   let group: Group
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
+    user = userFactory()
+    adminUser = userFactory()
+    room = roomFactory()
 
-    adminUser = await prisma.user.create({
-      data: {
-        name: 'adminUserName',
-        email: 'adminUserEmail',
-        image: 'adminUserImage',
-      },
-    })
-
-    room = await prisma.room.create({
-      data: {},
-    })
-
-    group = await prisma.group.create({
-      data: {
-        adminUserId: adminUser.id,
-        name: 'group',
-        image: 'image',
-        productId: 'productId',
-        roomId: room.id,
-      },
+    group = groupFactory({
+      adminUserId: adminUser.id,
+      roomId: room.id,
     })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findGroupSpy = jest.spyOn(prisma.group, 'findUnique')
-  const updateGroupSpy = jest.spyOn(prisma.group, 'update')
+  const findGroupSpy = jest.spyOn(prismaMock.group, 'findUnique')
+  const updateGroupSpy = jest.spyOn(prismaMock.group, 'update')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -64,6 +38,7 @@ describe('updateGroup', () => {
   })
 
   test('グループが存在しない', async () => {
+    prismaMock.group.findUnique.mockResolvedValue(null)
     try {
       await updateGroupResolver({
         user,
@@ -78,6 +53,7 @@ describe('updateGroup', () => {
   })
 
   test('ユーザーがチームの管理者ではない', async () => {
+    prismaMock.group.findUnique.mockResolvedValue(group)
     try {
       await updateGroupResolver({
         user,
@@ -92,6 +68,11 @@ describe('updateGroup', () => {
   })
 
   test('成功', async () => {
+    prismaMock.group.findUnique.mockResolvedValue(group)
+    prismaMock.group.update.mockResolvedValue({
+      ...group,
+      name: 'update group',
+    })
     const res = await updateGroupResolver({
       user: adminUser,
       id: group.id,
