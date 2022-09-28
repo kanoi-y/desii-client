@@ -1,59 +1,36 @@
-import { Message, Room, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { Message, Room, RoomMember, User } from '@prisma/client'
+import { prismaMock } from 'singleton'
+import {
+  messageFactory,
+  roomFactory,
+  roomMemberFactory,
+  userFactory,
+} from '../../../factories'
 import { getMessagesResolver } from '../resolver'
 
 describe('getMessages', () => {
   let user: User
   let roomMemberUser: User
   let room: Room
+  let roomMember: RoomMember
   let message: Message
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
+    user = userFactory()
+    roomMemberUser = userFactory()
+    room = roomFactory()
+    roomMember = roomMemberFactory({
+      roomId: room.id,
+      userId: roomMemberUser.id,
     })
-    roomMemberUser = await prisma.user.create({
-      data: {
-        name: 'roomMemberUserName',
-        email: 'roomMemberUserEmail',
-        image: 'roomMemberUserImage',
-      },
-    })
-    room = await prisma.room.create({
-      data: {},
-    })
-    await prisma.roomMember.create({
-      data: {
-        roomId: room.id,
-        userId: roomMemberUser.id,
-      },
-    })
-    message = await prisma.message.create({
-      data: {
-        type: 'TEXT',
-        roomId: room.id,
-        userId: roomMemberUser.id,
-        body: 'body',
-      },
-      include: {
-        user: true,
-        room: true,
-      },
+    message = messageFactory({
+      roomId: room.id,
+      userId: roomMemberUser.id,
     })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findRoomMemberSpy = jest.spyOn(prisma.roomMember, 'findMany')
-  const findMessageSpy = jest.spyOn(prisma.message, 'findMany')
+  const findRoomMemberSpy = jest.spyOn(prismaMock.roomMember, 'findMany')
+  const findMessageSpy = jest.spyOn(prismaMock.message, 'findMany')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -71,6 +48,7 @@ describe('getMessages', () => {
   })
 
   test('ルームに所属していないユーザーはメッセージを取得できない', async () => {
+    prismaMock.roomMember.findMany.mockResolvedValue([roomMember])
     try {
       await getMessagesResolver({
         sort: null,
@@ -88,6 +66,8 @@ describe('getMessages', () => {
   })
 
   test('成功', async () => {
+    prismaMock.roomMember.findMany.mockResolvedValue([roomMember])
+    prismaMock.message.findMany.mockResolvedValue([message])
     const res = await getMessagesResolver({
       sort: null,
       user: roomMemberUser,
