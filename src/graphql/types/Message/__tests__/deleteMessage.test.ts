@@ -1,59 +1,36 @@
-import { Message, Room, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { Message, Room, RoomMember, User } from '@prisma/client'
+import { prismaMock } from 'singleton'
+import {
+  messageFactory,
+  roomFactory,
+  roomMemberFactory,
+  userFactory,
+} from '../../../factories'
 import { deleteMessageResolver } from '../resolver'
 
 describe('deleteMessage', () => {
   let user: User
   let roomMemberUser: User
   let room: Room
+  let roomMember: RoomMember
   let message: Message
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
+    user = userFactory()
+    roomMemberUser = userFactory()
+    room = roomFactory()
+    roomMember = roomMemberFactory({
+      roomId: room.id,
+      userId: roomMemberUser.id,
     })
-    roomMemberUser = await prisma.user.create({
-      data: {
-        name: 'roomMemberUserName',
-        email: 'roomMemberUserEmail',
-        image: 'roomMemberUserImage',
-      },
-    })
-    room = await prisma.room.create({
-      data: {},
-    })
-    await prisma.roomMember.create({
-      data: {
-        roomId: room.id,
-        userId: roomMemberUser.id,
-      },
-    })
-    message = await prisma.message.create({
-      data: {
-        type: 'TEXT',
-        roomId: room.id,
-        userId: roomMemberUser.id,
-        body: 'body',
-      },
-      include: {
-        user: true,
-        room: true,
-      },
+    message = messageFactory({
+      roomId: room.id,
+      userId: roomMemberUser.id,
     })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findMessageSpy = jest.spyOn(prisma.message, 'findUnique')
-  const deleteMessageSpy = jest.spyOn(prisma.message, 'delete')
+  const findMessageSpy = jest.spyOn(prismaMock.message, 'findUnique')
+  const deleteMessageSpy = jest.spyOn(prismaMock.message, 'delete')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -70,6 +47,7 @@ describe('deleteMessage', () => {
   })
 
   test('メッセージが存在しない', async () => {
+    prismaMock.message.findUnique.mockResolvedValue(null)
     try {
       await deleteMessageResolver({
         id: 'id',
@@ -84,13 +62,16 @@ describe('deleteMessage', () => {
   })
 
   test('メッセージの作成者しか削除することは出来ない', async () => {
+    prismaMock.message.findUnique.mockResolvedValue(message)
     try {
       await deleteMessageResolver({
         id: message.id,
         user,
       })
     } catch (e) {
-      expect(e).toEqual(new Error('メッセージの作成者しか削除することは出来ません'))
+      expect(e).toEqual(
+        new Error('メッセージの作成者しか削除することは出来ません')
+      )
     }
 
     expect(findMessageSpy).toHaveBeenCalled()
@@ -98,6 +79,8 @@ describe('deleteMessage', () => {
   })
 
   test('成功', async () => {
+    prismaMock.message.findUnique.mockResolvedValue(message)
+    prismaMock.message.delete.mockResolvedValue(message)
     const res = await deleteMessageResolver({
       id: message.id,
       user: roomMemberUser,
