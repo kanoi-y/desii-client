@@ -1,6 +1,6 @@
 import { Notification, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import { notificationFactory, userFactory } from '../../../factories'
 import { updateNotificationResolver } from '../resolver'
 
 describe('updateNotification', () => {
@@ -9,40 +9,15 @@ describe('updateNotification', () => {
   let notification: Notification
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
-
-    targetUser = await prisma.user.create({
-      data: {
-        name: 'targetUserName',
-        email: 'targetUserEmail',
-        image: 'targetUserImage',
-      },
-    })
-
-    notification = await prisma.notification.create({
-      data: {
-        type: 'FETCH_REACTION',
-        targetUserId: targetUser.id,
-        message: 'message',
-        url: 'url',
-        isChecked: false,
-      },
+    user = userFactory()
+    targetUser = userFactory()
+    notification = notificationFactory({
+      targetUserId: targetUser.id,
     })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findNotificationSpy = jest.spyOn(prisma.notification, 'findUnique')
-  const updateNotificationSpy = jest.spyOn(prisma.notification, 'update')
+  const findNotificationSpy = jest.spyOn(prismaMock.notification, 'findUnique')
+  const updateNotificationSpy = jest.spyOn(prismaMock.notification, 'update')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -60,6 +35,7 @@ describe('updateNotification', () => {
   })
 
   test('通知が存在しない', async () => {
+    prismaMock.notification.findUnique.mockResolvedValue(null)
     try {
       await updateNotificationResolver({
         user: targetUser,
@@ -75,6 +51,7 @@ describe('updateNotification', () => {
   })
 
   test('ログインユーザーが通知の対象ユーザーではない', async () => {
+    prismaMock.notification.findUnique.mockResolvedValue(notification)
     try {
       await updateNotificationResolver({
         user,
@@ -92,6 +69,11 @@ describe('updateNotification', () => {
   })
 
   test('成功', async () => {
+    prismaMock.notification.findUnique.mockResolvedValue(notification)
+    prismaMock.notification.update.mockResolvedValue({
+      ...notification,
+      isChecked: true,
+    })
     const res = await updateNotificationResolver({
       user: targetUser,
       id: notification.id,
