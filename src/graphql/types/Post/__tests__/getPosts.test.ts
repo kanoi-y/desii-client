@@ -1,63 +1,38 @@
-import { Post, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { Favorite, Post, User } from '@prisma/client'
+import { prismaMock } from 'singleton'
+import { favoriteFactory, postFactory, userFactory } from '../../../factories'
 import { getPostsResolver } from '../resolver'
 
 describe('getPosts', () => {
   let user: User
   let post: Post
   let favoritePost: Post
+  let favorite: Favorite
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
+    user = userFactory()
+    post = postFactory({
+      createdUserId: user.id,
     })
-    post = await prisma.post.create({
-      data: {
-        title: 'title',
-        content: 'content',
-        category: 'GIVE_ME',
-        isPrivate: false,
-        createdUserId: user.id,
-        bgImage: 'bgImage',
-      },
+    favoritePost = postFactory({
+      createdUserId: user.id,
     })
-    favoritePost = await prisma.post.create({
-      data: {
-        title: 'title2',
-        content: 'content2',
-        category: 'GIVE_YOU',
-        isPrivate: false,
-        createdUserId: user.id,
-        bgImage: 'bgImage2',
-      },
-    })
-    await prisma.favorite.create({
-      data: {
-        createdUserId: user.id,
-        postId: favoritePost.id,
-      },
-      include: {
-        createdUser: true,
-        post: true,
-      },
+    favorite = favoriteFactory({
+      createdUserId: user.id,
+      postId: favoritePost.id,
     })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const countPostSpy = jest.spyOn(prisma.post, 'count')
-  const findPostSpy = jest.spyOn(prisma.post, 'findMany')
-  const findFavoriteSpy = jest.spyOn(prisma.favorite, 'findMany')
+  const countPostSpy = jest.spyOn(prismaMock.post, 'count')
+  const findPostSpy = jest.spyOn(prismaMock.post, 'findMany')
+  const findFavoriteSpy = jest.spyOn(prismaMock.favorite, 'findMany')
 
   test('sortがfavoriteで成功', async () => {
+    prismaMock.post.count.mockResolvedValue(2)
+    prismaMock.post.findMany.mockResolvedValue([post, favoritePost])
+    prismaMock.favorite.findMany
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([favorite])
     const res = await getPostsResolver({
       sort: 'favorite',
       userId: user.id,
@@ -70,6 +45,8 @@ describe('getPosts', () => {
   })
 
   test('成功', async () => {
+    prismaMock.post.count.mockResolvedValue(2)
+    prismaMock.post.findMany.mockResolvedValue([post, favoritePost])
     const res = await getPostsResolver({
       sort: null,
       userId: user.id,
