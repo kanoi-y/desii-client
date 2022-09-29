@@ -1,6 +1,6 @@
 import { Post, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import { postFactory, userFactory } from '../../../factories'
 import { updatePostResolver } from '../resolver'
 
 describe('updatePost', () => {
@@ -9,39 +9,15 @@ describe('updatePost', () => {
   let post: Post
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
-    createdUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
-    })
-    post = await prisma.post.create({
-      data: {
-        title: 'title',
-        content: 'content',
-        category: 'GIVE_ME',
-        isPrivate: false,
-        createdUserId: createdUser.id,
-        bgImage: 'bgImage',
-      },
+    user = userFactory()
+    createdUser = userFactory()
+    post = postFactory({
+      createdUserId: createdUser.id,
     })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findPostSpy = jest.spyOn(prisma.post, 'findUnique')
-  const updatePostSpy = jest.spyOn(prisma.post, 'update')
+  const findPostSpy = jest.spyOn(prismaMock.post, 'findUnique')
+  const updatePostSpy = jest.spyOn(prismaMock.post, 'update')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -59,6 +35,7 @@ describe('updatePost', () => {
   })
 
   test('投稿が存在しない', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(null)
     try {
       await updatePostResolver({
         id: 'id',
@@ -74,6 +51,7 @@ describe('updatePost', () => {
   })
 
   test('投稿は作成者以外更新できない', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(post)
     try {
       await updatePostResolver({
         id: post.id,
@@ -89,6 +67,11 @@ describe('updatePost', () => {
   })
 
   test('成功', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(post)
+    prismaMock.post.update.mockResolvedValue({
+      ...post,
+      title: 'title update',
+    })
     const res = await updatePostResolver({
       id: post.id,
       user: createdUser,
