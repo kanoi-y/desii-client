@@ -1,6 +1,6 @@
 import { Post, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import { postFactory, userFactory } from '../../../factories'
 import { deletePostResolver } from '../resolver'
 
 describe('deletePost', () => {
@@ -9,39 +9,15 @@ describe('deletePost', () => {
   let post: Post
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
-    createdUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
-    })
-    post = await prisma.post.create({
-      data: {
-        title: 'title',
-        content: 'content',
-        category: 'GIVE_ME',
-        isPrivate: false,
-        createdUserId: createdUser.id,
-        bgImage: 'bgImage',
-      },
+    user = userFactory()
+    createdUser = userFactory()
+    post = postFactory({
+      createdUserId: createdUser.id,
     })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findPostSpy = jest.spyOn(prisma.post, 'findUnique')
-  const deletePostSpy = jest.spyOn(prisma.post, 'delete')
+  const findPostSpy = jest.spyOn(prismaMock.post, 'findUnique')
+  const deletePostSpy = jest.spyOn(prismaMock.post, 'delete')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -58,6 +34,7 @@ describe('deletePost', () => {
   })
 
   test('投稿が存在しない', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(null)
     try {
       await deletePostResolver({
         id: 'id',
@@ -72,6 +49,7 @@ describe('deletePost', () => {
   })
 
   test('投稿は作成者しか削除できない', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(post)
     try {
       await deletePostResolver({
         id: post.id,
@@ -86,6 +64,7 @@ describe('deletePost', () => {
   })
 
   test('成功', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(post)
     await deletePostResolver({
       id: post.id,
       user: createdUser,
