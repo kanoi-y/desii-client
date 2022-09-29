@@ -1,6 +1,12 @@
-import { Post, Tag, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { Post, Tag, TagPostRelation, User } from '@prisma/client'
+import { prismaMock } from 'singleton'
+import {
+  postFactory,
+  tagFactory,
+  tagPostRelationFactory,
+  userFactory,
+} from '../../../factories'
+import * as logics from '../../../logics'
 import { getMatchingPostsResolver } from '../resolver'
 
 describe('getMatchingPosts', () => {
@@ -9,68 +15,35 @@ describe('getMatchingPosts', () => {
   let post: Post
   let matchingPost: Post
   let tag: Tag
+  let tagPostRelation: TagPostRelation
+  let tagMatchingPostRelation: TagPostRelation
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
+    user = userFactory()
+    matchingUser = userFactory()
+    post = postFactory({
+      createdUserId: user.id,
     })
-    matchingUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
+    matchingPost = postFactory({
+      createdUserId: matchingUser.id,
     })
-    post = await prisma.post.create({
-      data: {
-        title: 'title',
-        content: 'content',
-        category: 'GIVE_ME',
-        isPrivate: false,
-        createdUserId: user.id,
-        bgImage: 'bgImage',
-      },
+    tag = tagFactory()
+    tagPostRelation = tagPostRelationFactory({
+      tagId: tag.id,
+      postId: post.id,
     })
-    matchingPost = await prisma.post.create({
-      data: {
-        title: 'title2',
-        content: 'content2',
-        category: 'GIVE_YOU',
-        isPrivate: false,
-        createdUserId: matchingUser.id,
-        bgImage: 'bgImage2',
-      },
-    })
-    tag = await prisma.tag.create({
-      data: {
-        name: 'tag',
-      },
-    })
-    await prisma.tagPostRelation.create({
-      data: {
-        tagId: tag.id,
-        postId: post.id,
-      },
-    })
-    await prisma.tagPostRelation.create({
-      data: {
-        tagId: tag.id,
-        postId: matchingPost.id,
-      },
+    tagMatchingPostRelation = tagPostRelationFactory({
+      tagId: tag.id,
+      postId: matchingPost.id,
     })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findUniquePostSpy = jest.spyOn(prisma.post, 'findUnique')
-  const findTagPostRelationSpy = jest.spyOn(prisma.tagPostRelation, 'findMany')
+  const findUniquePostSpy = jest.spyOn(prismaMock.post, 'findUnique')
+  const findTagPostRelationSpy = jest.spyOn(
+    prismaMock.tagPostRelation,
+    'findMany'
+  )
+  const matchPostsSpy = jest.spyOn(logics, 'matchPosts')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -87,6 +60,7 @@ describe('getMatchingPosts', () => {
   })
 
   test('対象の投稿が存在しない', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(null)
     try {
       await getMatchingPostsResolver({
         postId: 'postId',
@@ -101,6 +75,9 @@ describe('getMatchingPosts', () => {
   })
 
   test('成功', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(post)
+    prismaMock.tagPostRelation.findMany.mockResolvedValue([tagPostRelation])
+    matchPostsSpy.mockResolvedValue([{ count: 1, post: matchingPost }])
     const res = await getMatchingPostsResolver({
       postId: post.id,
       user,
