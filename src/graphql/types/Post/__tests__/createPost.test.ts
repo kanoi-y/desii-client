@@ -1,6 +1,11 @@
-import { Group, Room, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { Group, Room, User, UserGroupRelation } from '@prisma/client'
+import { prismaMock } from 'singleton'
+import {
+  groupFactory,
+  roomFactory,
+  userFactory,
+  userGroupRelationFactory,
+} from '../../../factories'
 import { createPostResolver } from '../resolver'
 
 describe('createPost', () => {
@@ -8,50 +13,25 @@ describe('createPost', () => {
   let groupMemberUser: User
   let room: Room
   let group: Group
+  let userGroupRelation: UserGroupRelation
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
+    user = userFactory()
+    groupMemberUser = userFactory()
+    room = roomFactory()
+    group = groupFactory({
+      adminUserId: user.id,
+      roomId: room.id,
     })
-    groupMemberUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
-    })
-    room = await prisma.room.create({
-      data: {},
-    })
-    group = await prisma.group.create({
-      data: {
-        adminUserId: user.id,
-        name: 'group',
-        image: 'image',
-        productId: 'productId',
-        roomId: room.id,
-      },
-    })
-    await prisma.userGroupRelation.create({
-      data: {
-        userId: groupMemberUser.id,
-        groupId: group.id,
-      },
+    userGroupRelation = userGroupRelationFactory({
+      userId: groupMemberUser.id,
+      groupId: group.id,
     })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const createPostSpy = jest.spyOn(prisma.post, 'create')
+  const createPostSpy = jest.spyOn(prismaMock.post, 'create')
   const findUserGroupRelationSpy = jest.spyOn(
-    prisma.userGroupRelation,
+    prismaMock.userGroupRelation,
     'findMany'
   )
 
@@ -75,6 +55,7 @@ describe('createPost', () => {
   })
 
   test('グループに所属していないユーザーは作成できない', async () => {
+    prismaMock.userGroupRelation.findMany.mockResolvedValue([])
     try {
       await createPostResolver({
         title: 'title',
@@ -86,7 +67,9 @@ describe('createPost', () => {
         user,
       })
     } catch (e) {
-      expect(e).toEqual(new Error('グループに所属していないユーザーは作成できません'))
+      expect(e).toEqual(
+        new Error('グループに所属していないユーザーは作成できません')
+      )
     }
 
     expect(createPostSpy).not.toHaveBeenCalled()
@@ -94,6 +77,7 @@ describe('createPost', () => {
   })
 
   test('groupIdありの成功', async () => {
+    prismaMock.userGroupRelation.findMany.mockResolvedValue([userGroupRelation])
     await createPostResolver({
       title: 'title',
       content: 'content',
