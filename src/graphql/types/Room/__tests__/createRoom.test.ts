@@ -1,6 +1,6 @@
 import { User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import { roomFactory, userFactory } from '../../../factories'
 import { createRoomResolver } from '../resolver'
 
 describe('createRoom', () => {
@@ -8,30 +8,13 @@ describe('createRoom', () => {
   let roomMemberUser: User
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
-    })
-    roomMemberUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
-    })
+    user = userFactory()
+    roomMemberUser = userFactory()
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findUserSpy = jest.spyOn(prisma.user, 'findUnique')
-  const createRoomSpy = jest.spyOn(prisma.room, 'create')
-  const createRoomMemberSpy = jest.spyOn(prisma.roomMember, 'createMany')
+  const findUserSpy = jest.spyOn(prismaMock.user, 'findUnique')
+  const createRoomSpy = jest.spyOn(prismaMock.room, 'create')
+  const createRoomMemberSpy = jest.spyOn(prismaMock.roomMember, 'createMany')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -49,6 +32,7 @@ describe('createRoom', () => {
   })
 
   test('ルームのメンバーが存在しない', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(null)
     try {
       await createRoomResolver({
         memberId: 'memberId',
@@ -64,6 +48,7 @@ describe('createRoom', () => {
   })
 
   test('自分とのルームは作成できない', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(user)
     try {
       await createRoomResolver({
         memberId: user.id,
@@ -79,6 +64,10 @@ describe('createRoom', () => {
   })
 
   test('成功', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(roomMemberUser)
+    prismaMock.room.create.mockResolvedValue(roomFactory())
+    prismaMock.roomMember.createMany.mockResolvedValue({ count: 2 })
+
     await createRoomResolver({
       memberId: roomMemberUser.id,
       user,
