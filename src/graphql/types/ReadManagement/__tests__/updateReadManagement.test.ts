@@ -1,6 +1,12 @@
-import { Message, ReadManagement, Room, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { Message, ReadManagement, Room, RoomMember, User } from '@prisma/client'
+import { prismaMock } from 'singleton'
+import {
+  messageFactory,
+  readManagementFactory,
+  roomFactory,
+  roomMemberFactory,
+  userFactory,
+} from '../../../factories'
 import { updateReadManagementResolver } from '../resolver'
 
 describe('updateReadManagement', () => {
@@ -8,74 +14,43 @@ describe('updateReadManagement', () => {
   let createdMessageUser: User
   let roomMemberUser: User
   let room: Room
+  let createdMessageRoomMember: RoomMember
+  let roomMember: RoomMember
   let message: Message
   let readManagement: ReadManagement
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
+    user = userFactory()
+    createdMessageUser = userFactory()
+    roomMemberUser = userFactory()
+    room = roomFactory()
+    createdMessageRoomMember = roomMemberFactory({
+      roomId: room.id,
+      userId: createdMessageUser.id,
     })
-    createdMessageUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
+    roomMember = roomMemberFactory({
+      roomId: room.id,
+      userId: roomMemberUser.id,
     })
-    roomMemberUser = await prisma.user.create({
-      data: {
-        name: 'name3',
-        email: 'email3',
-        image: 'image3',
-      },
+    message = messageFactory({
+      roomId: room.id,
+      userId: createdMessageUser.id,
     })
-    room = await prisma.room.create({
-      data: {},
-    })
-    await prisma.roomMember.create({
-      data: {
-        roomId: room.id,
-        userId: createdMessageUser.id,
-      },
-    })
-    await prisma.roomMember.create({
-      data: {
-        roomId: room.id,
-        userId: roomMemberUser.id,
-      },
-    })
-    message = await prisma.message.create({
-      data: {
-        type: 'TEXT',
-        roomId: room.id,
-        userId: createdMessageUser.id,
-        body: 'body',
-      },
-      include: {
-        user: true,
-        room: true,
-      },
-    })
-    readManagement = await prisma.readManagement.create({
-      data: {
-        targetUserId: roomMemberUser.id,
-        messageId: message.id,
-        isRead: false,
-      },
+    readManagement = readManagementFactory({
+      targetUserId: roomMemberUser.id,
+      messageId: message.id,
+      isRead: false,
     })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findReadManagementSpy = jest.spyOn(prisma.readManagement, 'findUnique')
-  const updateReadManagementSpy = jest.spyOn(prisma.readManagement, 'update')
+  const findReadManagementSpy = jest.spyOn(
+    prismaMock.readManagement,
+    'findUnique'
+  )
+  const updateReadManagementSpy = jest.spyOn(
+    prismaMock.readManagement,
+    'update'
+  )
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -93,6 +68,7 @@ describe('updateReadManagement', () => {
   })
 
   test('既読管理が存在しない', async () => {
+    prismaMock.readManagement.findUnique.mockResolvedValue(null)
     try {
       await updateReadManagementResolver({
         messageId: 'id',
@@ -108,6 +84,7 @@ describe('updateReadManagement', () => {
   })
 
   test('自分の既読管理しか更新することは出来ない', async () => {
+    prismaMock.readManagement.findUnique.mockResolvedValue(readManagement)
     try {
       await updateReadManagementResolver({
         messageId: message.id,
@@ -122,8 +99,12 @@ describe('updateReadManagement', () => {
     expect(updateReadManagementSpy).not.toHaveBeenCalled()
   })
 
-
   test('成功', async () => {
+    prismaMock.readManagement.findUnique.mockResolvedValue(readManagement)
+    prismaMock.readManagement.update.mockResolvedValue({
+      ...readManagement,
+      isRead: true,
+    })
     const res = await updateReadManagementResolver({
       messageId: message.id,
       targetUserId: roomMemberUser.id,
