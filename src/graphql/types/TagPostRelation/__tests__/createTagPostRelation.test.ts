@@ -1,6 +1,11 @@
 import { Post, Tag, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import {
+  postFactory,
+  tagFactory,
+  tagPostRelationFactory,
+  userFactory,
+} from '../../../factories'
 import { createTagPostRelationResolver } from '../resolver'
 
 describe('createTagPostRelation', () => {
@@ -10,45 +15,20 @@ describe('createTagPostRelation', () => {
   let tag: Tag
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
+    user = userFactory()
+    anotherUser = userFactory()
+    post = postFactory({
+      createdUserId: user.id,
     })
-    anotherUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
-    })
-    post = await prisma.post.create({
-      data: {
-        title: 'title',
-        content: 'content',
-        category: 'GIVE_ME',
-        isPrivate: false,
-        createdUserId: user.id,
-        bgImage: 'bgImage',
-      },
-    })
-    tag = await prisma.tag.create({
-      data: {
-        name: 'tag',
-      },
-    })
+    tag = tagFactory()
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findTagSpy = jest.spyOn(prisma.tag, 'findUnique')
-  const findPostSpy = jest.spyOn(prisma.post, 'findUnique')
-  const createTagPostRelationSpy = jest.spyOn(prisma.tagPostRelation, 'create')
+  const findTagSpy = jest.spyOn(prismaMock.tag, 'findUnique')
+  const findPostSpy = jest.spyOn(prismaMock.post, 'findUnique')
+  const createTagPostRelationSpy = jest.spyOn(
+    prismaMock.tagPostRelation,
+    'create'
+  )
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -57,7 +37,6 @@ describe('createTagPostRelation', () => {
         tagId: tag.id,
         user: null,
       })
-  
     } catch (e) {
       expect(e).toEqual(new Error('ログインユーザーが存在しません'))
     }
@@ -68,13 +47,14 @@ describe('createTagPostRelation', () => {
   })
 
   test('タグ、または投稿が存在しない', async () => {
+    prismaMock.tag.findUnique.mockResolvedValue(tag)
+    prismaMock.post.findUnique.mockResolvedValue(null)
     try {
       await createTagPostRelationResolver({
         postId: 'id',
         tagId: tag.id,
         user,
       })
-  
     } catch (e) {
       expect(e).toEqual(new Error('タグ、または投稿が存在しません'))
     }
@@ -85,13 +65,14 @@ describe('createTagPostRelation', () => {
   })
 
   test('作成者しかタグを追加できない', async () => {
+    prismaMock.tag.findUnique.mockResolvedValue(tag)
+    prismaMock.post.findUnique.mockResolvedValue(post)
     try {
       await createTagPostRelationResolver({
         postId: post.id,
         tagId: tag.id,
         user: anotherUser,
       })
-  
     } catch (e) {
       expect(e).toEqual(new Error('作成者しかタグを追加できません'))
     }
@@ -102,6 +83,14 @@ describe('createTagPostRelation', () => {
   })
 
   test('成功', async () => {
+    prismaMock.tag.findUnique.mockResolvedValue(tag)
+    prismaMock.post.findUnique.mockResolvedValue(post)
+    prismaMock.tagPostRelation.create.mockResolvedValue(
+      tagPostRelationFactory({
+        tagId: tag.id,
+        postId: post.id,
+      })
+    )
     await createTagPostRelationResolver({
       postId: post.id,
       tagId: tag.id,
