@@ -1,6 +1,11 @@
-import { Room, RoomMember, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { Group, Room, RoomMember, User } from '@prisma/client'
+import { prismaMock } from 'singleton'
+import {
+  groupFactory,
+  roomFactory,
+  roomMemberFactory,
+  userFactory,
+} from '../../../factories'
 import { getTargetRoomMemberResolver } from '../resolver'
 
 describe('getTargetRoomMember', () => {
@@ -9,76 +14,42 @@ describe('getTargetRoomMember', () => {
   let notRoomMemberUser: User
   let room: Room
   let roomRelatedByGroup: Room
-  let anotherRoomMember: RoomMember
+  let group: Group
+  let roomMember: RoomMember & { room: Room; user: User }
+  let anotherRoomMember: RoomMember & { room: Room; user: User }
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
+    user = userFactory()
+    anotherUser = userFactory()
+    notRoomMemberUser = userFactory()
+    room = roomFactory()
+    roomRelatedByGroup = roomFactory()
+    group = groupFactory({
+      adminUserId: user.id,
+      roomId: roomRelatedByGroup.id,
     })
-    anotherUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
-    })
-    notRoomMemberUser = await prisma.user.create({
-      data: {
-        name: 'name3',
-        email: 'email3',
-        image: 'image3',
-      },
-    })
-    room = await prisma.room.create({
-      data: {},
-    })
-    roomRelatedByGroup = await prisma.room.create({
-      data: {},
-    })
-    await prisma.group.create({
-      data: {
-        adminUserId: user.id,
-        name: 'group',
-        image: 'image',
-        productId: 'productId',
-        roomId: roomRelatedByGroup.id,
-      },
-    })
-    await prisma.roomMember.create({
-      data: {
+    roomMember = {
+      ...roomMemberFactory({
         roomId: room.id,
         userId: user.id,
-      },
-      include: {
-        room: true,
-        user: true,
-      },
-    })
-    anotherRoomMember = await prisma.roomMember.create({
-      data: {
+      }),
+      room,
+      user,
+    }
+    anotherRoomMember = {
+      ...roomMemberFactory({
         roomId: room.id,
         userId: anotherUser.id,
-      },
-      include: {
-        room: true,
-        user: true,
-      },
-    })
+      }),
+      room,
+      user: anotherUser,
+    }
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findRoomSpy = jest.spyOn(prisma.room, 'findUnique')
-  const findGroupSpy = jest.spyOn(prisma.group, 'findUnique')
-  const findManyRoomMemberSpy = jest.spyOn(prisma.roomMember, 'findMany')
-  const findRoomMemberSpy = jest.spyOn(prisma.roomMember, 'findFirst')
+  const findRoomSpy = jest.spyOn(prismaMock.room, 'findUnique')
+  const findGroupSpy = jest.spyOn(prismaMock.group, 'findUnique')
+  const findManyRoomMemberSpy = jest.spyOn(prismaMock.roomMember, 'findMany')
+  const findRoomMemberSpy = jest.spyOn(prismaMock.roomMember, 'findFirst')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -98,6 +69,7 @@ describe('getTargetRoomMember', () => {
   })
 
   test('ルームが存在しない', async () => {
+    prismaMock.room.findUnique.mockResolvedValue(null)
     try {
       await getTargetRoomMemberResolver({
         roomId: 'id',
@@ -115,6 +87,8 @@ describe('getTargetRoomMember', () => {
   })
 
   test('ルームが一対一のルームではない', async () => {
+    prismaMock.room.findUnique.mockResolvedValue(roomRelatedByGroup)
+    prismaMock.group.findUnique.mockResolvedValue(group)
     try {
       await getTargetRoomMemberResolver({
         roomId: roomRelatedByGroup.id,
@@ -132,6 +106,9 @@ describe('getTargetRoomMember', () => {
   })
 
   test('userIdがルームのメンバーのIDではない', async () => {
+    prismaMock.room.findUnique.mockResolvedValue(room)
+    prismaMock.group.findUnique.mockResolvedValue(null)
+    prismaMock.roomMember.findMany.mockResolvedValue([roomMember, anotherRoomMember])
     try {
       await getTargetRoomMemberResolver({
         roomId: room.id,
@@ -149,6 +126,10 @@ describe('getTargetRoomMember', () => {
   })
 
   test('成功', async () => {
+    prismaMock.room.findUnique.mockResolvedValue(room)
+    prismaMock.group.findUnique.mockResolvedValue(null)
+    prismaMock.roomMember.findMany.mockResolvedValue([roomMember, anotherRoomMember])
+    prismaMock.roomMember.findFirst.mockResolvedValue(anotherRoomMember)
     const res = await getTargetRoomMemberResolver({
       roomId: room.id,
       userId: user.id,
