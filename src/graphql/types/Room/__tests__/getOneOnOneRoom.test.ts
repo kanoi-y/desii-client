@@ -1,6 +1,6 @@
-import { Room, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { PrismaPromise, Room, RoomMember, User } from '@prisma/client'
+import { prismaMock } from 'singleton'
+import { roomFactory, roomMemberFactory, userFactory } from '../../../factories'
 import { getOneOnOneRoomResolver } from '../resolver'
 
 describe('getOneOnOneRoom', () => {
@@ -8,53 +8,29 @@ describe('getOneOnOneRoom', () => {
   let anotherUser: User
   let roomMemberUser: User
   let room: Room
+  let roomMember1: RoomMember
+  let roomMember2: RoomMember
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
+    user = userFactory()
+    anotherUser = userFactory()
+    roomMemberUser = userFactory()
+    room = roomFactory()
+    roomMember1 = roomMemberFactory({
+      roomId: room.id,
+      userId: user.id,
     })
-    anotherUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
-    })
-    roomMemberUser = await prisma.user.create({
-      data: {
-        name: 'name3',
-        email: 'email3',
-        image: 'image3',
-      },
-    })
-    room = await prisma.room.create({
-      data: {},
-    })
-    await prisma.roomMember.createMany({
-      data: [
-        {
-          roomId: room.id,
-          userId: user.id,
-        },
-        {
-          roomId: room.id,
-          userId: roomMemberUser.id,
-        },
-      ],
+    roomMember2 = roomMemberFactory({
+      roomId: room.id,
+      userId: roomMemberUser.id,
     })
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findRoomMemberSpy = jest.spyOn(prisma.roomMember, 'findMany')
-  const findGroupSpy = jest.spyOn(prisma.group, 'findMany')
+  const findRoomMemberSpy = jest.spyOn(
+    prismaMock.roomMember,
+    'findMany'
+  ) as jest.SpyInstance<PrismaPromise<(RoomMember & { room: Room })[]>>
+  const findGroupSpy = jest.spyOn(prismaMock.group, 'findMany')
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -71,6 +47,8 @@ describe('getOneOnOneRoom', () => {
   })
 
   test('userとmemberのOneOnOneRoomがない場合はnullが返る', async () => {
+    findRoomMemberSpy.mockResolvedValue([{ ...roomMember2, room }])
+    findGroupSpy.mockResolvedValue([])
     const res = await getOneOnOneRoomResolver({
       memberId: roomMemberUser.id,
       user: anotherUser,
@@ -82,6 +60,11 @@ describe('getOneOnOneRoom', () => {
   })
 
   test('成功', async () => {
+    findRoomMemberSpy.mockResolvedValue([
+      { ...roomMember2, room },
+      { ...roomMember1, room },
+    ])
+    findGroupSpy.mockResolvedValue([])
     const res = await getOneOnOneRoomResolver({
       memberId: roomMemberUser.id,
       user,
