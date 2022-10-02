@@ -1,6 +1,11 @@
 import { Post, Tag, TagPostRelation, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import {
+  postFactory,
+  tagFactory,
+  tagPostRelationFactory,
+  userFactory,
+} from '../../../factories'
 import { deleteTagPostRelationsResolver } from '../resolver'
 
 describe('deleteTagPostRelations', () => {
@@ -20,90 +25,52 @@ describe('deleteTagPostRelations', () => {
   }
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
+    user = userFactory()
+    anotherUser = userFactory()
+    post = postFactory({
+      createdUserId: user.id,
     })
-    anotherUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
+    anotherPost = postFactory({
+      createdUserId: user.id,
     })
-    post = await prisma.post.create({
-      data: {
-        title: 'title',
-        content: 'content',
-        category: 'GIVE_ME',
-        isPrivate: false,
-        createdUserId: user.id,
-        bgImage: 'bgImage',
-      },
-    })
-    anotherPost = await prisma.post.create({
-      data: {
-        title: 'title2',
-        content: 'content2',
-        category: 'GIVE_YOU',
-        isPrivate: false,
-        createdUserId: user.id,
-        bgImage: 'bgImage2',
-      },
-    })
-    tag = await prisma.tag.create({
-      data: {
-        name: 'tag',
-      },
-    })
-    anotherTag = await prisma.tag.create({
-      data: {
-        name: 'tag2',
-      },
-    })
-    tagPostRelation = await prisma.tagPostRelation.create({
-      data: {
+    tag = tagFactory()
+    anotherTag = tagFactory()
+    tagPostRelation = {
+      ...tagPostRelationFactory({
         postId: post.id,
         tagId: tag.id,
-      },
-      include: {
-        post: true,
-        tag: true,
-      },
-    })
-    anotherTagPostRelation = await prisma.tagPostRelation.create({
-      data: {
+      }),
+      tag,
+      post,
+    }
+    anotherTagPostRelation = {
+      ...tagPostRelationFactory({
         postId: anotherPost.id,
         tagId: anotherTag.id,
-      },
-      include: {
-        post: true,
-        tag: true,
-      },
-    })
-  })
-
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
+      }),
+      tag,
+      post,
+    }
   })
 
   const findTagPostRelationsSpy = jest.spyOn(
-    prisma.tagPostRelation,
+    prismaMock.tagPostRelation,
     'findMany'
   )
-  const deleteTagPostRelationsSpy = jest.spyOn(prisma.tagPostRelation, 'deleteMany')
+  const deleteTagPostRelationsSpy = jest.spyOn(
+    prismaMock.tagPostRelation,
+    'deleteMany'
+  )
 
   test('ログインユーザーが存在しない', async () => {
     try {
       await deleteTagPostRelationsResolver({
-        tagPostTypes: [{ postId: post.id, tagId: tag.id }, { postId: anotherPost.id, tagId: anotherTag.id }],
+        tagPostTypes: [
+          { postId: post.id, tagId: tag.id },
+          { postId: anotherPost.id, tagId: anotherTag.id },
+        ],
         user: null,
       })
-  
     } catch (e) {
       expect(e).toEqual(new Error('ログインユーザーが存在しません'))
     }
@@ -113,12 +80,15 @@ describe('deleteTagPostRelations', () => {
   })
 
   test('tagPostRelationが存在しない', async () => {
+    prismaMock.tagPostRelation.findMany.mockResolvedValue([])
     try {
       await deleteTagPostRelationsResolver({
-        tagPostTypes: [{ postId: 'postId', tagId: 'tagId' }, { postId: 'anotherPostId', tagId: 'anotherTagId' }],
+        tagPostTypes: [
+          { postId: 'postId', tagId: 'tagId' },
+          { postId: 'anotherPostId', tagId: 'anotherTagId' },
+        ],
         user,
       })
-  
     } catch (e) {
       expect(e).toEqual(new Error('tagPostRelationが存在しません'))
     }
@@ -128,12 +98,15 @@ describe('deleteTagPostRelations', () => {
   })
 
   test('作成者しかタグを削除できない', async () => {
+    prismaMock.tagPostRelation.findMany.mockResolvedValue([tagPostRelation, anotherTagPostRelation])
     try {
       await deleteTagPostRelationsResolver({
-        tagPostTypes: [{ postId: post.id, tagId: tag.id }, { postId: anotherPost.id, tagId: anotherTag.id }],
+        tagPostTypes: [
+          { postId: post.id, tagId: tag.id },
+          { postId: anotherPost.id, tagId: anotherTag.id },
+        ],
         user: anotherUser,
       })
-  
     } catch (e) {
       expect(e).toEqual(new Error('作成者しかタグを削除できません'))
     }
@@ -143,8 +116,13 @@ describe('deleteTagPostRelations', () => {
   })
 
   test('成功', async () => {
+    prismaMock.tagPostRelation.findMany.mockResolvedValue([tagPostRelation, anotherTagPostRelation])
+    prismaMock.tagPostRelation.deleteMany.mockResolvedValue({ count: 2})
     const res = await deleteTagPostRelationsResolver({
-      tagPostTypes: [{ postId: post.id, tagId: tag.id }, { postId: anotherPost.id, tagId: anotherTag.id }],
+      tagPostTypes: [
+        { postId: post.id, tagId: tag.id },
+        { postId: anotherPost.id, tagId: anotherTag.id },
+      ],
       user,
     })
 
