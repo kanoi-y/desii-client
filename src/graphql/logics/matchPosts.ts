@@ -1,13 +1,13 @@
-import { Post, Tag, TagPostRelation } from '@prisma/client'
-import { Context } from '~/graphql/context'
+import { Post, Tag, TagPostRelation, User } from '@prisma/client'
+import { prisma } from '../../lib/prisma'
 
 export const matchPosts = async (
-  ctx: Context,
   tagPostRelations: (TagPostRelation & {
     post: Post
     tag: Tag
   })[],
-  post: Post
+  post: Post,
+  user: User
 ) => {
   const matchingPostsInfo: { count: number; post: Post }[] = []
 
@@ -19,7 +19,7 @@ export const matchPosts = async (
             tag: Tag
           }
         ) => {
-          return ctx.prisma.tagPostRelation.findMany({
+          return prisma.tagPostRelation.findMany({
             where: {
               tagId: tagPostRelation.tag.id,
               NOT: {
@@ -48,7 +48,7 @@ export const matchPosts = async (
     }
 
     if (
-      ctx.user?.id !== tagPostRelation.post.createdUserId &&
+      user.id !== tagPostRelation.post.createdUserId &&
       post.category !== tagPostRelation.post.category
     ) {
       matchingPostsInfo.push({ count: 1, post: tagPostRelation.post })
