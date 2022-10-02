@@ -8,7 +8,7 @@ import {
 import { prisma } from '../../../lib/prisma'
 import { matchPosts } from '../../logics'
 
-const createNotification = async (
+export const createNotification = async (
   tagPostRelations: (TagPostRelationType & {
     post: Post
     tag: Tag

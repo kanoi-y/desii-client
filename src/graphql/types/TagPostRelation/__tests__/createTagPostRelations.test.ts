@@ -1,6 +1,12 @@
 import { Post, Tag, User } from '@prisma/client'
-import { prisma } from '../../../../lib/prisma'
-import { resetDatabase } from '../../../logics'
+import { prismaMock } from 'singleton'
+import {
+  postFactory,
+  tagFactory,
+  tagPostRelationFactory,
+  userFactory,
+} from '../../../factories'
+import * as resolver from '../resolver'
 import { createTagPostRelationsResolver } from '../resolver'
 
 describe('createTagPostRelations', () => {
@@ -11,50 +17,27 @@ describe('createTagPostRelations', () => {
   let anotherTag: Tag
 
   beforeAll(async () => {
-    user = await prisma.user.create({
-      data: {
-        name: 'name',
-        email: 'email',
-        image: 'image',
-      },
+    user = userFactory()
+    anotherUser = userFactory()
+    post = postFactory({
+      createdUserId: user.id,
     })
-    anotherUser = await prisma.user.create({
-      data: {
-        name: 'name2',
-        email: 'email2',
-        image: 'image2',
-      },
-    })
-    post = await prisma.post.create({
-      data: {
-        title: 'title',
-        content: 'content',
-        category: 'GIVE_ME',
-        isPrivate: false,
-        createdUserId: user.id,
-        bgImage: 'bgImage',
-      },
-    })
-    tag = await prisma.tag.create({
-      data: {
-        name: 'tag',
-      },
-    })
-    anotherTag = await prisma.tag.create({
-      data: {
-        name: 'anotherTag',
-      },
-    })
+    tag = tagFactory()
+    anotherTag = tagFactory()
   })
 
-  afterAll(async () => {
-    await resetDatabase()
-    await prisma.$disconnect()
-  })
-
-  const findPostSpy = jest.spyOn(prisma.post, 'findUnique')
-  const createTagPostRelationsSpy = jest.spyOn(prisma.tagPostRelation, 'createMany')
-  const findTagPostRelationsSpy = jest.spyOn(prisma.tagPostRelation, 'findMany')
+  const findPostSpy = jest.spyOn(prismaMock.post, 'findUnique')
+  const createTagPostRelationsSpy = jest.spyOn(
+    prismaMock.tagPostRelation,
+    'createMany'
+  )
+  const findTagPostRelationsSpy = jest.spyOn(
+    prismaMock.tagPostRelation,
+    'findMany'
+  )
+  const createNotificationSpy = jest
+    .spyOn(resolver, 'createNotification')
+    .mockResolvedValue(void 0)
 
   test('ログインユーザーが存在しない', async () => {
     try {
@@ -63,7 +46,6 @@ describe('createTagPostRelations', () => {
         tagIds: [tag.id, anotherTag.id],
         user: null,
       })
-  
     } catch (e) {
       expect(e).toEqual(new Error('ログインユーザーが存在しません'))
     }
@@ -71,16 +53,17 @@ describe('createTagPostRelations', () => {
     expect(findPostSpy).not.toHaveBeenCalled()
     expect(createTagPostRelationsSpy).not.toHaveBeenCalled()
     expect(findTagPostRelationsSpy).not.toHaveBeenCalled()
+    expect(createNotificationSpy).not.toHaveBeenCalled()
   })
 
   test('投稿が存在しない', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(null)
     try {
       await createTagPostRelationsResolver({
         postId: 'postId',
         tagIds: [tag.id, anotherTag.id],
         user,
       })
-  
     } catch (e) {
       expect(e).toEqual(new Error('投稿が存在しません'))
     }
@@ -88,16 +71,17 @@ describe('createTagPostRelations', () => {
     expect(findPostSpy).toHaveBeenCalled()
     expect(createTagPostRelationsSpy).not.toHaveBeenCalled()
     expect(findTagPostRelationsSpy).not.toHaveBeenCalled()
+    expect(createNotificationSpy).not.toHaveBeenCalled()
   })
 
   test('投稿の作成者しかタグを追加できない', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(post)
     try {
       await createTagPostRelationsResolver({
         postId: post.id,
         tagIds: [tag.id, anotherTag.id],
         user: anotherUser,
       })
-  
     } catch (e) {
       expect(e).toEqual(new Error('投稿の作成者しかタグを追加できません'))
     }
@@ -105,9 +89,22 @@ describe('createTagPostRelations', () => {
     expect(findPostSpy).toHaveBeenCalled()
     expect(createTagPostRelationsSpy).not.toHaveBeenCalled()
     expect(findTagPostRelationsSpy).not.toHaveBeenCalled()
+    expect(createNotificationSpy).not.toHaveBeenCalled()
   })
 
   test('成功', async () => {
+    prismaMock.post.findUnique.mockResolvedValue(post)
+    prismaMock.tagPostRelation.createMany.mockResolvedValue({ count: 2 })
+    prismaMock.tagPostRelation.findMany.mockResolvedValue([
+      tagPostRelationFactory({
+        postId: post.id,
+        tagId: tag.id,
+      }),
+      tagPostRelationFactory({
+        postId: post.id,
+        tagId: anotherTag.id,
+      }),
+    ])
     await createTagPostRelationsResolver({
       postId: post.id,
       tagIds: [tag.id, anotherTag.id],
@@ -117,5 +114,6 @@ describe('createTagPostRelations', () => {
     expect(findPostSpy).toHaveBeenCalled()
     expect(createTagPostRelationsSpy).toHaveBeenCalled()
     expect(findTagPostRelationsSpy).toHaveBeenCalled()
+    expect(createNotificationSpy).toHaveBeenCalled()
   })
 })
